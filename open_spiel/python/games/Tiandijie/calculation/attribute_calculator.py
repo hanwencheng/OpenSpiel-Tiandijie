@@ -176,9 +176,9 @@ def get_defense(
     basic_defense = get_level1_modified_result(
         hero_instance, attr_name, defense_attribute
     )
-    return basic_defense + get_level2_modifier(
+    return basic_defense * (1 + get_level2_modifier(
         hero_instance, counter_instance, attr_name, context, is_basic
-    )
+    ))
 
 
 def get_attack(
@@ -203,9 +203,9 @@ def get_attack(
     basic_attack = get_level1_modified_result(
         actor_instance, attr_name, attack_attribute
     )
-    return basic_attack + get_level2_modifier(
+    return basic_attack * (1 + get_level2_modifier(
         actor_instance, target_instance, attr_name, context, is_basic
-        )
+        ))
 
 
 def get_damage_modifier(

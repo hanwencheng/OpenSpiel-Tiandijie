@@ -129,7 +129,7 @@ class TianDiJieState(pyspiel.State):
         if self.turn == 0:
             self.turn += 1
             for hero in hero_list:
-                event_listener_calculator(actor_instance=hero, counter_instance=None, event_type=EventTypes.turn_start, context=self.context)
+                event_listener_calculator(actor_instance=hero, counter_instance=None, event_type=EventTypes.game_start, context=self.context)
 
         if action is not None and action.has_additional_action:
             actor = action.actor

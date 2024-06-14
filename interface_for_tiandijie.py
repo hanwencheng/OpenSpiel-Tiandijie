@@ -39,8 +39,6 @@ class TIANDIJIEGUI:
                 print("创建")
                 self.agents.append(tabular_qlearner.QLearner(player_id=idx, num_actions=self.num_actions))
         self.eval_agents = [self.agents[0], self.agents[1]]
-        self.time_step = self.env.reset()
-        self.now_state = self.env.get_state
         self.data_dict = {}
         self.image_cache = {}
         self.heroes = []
@@ -128,12 +126,19 @@ class TIANDIJIEGUI:
         new_window.destroy()
 
     def go_tiandijie(self):
+        self.time_step = self.env.reset()
+        self.now_state = self.env.get_state
         self.heroes = self.now_state.context.heroes
         self.cemetery = self.now_state.context.cemetery
         self.map = self.now_state.context.battlemap.map
         self.remove_other_frame()
         self.create_map()
         self.init_hero_map()
+        # 更改英灵位置
+        hero = self.get_hero_by_id("mohuahuangfushen0")
+        from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, \
+            get_max_life
+        print(get_max_life(hero_instance=hero, target_instance=None, context=self.now_state.context))
 
     def start_simulation(self):
         self.button_dic["button_train"].config(state="disabled")

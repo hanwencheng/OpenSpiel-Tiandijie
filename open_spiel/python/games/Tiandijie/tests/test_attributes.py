@@ -6,6 +6,7 @@ from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import (
     generate_max_level_attributes,
     multiply_attributes,
 )
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import HideProfessions
 
 
 class TestGenerateMaxLevelAttributes(unittest.TestCase):
@@ -16,9 +17,9 @@ class TestGenerateMaxLevelAttributes(unittest.TestCase):
 
         # Call the function
         added_attributes = generate_max_level_attributes(
-            level0_attributes, growth_coefficients, "SORCERER_DAMAGE"
+            level0_attributes, growth_coefficients, HideProfessions.SORCERER_DAMAGE, "longxue"
         )
-        final_attributes = multiply_attributes(added_attributes, "SORCERER_DAMAGE")
+        final_attributes = multiply_attributes(added_attributes, HideProfessions.SORCERER_DAMAGE)
 
         # Assert that the results are as expected
         self.assertEqual(final_attributes.life, 5808)

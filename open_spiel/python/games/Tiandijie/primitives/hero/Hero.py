@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import traceback
 from typing import List
-from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes, multiply_attributes
 from typing import TYPE_CHECKING
 from open_spiel.python.games.Tiandijie.calculation.PathFinding import bfs_move_range
 from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
@@ -57,7 +58,10 @@ class Hero:
             self.temp.hide_professions,
             self.temp.temp_id,
         )
-        self.initial_attributes = initial_attributes
+        self.initial_attributes = multiply_attributes(initial_attributes, self.temp.hide_professions)
+        if self.id == "mohuahuangfushen0":
+            print("mohuahuangfushen0 进图前气血", self.initial_attributes.life)
+        #     traceback.print_stack()
         self.current_life = self.initial_attributes.life
 
     def take_harm(self, harm_value: float):
