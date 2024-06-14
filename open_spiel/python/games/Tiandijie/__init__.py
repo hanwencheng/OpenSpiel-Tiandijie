@@ -1,4 +1,4 @@
-# Copyright 2023 DeepMind Technologies Limited
+# Copyright 2019 DeepMind Technologies Limited
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,21 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for pyspiel Chat Game."""
+"""Tiandijie implemented in Python.
 
-from absl.testing import parameterized
+These games are registered as they are imported. It's perfectly possible to
+import just a single game if you prefer. There is no need to add new games here,
+so long as they register themselves and you import them when wanting to use
+them. However, adding them here will make them available for playthroughs and
+for automated API testing.
 
-
-class ChatGameTest(parameterized.TestCase):
-
-  def setUp(self):
-    super().setUp()
-
-  def test_game_from_cc(self, fixed_scenario):
-    """Runs our standard game tests, checking API consistency."""
-    print("test_game_from_cc")
-    pass
-
-
-if __name__ == '__main__':
-  absltest.main()
+Registration looks like this:
+```
+pyspiel.register_game(_GAME_TYPE, KuhnPokerGame)
+```
+"""
