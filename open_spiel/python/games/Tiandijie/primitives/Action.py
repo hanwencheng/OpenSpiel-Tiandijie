@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 import enum
 from typing import List
 from open_spiel.python.games.Tiandijie.calculation.PathFinding import a_star_search
+from open_spiel.python.games.Tiandijie.basics import Position
 
 if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
