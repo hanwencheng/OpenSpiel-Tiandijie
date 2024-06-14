@@ -1,10 +1,10 @@
 # import pyspiel
 from state.setup import setup_context
 from state.apply_action import apply_action
-from primitives.Action import Action, ActionTypes
-from calculation.PathFinding import bfs_move_range
-from primitives.effects.Event import EventTypes
-from calculation.event_calculator import event_listener_calculator
+from open_spiel.python.games.Tiandijie.primitives.Action import Action, ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator
 
 
 class State:

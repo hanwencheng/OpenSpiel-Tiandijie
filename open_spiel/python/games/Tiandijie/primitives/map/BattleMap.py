@@ -1,8 +1,8 @@
 from typing import List
 
-from primitives.map.Terrain import Terrain
-from primitives.map.TerrainType import TerrainType
-from primitives.map.TerrainBuff import TerrainBuff
+from open_spiel.python.games.Tiandijie.primitives.map.Terrain import Terrain
+from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
+from open_spiel.python.games.Tiandijie.primitives.map.TerrainBuff import TerrainBuff
 
 TerrainMap = List[List[Terrain]]
 

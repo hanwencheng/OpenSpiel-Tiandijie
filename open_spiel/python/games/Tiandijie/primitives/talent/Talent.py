@@ -1,7 +1,7 @@
 from typing import List
 
-from primitives.effects.EventListener import EventListener
-from primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
 
 
 class Talent:

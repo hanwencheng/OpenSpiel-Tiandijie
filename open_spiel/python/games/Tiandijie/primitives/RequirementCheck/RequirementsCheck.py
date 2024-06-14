@@ -1,33 +1,33 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
-from primitives.RequirementCheck.CheckHelpers import _is_attacker
-from primitives.RequirementCheck.LifeRequirementChecks import LifeRequirementChecks
-from primitives.RequirementCheck.PositionRequirementChecks import (
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.CheckHelpers import _is_attacker
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.LifeRequirementChecks import LifeRequirementChecks
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.PositionRequirementChecks import (
     PositionRequirementChecks,
 )
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.hero.Hero import Hero
-    from primitives.buff.Buff import Buff
-    from primitives.skill.skills import Skill
-    from primitives.formation.Formation import Formation
-    from primitives.fieldbuff.FieldBuff import FieldBuff
-    from primitives.skill.SkillTypes import SkillTargetTypes
-    from primitives.Action import Action
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
+    from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skill
+    from open_spiel.python.games.Tiandijie.primitives.formation.Formation import Formation
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
+    from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillTargetTypes
+    from open_spiel.python.games.Tiandijie.primitives.Action import Action
 
-from primitives.hero.Element import Elements
-from primitives.skill.SkillTypes import SkillType
-from calculation.modifier_calculator import get_modifier
-from calculation.ModifierAttributes import ModifierAttributes as Ma
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_modifier
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 
 from typing import List
-from primitives.hero.Element import get_elemental_relationship, ElementRelationships
-from primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import get_elemental_relationship, ElementRelationships
+from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
 
-from primitives.hero.HeroBasics import Professions, Gender
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions, Gender
 
 
 class RequirementCheck:

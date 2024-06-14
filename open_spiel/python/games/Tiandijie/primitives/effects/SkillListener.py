@@ -1,8 +1,8 @@
 from functools import partial
 
-from primitives import Context
-from primitives.effects.Event import EventTypes
-from primitives.hero.Hero import Hero
+from open_spiel.python.games.Tiandijie.primitives import Context
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
 
 
 class SkillListener:

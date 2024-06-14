@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from calculation.damage_calculator import apply_counterattack_damage, apply_damage
-from calculation.non_damage_calculator import *
-from state.state_calculator import (
+from open_spiel.python.games.Tiandijie.calculation.damage_calculator import apply_counterattack_damage, apply_damage
+from open_spiel.python.games.Tiandijie.calculation.non_damage_calculator import *
+from open_spiel.python.games.Tiandijie.state.state_calculator import (
     check_if_counterattack_first,
     check_if_in_battle,
     check_protector,
@@ -10,17 +10,17 @@ from state.state_calculator import (
 )
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.Action import Action
-    from primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.Action import Action
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
 
 from typing import Callable
 
-from calculation.event_calculator import event_listener_calculator, death_event_listener
-from primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator, death_event_listener
+from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
 
-from primitives.effects.Event import EventTypes
-from primitives.skill.SkillTemp import SkillTargetTypes
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import SkillTargetTypes
 
 # move actor to the desired position
 

@@ -1,13 +1,13 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from primitives.RequirementCheck.CheckHelpers import check_buff_on_target
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.CheckHelpers import check_buff_on_target
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.hero.Hero import Hero
-    from primitives.buff.Buff import Buff
-from primitives.buff.BuffTemp import BuffTypes
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
+from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 
 class BuffRequirementChecks:

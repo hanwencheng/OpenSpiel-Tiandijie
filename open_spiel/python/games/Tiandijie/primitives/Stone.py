@@ -1,7 +1,7 @@
 from enum import Enum
-from calculation.ModifierAttributes import ModifierAttributes as Ma
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
-from primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
 from functools import partial
 
 

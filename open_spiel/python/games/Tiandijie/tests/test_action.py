@@ -1,11 +1,11 @@
 import unittest
-from primitives.Context import Context
-from primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.Context import Context
+from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
 from state.apply_action import apply_action
-# from primitives.formation.formations import Formations
-from primitives.Action import Action
-# from calculation.PathFinding import bfs_move_range
-from calculation.modifier_calculator import get_modifier
+# from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender
+from open_spiel.python.games.Tiandijie.primitives.Action import Action
+# from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_modifier
 
 class TestHero(unittest.TestCase):
     def test_hero(self):

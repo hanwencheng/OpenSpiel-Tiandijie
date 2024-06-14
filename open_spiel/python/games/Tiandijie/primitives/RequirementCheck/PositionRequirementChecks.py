@@ -1,19 +1,19 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-from helpers import compose_hero_id
-from primitives.RequirementCheck.CheckHelpers import check_buff_in_range, _is_attacker
+from open_spiel.python.games.Tiandijie.helpers import compose_hero_id
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.CheckHelpers import check_buff_in_range, _is_attacker
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.hero.Hero import Hero
-    from primitives.hero.Element import Elements
-    from primitives.buff.Buff import Buff
-    from primitives.Passive import Passive
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+    from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
+    from open_spiel.python.games.Tiandijie.primitives.Passive import Passive
 from typing import List
-from calculation.Range import calculate_if_targe_in_diamond_range
-from primitives.hero.HeroBasics import Gender
-from primitives.buff.BuffTemp import BuffTypes
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender
+from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 
 class PositionRequirementChecks:

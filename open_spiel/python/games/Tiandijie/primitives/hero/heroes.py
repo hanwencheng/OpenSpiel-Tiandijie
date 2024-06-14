@@ -1,13 +1,13 @@
 from enum import Enum
 from typing import TYPE_CHECKING
 
-from primitives.hero.HeroBasics import Gender, Professions, HideProfessions
-from primitives.hero.HeroTemp import HeroTemp
-from primitives.formation.formations import Formations
-from primitives.hero.Element import Elements
-from primitives.hero.Attributes import Attributes
-from primitives.talent.talents import Talents
-from primitives.Weapons import Weapons
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender, Professions, HideProfessions
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroTemp import HeroTemp
+from open_spiel.python.games.Tiandijie.primitives.formation.formations import Formations
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import Attributes
+from open_spiel.python.games.Tiandijie.primitives.talent.talents import Talents
+from open_spiel.python.games.Tiandijie.primitives.Weapons import Weapons
 
 
 class HeroeTemps(Enum):

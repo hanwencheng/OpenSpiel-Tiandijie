@@ -1,14 +1,14 @@
 from functools import partial
 
-from primitives.effects.Event import EventTypes
-from primitives.effects.EventListener import EventListener
-from primitives.effects.ModifierEffect import ModifierEffect
-from primitives.formation.FormationTemp import FormationTemp
-from primitives.hero.Element import Elements
-from primitives.hero.HeroBasics import Professions, Gender
-from calculation.Effects import Effects
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Check
-from calculation.ModifierAttributes import ModifierAttributes as ma
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.formation.FormationTemp import FormationTemp
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions, Gender
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Check
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 
 
 class Formations:

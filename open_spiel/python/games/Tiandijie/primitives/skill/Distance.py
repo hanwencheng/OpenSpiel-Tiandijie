@@ -1,6 +1,6 @@
 from enum import Enum
 
-from primitives.hero.HeroBasics import Professions
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
 
 
 class DistanceType(Enum):

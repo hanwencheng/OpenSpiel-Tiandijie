@@ -3,14 +3,13 @@ from typing import TYPE_CHECKING
 
 import enum
 from typing import List
-from basics import Position
-from calculation.PathFinding import a_star_search
+from open_spiel.python.games.Tiandijie.calculation.PathFinding import a_star_search
 
 if TYPE_CHECKING:
-    from primitives.hero.Hero import Hero
-    from primitives.skill.Skill import Skill
-from calculation.modifier_calculator import get_buff_modifier
-from primitives.skill.SkillTypes import SkillType, SkillTargetTypes
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType, SkillTargetTypes
 
 
 class ActionTypes(enum.Enum):

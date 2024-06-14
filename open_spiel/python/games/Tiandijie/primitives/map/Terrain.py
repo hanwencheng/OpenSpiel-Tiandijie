@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.map.TerrainBuff import TerrainBuff
-    from primitives.map.TerrainType import TerrainType
+    from open_spiel.python.games.Tiandijie.primitives.map.TerrainBuff import TerrainBuff
+    from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 
 
 class Collectable:

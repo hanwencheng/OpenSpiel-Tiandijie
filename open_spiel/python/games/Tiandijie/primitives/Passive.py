@@ -3,13 +3,13 @@ from functools import partial
 from typing import TYPE_CHECKING
 
 # if TYPE_CHECKING:
-from calculation.Effects import Effects
-# from primitives.equipment.Equipment import Equipment
-from primitives.effects.EventListener import EventListener
-from primitives.effects.Event import EventTypes
-from primitives.effects.ModifierEffect import ModifierEffect
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
-from calculation.ModifierAttributes import ModifierAttributes as Ma
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+# from open_spiel.python.games.Tiandijie.primitives.equipment.Equipment import Equipment
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
 
 
 class Passive:

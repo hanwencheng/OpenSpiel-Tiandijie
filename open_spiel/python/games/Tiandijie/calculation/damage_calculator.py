@@ -4,11 +4,11 @@ from random import random
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.Action import Action
+    from open_spiel.python.games.Tiandijie.primitives import Context, Action
 
-from calculation.attribute_calculator import *
-from calculation.event_calculator import event_listener_calculator
-from primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import *
+from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
 
 CRIT_MULTIPLIER = 1.3
 LIEXING_DAMAGE_REDUCTION = 4

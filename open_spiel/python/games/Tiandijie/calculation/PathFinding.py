@@ -2,14 +2,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.map import BattleMap
+    from open_spiel.python.games.Tiandijie.primitives.map import BattleMap
 
 import heapq
 from collections import deque
 from typing import List
 
-# from primitives.map.Terrain import Terrain
-from primitives.map.TerrainType import TerrainType
+# from open_spiel.python.games.Tiandijie.primitives.map.Terrain import Terrain
+from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 
 # type TerrainMap = List[List[Terrain]]
 

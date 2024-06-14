@@ -1,4 +1,4 @@
-from calculation.ModifierAttributes import ModifierAttributes
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes
 
 
 class Modifier:

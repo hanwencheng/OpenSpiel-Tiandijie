@@ -3,21 +3,21 @@ from __future__ import annotations
 import traceback
 from typing import TYPE_CHECKING
 
-from primitives.skill.Skill import Skill
+from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
 
 if TYPE_CHECKING:
-    from calculation.Modifier import Modifier
-    from primitives.Context import Context
-    from primitives.effects.ModifierEffect import ModifierEffect
-    from primitives.formation.Formation import Formation
-    from primitives.hero.Hero import Hero
-    from primitives.Stone import Stone
-    from primitives.Passive import Passive
-from calculation.Range import calculate_if_targe_in_diamond_range
+    from open_spiel.python.games.Tiandijie.calculation.Modifier import Modifier
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+    from open_spiel.python.games.Tiandijie.primitives.formation.Formation import Formation
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.Stone import Stone
+    from open_spiel.python.games.Tiandijie.primitives.Passive import Passive
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
 
 from functools import reduce
 from typing import List
-from calculation.BuffStack import (
+from open_spiel.python.games.Tiandijie.calculation.BuffStack import (
     calculate_buff_with_max_stack,
     calculate_stone_with_max_stack,
 )

@@ -4,7 +4,7 @@ import random
 from typing import TYPE_CHECKING, List
 
 # if TYPE_CHECKING:
-from primitives.hero.HeroBasics import Professions
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
 
 is_magic_profession_dict = {
     profession: True if profession in [Professions.SORCERER, Professions.PRIEST, Professions.WARRIOR] else False

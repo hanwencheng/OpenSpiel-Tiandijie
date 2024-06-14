@@ -2,9 +2,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.buff.Buff import Buff
+    from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
 from typing import List
-from calculation.ModifierAttributes import ModifierAttributes as ma
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 
 
 class BuffTriggerLimit:

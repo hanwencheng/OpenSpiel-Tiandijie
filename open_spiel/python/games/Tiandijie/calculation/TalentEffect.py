@@ -2,29 +2,29 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from calculation.damage_calculator import (
+from open_spiel.python.games.Tiandijie.calculation.damage_calculator import (
     calculate_fix_damage,
 )
-from calculation.OtherlCalculation import (
+from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import (
     calculate_fix_heal,
 )
-from primitives.hero.Element import Elements
-from helpers import random_select
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.helpers import random_select
 
 if TYPE_CHECKING:
-    from primitives.hero import Hero
-    from primitives import Context
-    from primitives.talent.Talent import Talent
-    from primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
-    from primitives.fieldbuff.FieldBuff import FieldBuff
-from calculation.Effects import Effects
-from primitives.skill.skills import Skills
-from primitives.skill.Skill import Skill
-from primitives.map.TerrainType import TerrainType
+    from open_spiel.python.games.Tiandijie.primitives.hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives import Context
+    from open_spiel.python.games.Tiandijie.primitives.talent.Talent import Talent
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skills
+from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 
 from collections import Counter
-from primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
-from calculation.attribute_calculator import get_defense, get_attack, get_max_life
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, get_max_life
 from typing import List
 
 

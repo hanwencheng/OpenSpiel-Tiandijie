@@ -2,14 +2,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives import Context
-    from primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
     from typing import List
 
-from primitives.hero.HeroBasics import Professions
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
 from math import ceil, floor
-from calculation.RangeType import RangeType
-from basics import Position
+from open_spiel.python.games.Tiandijie.calculation.RangeType import RangeType
+from open_spiel.python.games.Tiandijie.basics import Position
 
 
 # return the area in the right bottom direction based on the actor point

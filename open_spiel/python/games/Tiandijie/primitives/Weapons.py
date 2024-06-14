@@ -2,15 +2,15 @@ from enum import Enum
 from typing import TYPE_CHECKING
 from functools import partial
 
-from calculation.ModifierAttributes import ModifierAttributes as Ma
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
-from primitives.RequirementCheck.TalentRequirementChecks import TalentRequirementChecks as TRs
-from primitives.effects.Event import EventTypes
-from calculation.Effects import Effects
-from primitives.effects.ModifierEffect import ModifierEffect
-from primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.TalentRequirementChecks import TalentRequirementChecks as TRs
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 
-from primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
 # if TYPE_CHECKING:
 
 

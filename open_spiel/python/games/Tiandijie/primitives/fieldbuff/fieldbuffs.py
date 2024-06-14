@@ -1,19 +1,19 @@
 from functools import partial
 from enum import Enum
 
-from primitives.effects.Event import EventTypes
-from primitives.effects.EventListener import EventListener
-from primitives.effects.ModifierEffect import ModifierEffect
-from primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
 
-from calculation.Effects import Effects
-from calculation.TalentEffect import TalentEffects as TEffects
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as RS
-from primitives.RequirementCheck.TalentRequirementChecks import (
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+from open_spiel.python.games.Tiandijie.calculation.TalentEffect import TalentEffects as TEffects
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as RS
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.TalentRequirementChecks import (
     TalentRequirementChecks as TRs,
 )
-from calculation.ModifierAttributes import ModifierAttributes as ma
-from primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 
 
 class FieldBuffsTemps(Enum):

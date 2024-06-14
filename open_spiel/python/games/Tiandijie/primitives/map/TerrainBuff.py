@@ -4,11 +4,11 @@ from enum import Enum
 from functools import partial
 from typing import List
 
-from calculation.Effects import Effects
-from primitives.effects.Event import EventTypes
-from primitives.effects.EventListener import EventListener
-from calculation.Modifier import Modifier
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as RS
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.calculation.Modifier import Modifier
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as RS
 
 
 class TerrainBuffTemp:

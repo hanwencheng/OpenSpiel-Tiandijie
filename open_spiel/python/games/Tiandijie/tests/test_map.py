@@ -1,7 +1,7 @@
 import unittest
 
-from calculation.PathFinding import bfs_move_range, a_star_search
-from primitives.map.BattleMap import BattleMap
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes, a_star_search
+from open_spiel.python.games.Tiandijie.primitives.map.BattleMap import BattleMap
 
 
 class TestMap(unittest.TestCase):

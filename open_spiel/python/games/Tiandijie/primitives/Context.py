@@ -3,31 +3,31 @@ from __future__ import annotations
 import random
 from collections import Counter
 from typing import List, TYPE_CHECKING, Dict
-from primitives.map.BattleMap import BattleMap
+from open_spiel.python.games.Tiandijie.primitives.map.BattleMap import BattleMap
 
 if TYPE_CHECKING:
-    from primitives.buff.buffs import BuffTemps
-    from primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
-    from primitives import Action
-    from primitives.formation.Formation import Formation
-    from primitives.buff.BuffTemp import BuffTemp
-    from primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
-from primitives.equipment.Equipments import Equipments
-from primitives.hero.Hero import Hero
-from primitives.hero.heroes import HeroeTemps
-from primitives.buff.BuffTemp import BuffTypes
-from primitives.Stone import Stones
-from primitives.skill.Skill import Skill
-from primitives.skill.skills import Skills
-from primitives.map.maps import Maps
+    from open_spiel.python.games.Tiandijie.primitives.buff.buffs import BuffTemps
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
+    from open_spiel.python.games.Tiandijie.primitives import Action
+    from open_spiel.python.games.Tiandijie.primitives.formation.Formation import Formation
+    from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTemp
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
+from open_spiel.python.games.Tiandijie.primitives.equipment.Equipments import Equipments
+from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+from open_spiel.python.games.Tiandijie.primitives.hero.heroes import HeroeTemps
+from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
+from open_spiel.python.games.Tiandijie.primitives.Stone import Stones
+from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skills
+from open_spiel.python.games.Tiandijie.primitives.map.maps import Maps
 
-from calculation.Range import (
+from open_spiel.python.games.Tiandijie.calculation.Range import (
     calculate_square_area,
     calculate_diamond_area,
     calculate_cross_area,
 )
 
-from primitives.map.Terrain import Terrain
+from open_spiel.python.games.Tiandijie.primitives.map.Terrain import Terrain
 
 TerrainMap = List[List[Terrain]]
 
@@ -104,7 +104,7 @@ class Context:
         ]
 
     def load_buffs(self):
-        from primitives.buff.buffs import BuffTemps
+        from open_spiel.python.games.Tiandijie.primitives.buff.buffs import BuffTemps
 
         all_buffs = {}
         harm_buffs = []
@@ -119,7 +119,7 @@ class Context:
         self.all_buffs_temps = all_buffs
         self.harm_buffs_temps = harm_buffs
         self.benefit_buffs_temps = benefit_buffs
-        from primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
+        from open_spiel.python.games.Tiandijie.primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
 
         for buff in FieldBuffsTemps:
             benefit_buffs[buff.value.id] = buff.value
@@ -251,7 +251,7 @@ class Context:
         self.battlemap = BattleMap(11, 11, initial_terrain_map)
 
     def init_game_heroes(self):
-        from primitives.Passive import Passives
+        from open_spiel.python.games.Tiandijie.primitives.Passive import Passives
         hero_list = []
         mohuahuangfushen = Hero(
             0,

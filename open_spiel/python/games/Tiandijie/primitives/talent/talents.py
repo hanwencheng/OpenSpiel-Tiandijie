@@ -1,17 +1,17 @@
 from functools import partial
 from enum import Enum
 
-from calculation.ModifierAttributes import ModifierAttributes as Ma
-from primitives.effects.ModifierEffect import ModifierEffect
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
-from primitives.RequirementCheck.TalentRequirementChecks import (
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.TalentRequirementChecks import (
     TalentRequirementChecks as TRs,
 )
-from primitives.effects.EventListener import EventListener
-from calculation.Effects import Effects
-from calculation.TalentEffect import TalentEffects
-from primitives.effects.Event import EventTypes
-from primitives.talent.Talent import Talent
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+from open_spiel.python.games.Tiandijie.calculation.TalentEffect import TalentEffects
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.talent.Talent import Talent
 
 
 class Talents(Enum):

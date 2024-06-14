@@ -1,7 +1,7 @@
 import string
 from typing import Tuple, Union
 
-from primitives.hero.BasicAttributes import (
+from open_spiel.python.games.Tiandijie.primitives.hero.BasicAttributes import (
     JishenProfessions,
     ShenbinProfessions,
     HuazhenProfessions,
@@ -10,7 +10,7 @@ from primitives.hero.BasicAttributes import (
     XingpanAmplifier,
     AttributesTuple,
 )
-from wunei import WuneiProfessions
+from open_spiel.python.games.Tiandijie.wunei import WuneiProfessions
 
 MAXIMUM_LEVEL = 70
 WUNEI_AMPLIFIERS = (25, 25, 25, 25, 25, 0)

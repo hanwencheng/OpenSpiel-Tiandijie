@@ -1,6 +1,6 @@
 from functools import partial
 
-from primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
 
 
 class EventListener:

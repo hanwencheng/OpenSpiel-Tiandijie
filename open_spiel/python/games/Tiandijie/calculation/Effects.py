@@ -3,39 +3,39 @@ from __future__ import annotations
 from random import random
 from typing import TYPE_CHECKING
 
-from calculation.damage_calculator import (
+from open_spiel.python.games.Tiandijie.calculation.damage_calculator import (
     calculate_fix_damage,
     calculate_magic_damage,
     calculate_physical_damage,
 )
-from calculation.OtherlCalculation import (
+from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import (
     calculate_fix_heal,
     calculate_reset_hero_actionable,
     calculate_fix_shield,
 )
-from helpers import random_select
+from open_spiel.python.games.Tiandijie.helpers import random_select
 
 if TYPE_CHECKING:
-    from primitives.hero import Hero
-    from primitives import Context, Action
-    from primitives.buff import BuffTemp
-    from primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
-    from primitives.fieldbuff.FieldBuff import FieldBuff
-    from primitives.equipment.Equipments import Equipment
-    from primitives.skill.Skill import Skill
-    from primitives.formation.Formation import Formation
-from primitives.buff.Buff import Buff
+    from open_spiel.python.games.Tiandijie.primitives.hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives import Context, Action
+    from open_spiel.python.games.Tiandijie.primitives.buff import BuffTemp
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
+    from open_spiel.python.games.Tiandijie.primitives.equipment.Equipments import Equipment
+    from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+    from open_spiel.python.games.Tiandijie.primitives.formation.Formation import Formation
+from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
 
-from primitives.map.TerrainType import TerrainType
-from primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from typing import List
-from basics import Position
-from calculation.attribute_calculator import get_defense, get_attack, get_max_life
-from primitives.buff.BuffTemp import BuffTypes
-from calculation.BuffStack import get_buff_max_stack
-from calculation.BuffTriggerLimit import get_buff_max_trigger_limit
-from state.apply_action import is_hero_live
-from primitives.talent.Talent import Talent
+from open_spiel.python.games.Tiandijie.basics import Position
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, get_max_life
+from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
+from open_spiel.python.games.Tiandijie.calculation.BuffStack import get_buff_max_stack
+from open_spiel.python.games.Tiandijie.calculation.BuffTriggerLimit import get_buff_max_trigger_limit
+from open_spiel.python.games.Tiandijie.state.apply_action import is_hero_live
+from open_spiel.python.games.Tiandijie.primitives.talent.Talent import Talent
 
 
 def get_current_action(context: Context) -> Action:
@@ -815,8 +815,8 @@ class Effects:
         tager_position: Position,
         context: Context,
     ):
-        from calculation.Range import Range, RangeType
-        from primitives.map.TerrainBuff import TerrainBuffTemps
+        from open_spiel.python.games.Tiandijie.calculation.Range import Range, RangeType
+        from open_spiel.python.games.Tiandijie.primitives.map.TerrainBuff import TerrainBuffTemps
 
         buff_range = Range(RangeType.DIAMOND, range_value)
         for position in buff_range.get_area(
@@ -834,8 +834,8 @@ class Effects:
         target_position: Position,
         context: Context,
     ):
-        from calculation.Range import Range, RangeType
-        from primitives.map.TerrainBuff import TerrainBuffTemps
+        from open_spiel.python.games.Tiandijie.calculation.Range import Range, RangeType
+        from open_spiel.python.games.Tiandijie.primitives.map.TerrainBuff import TerrainBuffTemps
 
         buff_range = Range(RangeType.DIAMOND, range_value)
         for position in buff_range.get_area(target_position, target_position):

@@ -2,16 +2,7 @@ from __future__ import annotations
 
 import enum
 from typing import TYPE_CHECKING, List
-from basics import Position
-from primitives.skill.SkillTemp import SkillTemp
-
-if TYPE_CHECKING:
-    from primitives.hero.Element import Elements
-    from primitives.skill.Distance import Distance
-    from calculation.Range import Range
-    from primitives.effects.EventListener import EventListener
-    from primitives.effects.SkillListener import SkillListener
-    from primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import SkillTemp
 
 
 class Skill:

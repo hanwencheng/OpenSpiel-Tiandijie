@@ -1,23 +1,23 @@
 from __future__ import annotations
 
 from typing import List
-from primitives.hero.Attributes import generate_max_level_attributes
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes
 from typing import TYPE_CHECKING
-from calculation.PathFinding import bfs_move_range
-from calculation.Range import calculate_if_targe_in_diamond_range
-from primitives.skill.SkillTypes import SkillTargetTypes, SkillType
-from primitives.Action import Action, ActionTypes
-from calculation.modifier_calculator import get_level2_modifier
+from open_spiel.python.games.Tiandijie.calculation.PathFinding import bfs_move_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillTargetTypes, SkillType
+from open_spiel.python.games.Tiandijie.primitives.Action import Action, ActionTypes
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_level2_modifier
 
 if TYPE_CHECKING:
-    from primitives.hero.HeroTemp import HeroTemp
-    from primitives.buff import Buff
-    from primitives.fieldbuff.FieldBuff import FieldBuff
-    from basics import Position
-    from primitives.Passive import Passive
-from primitives.skill.skills import Skills
-from primitives.skill.Skill import Skill
-from calculation.Range import (
+    from open_spiel.python.games.Tiandijie.primitives.hero.HeroTemp import HeroTemp
+    from open_spiel.python.games.Tiandijie.primitives.buff import Buff
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
+    from open_spiel.python.games.Tiandijie.basics import Position
+    from open_spiel.python.games.Tiandijie.primitives.Passive import Passive
+from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skills
+from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+from open_spiel.python.games.Tiandijie.calculation.Range import (
     calculate_diamond_area,
 )
 

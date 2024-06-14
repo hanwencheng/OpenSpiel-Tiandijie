@@ -1,8 +1,8 @@
 from typing import List, Any
 
-from calculation.Modifier import Modifier
-from primitives.effects.EventListener import EventListener
-from primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.calculation.Modifier import Modifier
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
 
 
 class FormationTemp:

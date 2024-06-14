@@ -2,16 +2,16 @@ from typing import List, Any
 from typing import TYPE_CHECKING
 
 
-from primitives.Action import Action
+from open_spiel.python.games.Tiandijie.primitives.Action import Action
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.hero.Hero import Hero
-from primitives.effects.Event import EventTypes
-from primitives.effects.EventListener import EventListener
-from calculation.Range import calculate_if_targe_in_diamond_range
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
 from random import random
-from primitives.map.TerrainType import TerrainType
+from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 
 skill_related_events = [
     EventTypes.skill_start,

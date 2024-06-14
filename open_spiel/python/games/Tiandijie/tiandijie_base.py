@@ -1,12 +1,12 @@
 import traceback
 
 import pyspiel
-from state.setup import setup_context
-from state.apply_action import apply_action
-from primitives.Action import Action, ActionTypes
-from calculation.PathFinding import bfs_move_range
-from primitives.effects.Event import EventTypes
-from calculation.event_calculator import event_listener_calculator
+from open_spiel.python.games.Tiandijie.state.setup import setup_context
+from open_spiel.python.games.Tiandijie.state.apply_action import apply_action
+from open_spiel.python.games.Tiandijie.primitives.Action import Action, ActionTypes
+from open_spiel.python.games.Tiandijie.calculation.PathFinding import bfs_move_range
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator
 from open_spiel.python.observation import IIGObserverForPublicInfoGame
 
 _NUM_PLAYERS = 2

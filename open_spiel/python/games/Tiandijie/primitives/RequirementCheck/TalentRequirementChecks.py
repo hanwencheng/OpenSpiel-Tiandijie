@@ -2,14 +2,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.hero.Hero import Hero
-    from primitives.fieldbuff.FieldBuff import FieldBuff
-from primitives.hero.Element import Elements
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
-from primitives.talent.Talent import Talent
-from primitives.hero.HeroBasics import Professions
-from calculation.Range import calculate_if_targe_in_diamond_range
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as RS
+from open_spiel.python.games.Tiandijie.primitives.talent.Talent import Talent
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
 
 
 class TalentRequirementChecks:

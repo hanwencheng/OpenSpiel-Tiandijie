@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import unittest
-from primitives.hero.Attributes import Attributes
-from primitives.hero.Attributes import (
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import Attributes
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import (
     generate_max_level_attributes,
     multiply_attributes,
 )

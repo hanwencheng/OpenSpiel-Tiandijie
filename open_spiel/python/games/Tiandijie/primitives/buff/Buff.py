@@ -2,13 +2,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives import Context
-    from primitives.buff.BuffTemp import BuffTemp, BuffTypes
-    from primitives.fieldbuff.FieldBuff import FieldBuff
-    from primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
+    from open_spiel.python.games.Tiandijie.primitives import Context
+    from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTemp, BuffTypes
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
+    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
 
 
-from primitives.buff.BuffImmuneList import *
+from open_spiel.python.games.Tiandijie.primitives.buff.BuffImmuneList import *
 
 
 class Buff:

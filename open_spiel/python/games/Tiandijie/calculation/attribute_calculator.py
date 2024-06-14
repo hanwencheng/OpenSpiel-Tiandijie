@@ -3,21 +3,21 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives import Context
-    from primitives.hero import Hero
-    from primitives.skill.Skill import Skill
-    from primitives.Action import Action
-from primitives.hero.Element import (
+    from open_spiel.python.games.Tiandijie.primitives import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+    from open_spiel.python.games.Tiandijie.primitives.Action import Action
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import (
     get_elemental_relationship,
     get_elemental_multiplier,
 )
 
-from helpers import is_normal_attack_magic
+from open_spiel.python.games.Tiandijie.helpers import is_normal_attack_magic
 
-from primitives.Action import ActionTypes
-from calculation.ModifierAttributes import ModifierAttributes as ma
-from calculation.Range import calculate_if_targe_in_diamond_range
-from calculation.modifier_calculator import (
+from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     accumulate_attribute,
     get_level1_modified_result,
     get_level2_modifier,
@@ -25,7 +25,6 @@ from calculation.modifier_calculator import (
     accumulate_stone_attribute,
     accumulate_suit_stone_attribute
 )
-from primitives.skill.SkillTemp import SkillTargetTypes
 
 LIEXING_DAMAGE_REDUCTION = 4
 LIEXING_DAMAGE_INCREASE = 4

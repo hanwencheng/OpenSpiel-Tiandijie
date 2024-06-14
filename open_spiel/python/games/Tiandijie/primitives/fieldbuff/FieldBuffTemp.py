@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.effects import EventListener
-    from primitives.effects.ModifierEffect import ModifierEffect
+    from open_spiel.python.games.Tiandijie.primitives.effects import EventListener
+    from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
 from typing import List
 
 

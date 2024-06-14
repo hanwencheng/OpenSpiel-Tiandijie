@@ -1,17 +1,17 @@
 from enum import Enum
 from functools import partial
 
-from calculation.Range import RangeType, Range
-from primitives.effects.EventListener import EventListener
-from calculation.Effects import Effects
-from primitives.effects.Event import EventTypes
-from primitives.hero.Element import Elements
-from primitives.skill.Distance import Distance, DistanceType
-from primitives.skill.SkillTypes import SkillType, SkillTargetTypes
-from calculation.ModifierAttributes import ModifierAttributes as Ma
-from primitives.effects.ModifierEffect import ModifierEffect
-from primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
-from primitives.skill.SkillTemp import SkillTemp
+from open_spiel.python.games.Tiandijie.calculation.Range import RangeType, Range
+from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
+from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.skill.Distance import Distance, DistanceType
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType, SkillTargetTypes
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import SkillTemp
 
 
 class Skills(Enum):

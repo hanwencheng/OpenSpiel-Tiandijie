@@ -4,9 +4,9 @@ from random import random
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.Action import Action
+    from open_spiel.python.games.Tiandijie.primitives.Action import Action
 
-from calculation.attribute_calculator import *
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import *
 
 
 def calculate_fix_heal(

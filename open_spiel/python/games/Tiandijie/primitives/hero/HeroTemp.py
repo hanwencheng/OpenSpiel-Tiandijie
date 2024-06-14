@@ -1,15 +1,15 @@
 from typing import List
 
-from helpers import is_normal_attack_magic
-from primitives.hero.Element import Elements
-from primitives.hero.HeroBasics import Gender, Professions, HideProfessions
-from primitives.hero.Attributes import Attributes, generate_max_level_attributes
-from primitives.hero.BasicAttributes import AttributesTuple
-from primitives.skill.SkillTemp import create_normal_attack_skill
+from open_spiel.python.games.Tiandijie.helpers import is_normal_attack_magic
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender, Professions, HideProfessions
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import Attributes, generate_max_level_attributes
+from open_spiel.python.games.Tiandijie.primitives.hero.BasicAttributes import AttributesTuple
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import create_normal_attack_skill
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives import Passive
+    from open_spiel.python.games.Tiandijie.primitives import Passive
 
 
 class HeroTemp:

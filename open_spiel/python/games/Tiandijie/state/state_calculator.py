@@ -2,19 +2,19 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.hero.Hero import Hero
-    from primitives.Action import Action, ActionTypes
-from primitives.Action import ActionTypes
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+    from open_spiel.python.games.Tiandijie.primitives.Action import Action, ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
 
-from calculation.modifier_calculator import (
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     get_modifier,
     get_skill_modifier,
     calculate_if_targe_in_diamond_range,
 )
-from calculation.ModifierAttributes import ModifierAttributes as ma
-from calculation.Range import check_if_target_in_skill_attack_range
-from primitives.skill.SkillTemp import SkillTargetTypes
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
+from open_spiel.python.games.Tiandijie.calculation.Range import check_if_target_in_skill_attack_range
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import SkillTargetTypes
 
 
 def check_if_counterattack(actor: Hero, target: Hero, context: Context):

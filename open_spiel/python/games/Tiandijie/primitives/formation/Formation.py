@@ -1,4 +1,4 @@
-from primitives.formation.FormationTemp import FormationTemp
+from open_spiel.python.games.Tiandijie.primitives.formation.FormationTemp import FormationTemp
 
 
 class Formation:

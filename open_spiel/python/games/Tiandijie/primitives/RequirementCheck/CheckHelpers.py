@@ -2,10 +2,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.Context import Context
-    from primitives.hero.Hero import Hero
-from calculation.Range import calculate_if_targe_in_diamond_range
-from primitives.buff.BuffTemp import BuffTypes
+    from open_spiel.python.games.Tiandijie.primitives.Context import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 
 def _is_attacker(actor_hero: Hero, context: Context) -> int:

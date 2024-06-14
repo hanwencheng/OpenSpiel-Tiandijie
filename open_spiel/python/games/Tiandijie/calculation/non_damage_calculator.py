@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from primitives.Action import Action
-    from primitives import Context
-    from primitives.hero.Hero import Hero
-from calculation.event_calculator import event_listener_calculator
-from primitives.effects.Event import EventTypes
+    from open_spiel.python.games.Tiandijie.primitives.Action import Action
+    from open_spiel.python.games.Tiandijie.primitives import Context
+    from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
+from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator
+from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
 
 
 def apply_move(actor: Hero, action: Action, context: Context):
