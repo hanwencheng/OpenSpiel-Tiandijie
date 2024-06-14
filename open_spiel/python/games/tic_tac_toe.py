@@ -99,7 +99,7 @@ class TicTacToeState(pyspiel.State):
     return pyspiel.PlayerId.TERMINAL if self._is_terminal else self._cur_player
 
   def _legal_actions(self, player):
-    """Returns a list of legal actions, sorted in ascending order."""
+    """Returns a list of `legal actions, sorted in ascending order."""
     return [a for a in range(_NUM_CELLS) if self.board[_coord(a)] == "."]
 
   def _apply_action(self, action):
@@ -114,6 +114,7 @@ class TicTacToeState(pyspiel.State):
       self._cur_player = 1 - self._cur_player
 
   def _action_to_string(self, player, action):
+    print("_action_to_string")
     """Action -> string."""
     row, col = _coord(action)
     return "{}({},{})".format("x" if player == 0 else "o", row, col)

@@ -103,42 +103,42 @@ class QLearner(rl_agent.AbstractAgent):
       A `rl_agent.StepOutput` containing the action probs and chosen action.
     """
     if self._centralized:
-      info_state = str(time_step.observations["info_state"])
+        info_state = str(time_step.observations["info_state"])
     else:
-      info_state = str(time_step.observations["info_state"][self._player_id])
+        info_state = str(time_step.observations["info_state"][self._player_id])
     legal_actions = time_step.observations["legal_actions"][self._player_id]
 
     # Prevent undefined errors if this agent never plays until terminal step
     action, probs = None, None
 
     # Act step: don't act at terminal states.
-    if not time_step.last():
-      epsilon = 0.0 if is_evaluation else self._epsilon
-      action, probs = self._get_action_probs(info_state, legal_actions, epsilon)
+    if not time_step.last() and legal_actions:
+        epsilon = 0.0 if is_evaluation else self._epsilon
+        action, probs = self._get_action_probs(info_state, legal_actions, epsilon)
 
     # Learn step: don't learn during evaluation or at first agent steps.
     if self._prev_info_state and not is_evaluation:
-      target = time_step.rewards[self._player_id]
-      if not time_step.last():  # Q values are zero for terminal.
-        target += self._discount_factor * max(
-            [self._q_values[info_state][a] for a in legal_actions])
+        target = time_step.rewards[self._player_id]
+        if not time_step.last() and legal_actions:  # Q values are zero for terminal.
+            max_q_value = max([self._q_values[info_state][a] for a in legal_actions])
+            target += self._discount_factor * max_q_value
 
-      prev_q_value = self._q_values[self._prev_info_state][self._prev_action]
-      self._last_loss_value = target - prev_q_value
-      self._q_values[self._prev_info_state][self._prev_action] += (
-          self._step_size * self._last_loss_value)
+        prev_q_value = self._q_values[self._prev_info_state][self._prev_action]
+        self._last_loss_value = target - prev_q_value
+        self._q_values[self._prev_info_state][self._prev_action] += (
+                self._step_size * self._last_loss_value)
 
-      # Decay epsilon, if necessary.
-      self._epsilon = self._epsilon_schedule.step()
+        # Decay epsilon, if necessary.
+        self._epsilon = self._epsilon_schedule.step()
 
-      if time_step.last():  # prepare for the next episode.
-        self._prev_info_state = None
-        return
+        if time_step.last():  # prepare for the next episode.
+            self._prev_info_state = None
+            return
 
     # Don't mess up with the state during evaluation.
-    if not is_evaluation:
-      self._prev_info_state = info_state
-      self._prev_action = action
+    if not is_evaluation and legal_actions:
+        self._prev_info_state = info_state
+        self._prev_action = action
     return rl_agent.StepOutput(action=action, probs=probs)
 
   @property

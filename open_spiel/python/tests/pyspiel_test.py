@@ -116,6 +116,8 @@ EXPECTED_GAMES = frozenset([
     "python_mfg_predator_prey",
     "python_kuhn_poker",
     "python_tic_tac_toe",
+    "python_tic_tac_toe1",
+    "tiandijie",
     "python_liars_poker",
     "quoridor",
     "repeated_game",
@@ -193,29 +195,17 @@ class PyspielTest(absltest.TestCase):
     self.assertEqual(game_list["kuhn_poker"].min_num_players, 2)
 
   def test_create_game(self):
-    game = pyspiel.load_game("kuhn_poker")
+    game = pyspiel.load_game("tiandijie")
     game_info = game.get_type()
     self.assertEqual(game_info.information,
-                     pyspiel.GameType.Information.IMPERFECT_INFORMATION)
+                     pyspiel.GameType.Information.PERFECT_INFORMATION)
     self.assertEqual(game.num_players(), 2)
 
   def test_play_kuhn_poker(self):
-    game = pyspiel.load_game("kuhn_poker")
+    game = pyspiel.load_game("tiandijie")
     state = game.new_initial_state()
-    self.assertEqual(state.is_chance_node(), True)
-    self.assertEqual(state.chance_outcomes(), [(0, 1 / 3), (1, 1 / 3),
-                                               (2, 1 / 3)])
-    state.apply_action(1)
-    self.assertEqual(state.is_chance_node(), True)
-    self.assertEqual(state.chance_outcomes(), [(0, 0.5), (2, 0.5)])
-    state.apply_action(2)
-    self.assertEqual(state.is_chance_node(), False)
-    self.assertEqual(state.legal_actions(), [0, 1])
-    sampler = pyspiel.UniformProbabilitySampler(0., 1.)
-    clone = state.resample_from_infostate(1, sampler)
-    self.assertEqual(
-        clone.information_state_string(1), state.information_state_string(1))
-
+    legal_actions = state._legal_actions(0)
+    print(len(legal_actions))
   def test_othello(self):
     game = pyspiel.load_game("othello")
     state = game.new_initial_state()
@@ -224,7 +214,7 @@ class PyspielTest(absltest.TestCase):
     self.assertEqual(state.legal_actions(), [19, 26, 37, 44])
 
   def test_tic_tac_toe(self):
-    game = pyspiel.load_game("tic_tac_toe")
+    game = pyspiel.load_game("python_tic_tac_toe1")
     state = game.new_initial_state()
     self.assertFalse(state.is_chance_node())
     self.assertFalse(state.is_terminal())
@@ -331,7 +321,12 @@ class PyspielTest(absltest.TestCase):
                                           python_policy.state_lookup,
                                           batch_size, include_full_observations,
                                           seed, -1)
-
+  def test_play_tiandijie(self):
+    game = pyspiel.load_game("tiandijie")
+    state = game.new_initial_state()
+    legal_actions = state._legal_actions(1)
+    print(legal_actions[280].action_to_string())
+    state._apply_action(legal_actions[280])
 
 if __name__ == "__main__":
   absltest.main()

@@ -247,7 +247,7 @@ class Environment(object):
           else self._state.information_state_tensor(player_id))
 
       observations["legal_actions"].append(self._state.legal_actions(player_id))
-    observations["current_player"] = self._state.current_player()
+      observations["current_player"] = self._state.current_player()
     discounts = self._discounts
     if step_type == StepType.LAST:
       # When the game is in a terminal state set the discount to 0.
@@ -362,7 +362,7 @@ class Environment(object):
 
     return TimeStep(
         observations=observations,
-        rewards=None,
+        rewards=[0.0, 0.0],
         discounts=None,
         step_type=StepType.FIRST)
 
