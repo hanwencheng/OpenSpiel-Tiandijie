@@ -14,7 +14,7 @@ from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import Mod
 
 
 class Equipment:
-    def __init__(self, equipment_id, modifier_effects, on_event):
+    def __init__(self, equipment_id, modifier_effects: [ModifierEffect], on_event:[EventListener]):
         self.equipment_id = equipment_id
         self.modifier_effects = modifier_effects
         self.on_event = on_event
@@ -259,16 +259,14 @@ class Equipments(Enum):
     qingshenjingyu = Equipment(
         "qingshenjingyu",
         [
-            {
-                ModifierEffect(
-                    Rs.always_true,
-                    {Ma.life_percentage: 5},
-                ),
-                ModifierEffect(
-                    partial(Rs.is_attacker),
-                    {Ma.defense_percentage: 15, Ma.magic_defense_percentage: 15},
-                ),
-            }
+            ModifierEffect(
+                Rs.always_true,
+                {Ma.life_percentage: 5},
+            ),
+            ModifierEffect(
+                partial(Rs.is_attacker),
+                {Ma.defense_percentage: 15, Ma.magic_defense_percentage: 15},
+            ),
         ],
         [],
     )
@@ -414,6 +412,43 @@ class Equipments(Enum):
             ModifierEffect(
                 partial(Rs.skill_is_range_target_damage),
                 {Ma.critical_percentage: 12},
+            ),
+        ],
+        [],
+    )
+
+    # 全属性+5%，使用单体绝学时，伤害提高12%，使用群体绝学时，暴击率提高12%
+    sheshoulingjie = Equipment(
+        "sheshoulingjie",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 8,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.is_in_battle),
+                {Ma.attack_percentage: 15},
+            ),
+        ],
+        [],
+    )
+
+    # 全属性+5%，使用单体绝学时，伤害提高12%，使用群体绝学时，暴击率提高12%
+    xiangsheyinpei_chen = Equipment(
+        "xiangsheyinpei_chen",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.defense_percentage: 5,
+                    Ma.life_percentage: 5,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.is_in_battle),
+                {Ma.attack_percentage: 15},
             ),
         ],
         [],

@@ -186,7 +186,7 @@ class PositionRequirementChecks:
                 if calculate_if_targe_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
-                    if hero.gender == Gender.MALE:
+                    if hero.temp.gender == Gender.MALE:
                         return 1
         return 0
 
@@ -202,7 +202,7 @@ class PositionRequirementChecks:
                 if calculate_if_targe_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
-                    if hero.gender == Gender.FEMALE:
+                    if hero.temp.gender == Gender.FEMALE:
                         return 1
         return 0
 

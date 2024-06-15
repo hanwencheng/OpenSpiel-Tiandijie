@@ -55,9 +55,6 @@ def merge_modifier(total: Modifier, hero: Hero, attr_name: str) -> Modifier:
 def accumulate_talents_modifier(
     attr_name: str, actor_instance: Hero, target_instance: Hero, context: Context
 ) -> float:
-    # player_id = actor_instance.player_id
-    # partner_heroes = context.get_heroes_by_player_id(player_id)
-    # counter_heroes = context.get_heroes_by_counter_player_id(player_id)
     modifier_value = 0
     for modifier_effect in actor_instance.temp.talent.modifier_effects:
         if attr_name in modifier_effect.modifier:
@@ -95,7 +92,7 @@ def get_formation_modifier(
             current_formation.temp.modifier_effects
         )
         for effect in formation_modifier_effects:
-            if hasattr(effect.modifier, attr_name):
+            if attr_name in effect.modifier:
                 multiplier = effect.requirement(
                     actor_instance, target_instance, context
                 )
@@ -204,14 +201,14 @@ def get_level2_modifier(
         if not is_basic
         else 0
     )
-    accumulated_stones_effect_modifier = accumulate_stone_attribute(
-        actor_instance.stones, attr_name
+    accumulated_stones_effect_modifier = accumulate_suit_stone_attribute(
+        actor_instance, counter_instance, attr_name, context
     )
     accumulated_talents_modifier = accumulate_talents_modifier(
         attr_name, actor_instance, counter_instance, context
     )
-    accumulated_equipments_modifier = accumulate_attribute(
-        actor_instance.equipments, attr_name
+    accumulated_equipments_modifier = accumulate_equipments_modifier(
+        attr_name, actor_instance, counter_instance, context
     )
     formation_modifier = get_formation_modifier(
         attr_name, actor_instance, counter_instance, context
@@ -301,7 +298,7 @@ def accumulate_suit_stone_attribute(
             for modifier_effects in modifier_effects_list:
                 if attr_name in modifier_effects.modifier:
                     is_requirement_meet = modifier_effects.requirement(
-                        actor_instance, target_instance, context
+                        actor_instance, target_instance, context, stone_suit
                     )
                     if is_requirement_meet > 0:
                         modifier_value = get_modifier_attribute_value(
@@ -310,3 +307,22 @@ def accumulate_suit_stone_attribute(
                         return is_requirement_meet * calculate_stone_with_max_stack(
                             stone_suit, modifier_value, attr_name
                         )
+    return 0
+
+
+def accumulate_equipments_modifier(
+    attr_name: str, actor_instance: Hero, target_instance: Hero, context: Context
+) -> float:
+    modifier_value = 0
+    for equipment in actor_instance.equipments:
+        for modifier_effect in equipment.modifier_effects:
+            if attr_name in modifier_effect.modifier:
+                is_requirement_meet = modifier_effect.requirement(
+                    actor_instance, target_instance, context, actor_instance.temp.talent
+                )
+                if is_requirement_meet > 0:
+                    bascic_modifier_value = get_modifier_attribute_value(
+                        actor_instance, modifier_effect.modifier, attr_name
+                    )
+                    modifier_value += is_requirement_meet * bascic_modifier_value
+    return modifier_value

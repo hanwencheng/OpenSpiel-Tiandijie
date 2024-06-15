@@ -91,7 +91,7 @@ class Stones(Enum):
         ],
         value=[
             [
-                ModifierEffect(Rs.always_true, {Ma.luck_percentage: 10}),
+                ModifierEffect(Rs.always_true, {Ma.life_percentage: 10}),
             ],
             [
                 ModifierEffect(

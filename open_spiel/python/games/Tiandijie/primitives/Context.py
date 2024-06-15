@@ -9,9 +9,9 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.buff.buffs import BuffTemps
     from open_spiel.python.games.Tiandijie.primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
     from open_spiel.python.games.Tiandijie.primitives import Action
-    from open_spiel.python.games.Tiandijie.primitives.formation.Formation import Formation
     from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTemp
     from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
+from open_spiel.python.games.Tiandijie.primitives.formation.Formation import Formation
 from open_spiel.python.games.Tiandijie.primitives.equipment.Equipments import Equipments
 from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
 from open_spiel.python.games.Tiandijie.primitives.hero.heroes import HeroeTemps
@@ -135,11 +135,13 @@ class Context:
         return 1 - self.get_current_player_id()
 
     def get_formation_by_player_id(self, player_id: int) -> Formation:
-        return [
+        formations = [
             formation
             for formation in self.formation
             if formation.player_id == player_id
-        ][0] if self.formation else None
+        ]
+        from open_spiel.python.games.Tiandijie.helpers import random_select
+        return random_select(formations, 1)[0] if formations else None
 
     def get_heroes_by_player_id(self, player_id: int) -> List[Hero]:
         return [hero for hero in self.heroes if hero.player_id == player_id]
@@ -224,8 +226,9 @@ class Context:
                         satisfied_counts[str(req)] >= count
                         for req, count in req_counts.items()
                 ):
-                    self.formation = Formation(hero.player_id, formation_temp)
-                    self.formation.active_formation()
+                    formation = Formation(hero.player_id, formation_temp)
+                    formation.active_formation()
+                    self.formation.append(formation)
 
     def get_harm_buff_temp_by_id(self, buff_temp_id: str) -> BuffTemp:
         return self.harm_buffs_temps[buff_temp_id]

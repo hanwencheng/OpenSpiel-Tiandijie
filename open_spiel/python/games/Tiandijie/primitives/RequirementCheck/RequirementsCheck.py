@@ -162,7 +162,7 @@ class RequirementCheck:
         return 0
 
     @staticmethod
-    def always_true(actor_hero: Hero, target_hero: Hero, context: Context, primitives: Buff or Skill or Formation or FieldBuff) -> int:
+    def always_true(actor_hero: Hero, target_hero: Hero, context: Context, primitives) -> int:
         return 1
 
     @staticmethod

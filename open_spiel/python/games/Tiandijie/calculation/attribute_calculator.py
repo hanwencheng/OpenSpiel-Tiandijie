@@ -154,7 +154,7 @@ def get_max_life(
         1
         + get_level2_modifier(
             hero_instance, target_instance, ma.life_percentage, context, is_basic
-        )
+        )/100
     )
 
 
@@ -178,7 +178,7 @@ def get_defense(
     )
     return basic_defense * (1 + get_level2_modifier(
         hero_instance, counter_instance, attr_name, context, is_basic
-    ))
+    )/100)
 
 
 def get_attack(
@@ -205,7 +205,7 @@ def get_attack(
     )
     return basic_attack * (1 + get_level2_modifier(
         actor_instance, target_instance, attr_name, context, is_basic
-        ))
+        )/100)
 
 
 def get_damage_modifier(
