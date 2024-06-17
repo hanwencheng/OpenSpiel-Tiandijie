@@ -94,6 +94,7 @@ class TianDiJieState(pyspiel.State):
         def has_actionable_hero(player_id):
             return any(hero.actionable for hero in self.context.get_heroes_by_player_id(player_id))
 
+        self._last_player = self._cur_player
         if action_instance is None or not action_instance.has_additional_action:
             next_player = 1 - self._cur_player
             # if action_instance:
@@ -193,8 +194,7 @@ class TianDiJieState(pyspiel.State):
         return self._is_terminal
 
     def _action_to_string(self, player, action):
-        # print(player, action)
-        action_instance = self.legal_actions_dic[player][action]
+        action_instance = self.legal_actions_dic[self._last_player][action]
         return action_instance.action_to_string(self.context)
 
     def rewards(self):

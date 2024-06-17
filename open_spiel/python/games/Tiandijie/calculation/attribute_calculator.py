@@ -334,15 +334,17 @@ def get_damage_reduction_modifier(
     accumulated_stones_damage_reduction_percentage_modifier = accumulate_stone_attribute(
         defense_instance.stones, attr_name
     )
-    # TODO
-    #  add stones suit effect
     formation_damage_reduction_modifier = 0
     if context.formation:
+        from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_formation_modifier
         formation_damage_reduction_modifier = (
-            context.formation.magic_damage_reduction_percentage
-            if is_magic
-            else context.formation.physical_damage_reduction_percentage
+            get_formation_modifier(attr_name, defense_instance, counter_instance, context)
         )
+        #     (
+        #     context.formation.magic_damage_reduction_percentage
+        #     if is_magic
+        #     else context.formation.physical_damage_reduction_percentage
+        # )
 
     # A-type damage increase (Additive)
     a_type_damage_reduction = (

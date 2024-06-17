@@ -9,16 +9,16 @@ from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 class LifeRequirementChecks:
     @staticmethod
-    def life_not_full(actor_hero: Hero, target_hero: Hero, context: Context) -> int:
+    def life_not_full(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
         return 1 if actor_hero.current_life < actor_hero.max_life else 0
 
     @staticmethod
-    def life_is_full(actor_hero: Hero, target_hero: Hero, context: Context) -> int:
+    def life_is_full(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
         return 1 if actor_hero.current_life == actor_hero.max_life else 0
 
     @staticmethod
     def target_life_is_below(
-        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context
+        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return (
             1
@@ -28,7 +28,7 @@ class LifeRequirementChecks:
 
     @staticmethod
     def target_life_is_higher(
-        percentage: float, _actor_hero: Hero, target_hero: Hero, context: Context
+        percentage: float, _actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return (
             1
@@ -46,7 +46,7 @@ class LifeRequirementChecks:
 
     @staticmethod
     def self_life_is_below(
-        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context
+        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return (
             1 if actor_hero.current_life / actor_hero.max_life < percentage / 100 else 0
@@ -54,7 +54,7 @@ class LifeRequirementChecks:
 
     @staticmethod
     def self_life_is_higher_percentage(
-        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context
+        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> float:
         offset_base = actor_hero.max_life * percentage / 100
         offset_range = actor_hero.max_life - offset_base
@@ -67,7 +67,7 @@ class LifeRequirementChecks:
 
     @staticmethod
     def self_life_is_lower_percentage(
-        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context
+        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> float:
         offset_base = actor_hero.max_life * percentage / 100
         offset_range = actor_hero.max_life - offset_base
@@ -80,7 +80,7 @@ class LifeRequirementChecks:
 
     @staticmethod
     def self_life_is_higher_and_no_harm_buff(
-        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context
+        percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         if actor_hero.current_life / actor_hero.max_life > percentage / 100:
             for buff in actor_hero.buffs:
@@ -91,13 +91,13 @@ class LifeRequirementChecks:
 
     @staticmethod
     def self_life_is_higher_than_target(
-        _percentage: float, actor_hero: Hero, target_hero: Hero, context: Context
+        _percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return 1 if actor_hero.current_life < target_hero.current_life else 0
 
     @staticmethod
     def self_life_is_higher_than_target_in_range(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         enemies = context.get_enemies_in_cross_range(actor_hero, 3)
         partner = context.get_partner_in_square_range(actor_hero, 3)

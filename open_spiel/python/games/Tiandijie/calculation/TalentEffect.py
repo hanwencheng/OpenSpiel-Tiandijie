@@ -68,7 +68,7 @@ class TalentEffects:
         context: Context,
         talent: Talent,
     ):
-        talent_owner = talent.hero_id
+        talent_owner = talent.caster_id
         damage = get_attack(talent_owner, actor_instance, context, True) * multiplier
         calculate_fix_damage(damage, talent_owner, actor_instance, context)
 
@@ -80,7 +80,7 @@ class TalentEffects:
         context: Context,
         talent: Talent,
     ):
-        talent_owner = talent.hero_id
+        talent_owner = talent.caster_id
         damage = get_attack(talent_owner, actor_instance, context, True) * multiplier
         calculate_fix_damage(damage, talent_owner, actor_instance, context)
 
@@ -126,7 +126,7 @@ class TalentEffects:
         selected_heroes = random_select(targets, 2)
         for enemy_hero in selected_heroes:
             Effects.add_buffs(
-                selected_harm_buff_temps, 2, actor_instance, enemy_hero, context
+                selected_harm_buff_temps, 2, actor_instance, enemy_hero, context, talent
             )
 
     @staticmethod
@@ -143,7 +143,7 @@ class TalentEffects:
         TalentEffects.add_fixed_damage_by_talent_owner_magic_attack(
             0.3, talent.caster, actor_instance, context, talent
         )
-        Effects.add_self_buffs(["zhanyin"], 1, actor_instance, target_instance, context)
+        Effects.add_self_buffs(["zhanyin"], 1, actor_instance, target_instance, context, talent)
 
     @staticmethod
     def take_effect_of_wenchangxingyun(
@@ -165,7 +165,7 @@ class TalentEffects:
     ):
         if stage == 1:
             Effects.add_self_buffs(
-                ["youshuang"], 3, actor_instance, actor_instance, context
+                ["youshuang"], 3, actor_instance, actor_instance, context, talent
             )
             talent.cooldown = 4
         else:
@@ -191,7 +191,7 @@ class TalentEffects:
                         context,
                     )
                     Effects.add_buffs(
-                        ["wucuichihuan"], 2, actor_instance, enemy, context
+                        ["wucuichihuan"], 2, actor_instance, enemy, context, talent
                     )
 
     @staticmethod
@@ -294,7 +294,7 @@ class TalentEffects:
         if talent.trigger >= 2:
             return
         talent.trigger += 1
-        Effects.add_buffs(["youming"], 2, actor_instance, target_instance, context)
+        Effects.add_buffs(["youming"], 2, actor_instance, target_instance, context, talent)
 
     @staticmethod
     def take_effect_of_shangshandaoxin(
@@ -312,9 +312,9 @@ class TalentEffects:
         selected_harm_buff_temps = random_select(context.harm_buffs, 1)
         for enemy_hero in enemies:
             Effects.add_buffs(
-                selected_harm_buff_temps, 1, actor_instance, enemy_hero, context
+                selected_harm_buff_temps, 1, actor_instance, enemy_hero, context, talent
             )
-        Effects.add_self_buffs(["ankai"], 1, actor_instance, actor_instance, context)
+        Effects.add_self_buffs(["ankai"], 1, actor_instance, actor_instance, context, talent)
 
     @staticmethod
     def take_effect_of_zhanfengwangxiang(
@@ -345,7 +345,7 @@ class TalentEffects:
             count = len(action.targets)
             if count > 0:
                 Effects.add_self_buffs(
-                    ["yingwei"], 15, actor_instance, actor_instance, context
+                    ["yingwei"], 15, actor_instance, actor_instance, context, talent
                 )
                 if count > 1:
                     for i in range(count - 1):
@@ -368,7 +368,7 @@ class TalentEffects:
             duplicates = [element for element, count in counts.items() if count >= 2]
             for index in duplicates:
                 Effects.add_buffs(
-                    ["meihuo"], 1, actor_instance, enemies[index], context
+                    ["meihuo"], 1, actor_instance, enemies[index], context, talent
                 )
 
     @staticmethod
@@ -401,7 +401,7 @@ class TalentEffects:
 
             enemies = sorted(enemies, key=compare, reverse=True)[:2]
         for enemy in enemies:
-            Effects.add_buffs(["shefu"], 2, actor_instance, enemy, context)
+            Effects.add_buffs(["shefu"], 2, actor_instance, enemy, context, talent)
 
     @staticmethod
     def take_effect_of_pohuishenfu(
@@ -413,7 +413,7 @@ class TalentEffects:
         selected_harm_buff_temps = random_select(context.harm_buffs_temps, 1)
         selected_harm_buff_temps.append(context.get_buff_by_id("youjin"))
         Effects.add_buffs(
-            selected_harm_buff_temps, 2, actor_instance, target_instance, context
+            selected_harm_buff_temps, 2, actor_instance, target_instance, context, talent
         )
 
     @staticmethod
@@ -421,7 +421,7 @@ class TalentEffects:
         actor_instance: Hero, target_instance: Hero, context: Context, talent: Talent
     ):
         Effects.remove_actor_certain_buff(
-            "tianxuan", actor_instance, target_instance, context
+            "tianxuan", actor_instance, target_instance, context, talent
         )
         Effects.add_fixed_damage_in_range_by_caster_physical_attack(
             0.3, 3, actor_instance, target_instance, context, talent
@@ -442,7 +442,7 @@ class TalentEffects:
         if not enemies:
             return
         enemy = random_select(enemies, 1)
-        Effects.add_buffs(["yunxuan"], 1, actor_instance, enemy, context)
+        Effects.add_buffs(["yunxuan"], 1, actor_instance, enemy, context, talent)
         talent.cooldown = 3
 
     @staticmethod
@@ -455,23 +455,23 @@ class TalentEffects:
     ):
         if state == 1:
             Effects.add_self_buffs(
-                ["juexin"], 15, actor_instance, actor_instance, context
+                ["juexin"], 15, actor_instance, actor_instance, context, talent
             )
             partners = context.get_partners_in_diamond_range(actor_instance, 2)
             element_values = {partner.temp.element for partner in partners}
             if Elements.DARK in element_values and Elements.THUNDER in element_values:
                 Effects.add_buffs(
-                    ["juexin"], 15, actor_instance, actor_instance, context
+                    ["juexin"], 15, actor_instance, actor_instance, context, talent
                 )
 
             if BuffRequirementChecks.self_buff_stack_reach(
-                5, "juexin", actor_instance, actor_instance, context
+                5, "juexin", actor_instance, actor_instance, context, talent
             ):
                 Effects.remove_actor_certain_buff(
-                    "juexin", actor_instance, actor_instance, context
+                    "juexin", actor_instance, actor_instance, context, talent
                 )
                 Effects.add_self_buffs(
-                    ["juexin"], 3, actor_instance, actor_instance, context
+                    ["juexin"], 3, actor_instance, actor_instance, context, talent
                 )
         else:
             enemies = context.get_enemies_in_diamond_range(actor_instance, 2)

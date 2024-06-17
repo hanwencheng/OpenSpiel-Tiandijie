@@ -59,9 +59,6 @@ class Hero:
             self.temp.temp_id,
         )
         self.initial_attributes = multiply_attributes(initial_attributes, self.temp.hide_professions)
-        if self.id == "mohuahuangfushen0":
-            print("mohuahuangfushen0 进图前气血", self.initial_attributes.life)
-        #     traceback.print_stack()
         self.current_life = self.initial_attributes.life
 
     def take_harm(self, harm_value: float):

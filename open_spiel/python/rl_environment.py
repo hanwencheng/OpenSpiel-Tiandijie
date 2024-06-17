@@ -279,7 +279,7 @@ class Environment(object):
           raise RuntimeError(f"step() by player {p} called on illegal " +
                              f"action: {actions[p]}")
 
-  def step(self, actions):
+  def step(self, actions, callback=None):
     """Updates the environment according to `actions` and returns a `TimeStep`.
 
     If the environment returned a `TimeStep` with `StepType.LAST` at the
@@ -317,6 +317,8 @@ class Environment(object):
       self._state.apply_action(actions[0])
     else:
       self._state.apply_actions(actions)
+    if callback:
+      callback(f"Agent {self._state._last_player} chooses {self._state.action_to_string(actions[0])}")
     self._sample_external_events()
 
     return self.get_time_step()

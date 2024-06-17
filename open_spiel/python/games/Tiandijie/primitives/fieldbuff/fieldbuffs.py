@@ -241,8 +241,8 @@ class FieldBuffsTemps(Enum):
     )
 
     #   地火焚狱	其他	不可驱散	不可扩散	不可偷取	若敌人行动结束时，位于施加者3格范围内，驱散2个「有益状态」，并受到1次「固定伤害」（施术者物攻的15%）
-    dihuofenyu = FieldBuffTemp(
-        "dihuofenyu",
+    dihuofanyu = FieldBuffTemp(
+        "dihuofanyu",
         "yuwentuo",
         3,
         [],

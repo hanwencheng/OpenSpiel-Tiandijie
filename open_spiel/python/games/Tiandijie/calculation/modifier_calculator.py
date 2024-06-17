@@ -94,7 +94,7 @@ def get_formation_modifier(
         for effect in formation_modifier_effects:
             if attr_name in effect.modifier:
                 multiplier = effect.requirement(
-                    actor_instance, target_instance, context
+                    actor_instance, target_instance, context, current_formation
                 )
                 if multiplier > 0:
                     basic_modifier_value += (
@@ -318,7 +318,7 @@ def accumulate_equipments_modifier(
         for modifier_effect in equipment.modifier_effects:
             if attr_name in modifier_effect.modifier:
                 is_requirement_meet = modifier_effect.requirement(
-                    actor_instance, target_instance, context, actor_instance.temp.talent
+                    actor_instance, target_instance, context, equipment
                 )
                 if is_requirement_meet > 0:
                     bascic_modifier_value = get_modifier_attribute_value(

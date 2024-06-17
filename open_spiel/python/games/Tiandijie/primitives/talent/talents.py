@@ -1092,7 +1092,7 @@ class Talents(Enum):
                 },
             ),
             ModifierEffect(
-                Rs.always_true,
+                partial(Rs.BuffChecks.self_has_no_certain_buff, "huwei"),
                 {Ma.physical_protect_range: 1, Ma.magic_protect_range: 1},
             ),
         ],
@@ -1103,18 +1103,18 @@ class Talents(Enum):
                 Rs.always_true,
                 partial(Effects.add_self_buffs, ["huwei"], 2),
             ),
-            EventListener(
-                EventTypes.skill_end,
-                2,
-                partial(Rs.skill_has_no_damage),
-                partial(Effects.add_self_field_buff, "huilingjie", 1),
-            ),
-            EventListener(
-                EventTypes.skill_end,
-                2,
-                partial(Rs.skill_has_damage),
-                partial(Effects.add_self_field_buff, "xuanmiejie", 1),
-            ),
+            # EventListener(
+            #     EventTypes.skill_end,
+            #     2,
+            #     partial(Rs.skill_has_no_damage),
+            #     partial(Effects.add_self_field_buff, "huilingjie", 1),
+            # ),
+            # EventListener(
+            #     EventTypes.skill_end,
+            #     2,
+            #     partial(Rs.skill_has_damage),
+            #     partial(Effects.add_self_field_buff, "xuanmiejie", 1),
+            # ),
         ],
     )
 
@@ -1197,7 +1197,7 @@ class Talents(Enum):
         "huoyong",
         [
             ModifierEffect(
-                partial(Rs.BuffChecks.self_has_certain_buff_in_list, ["hanlan", "fenyu", "xuanyou"]),
+                partial(Rs.BuffChecks.self_has_certain_buff_in_list, ["hanlan", "fanyu", "xuanyou"]),
                 {Ma.magic_attack_percentage: 6, Ma.magic_defense_percentage: 6},
             ),
         ],
@@ -1206,7 +1206,7 @@ class Talents(Enum):
                 EventTypes.action_start,
                 1,
                 partial(TRs.youfenghuashen_requires_check),
-                partial(Effects.add_self_buffs, ["hanlan", "fenyu", "xuanyou"], 15),
+                partial(Effects.add_self_buffs, ["hanlan", "fanyu", "xuanyou"], 15),
             ),
         ],
     )

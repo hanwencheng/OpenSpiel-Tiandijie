@@ -59,7 +59,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def no_partners_in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
@@ -74,7 +74,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def no_partners_in_target_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         actor_position = target_hero.position
         for hero in context.heroes:
@@ -88,7 +88,7 @@ class PositionRequirementChecks:
         return 1
 
     @staticmethod
-    def in_the_same_line(actor_hero: Hero, target_hero: Hero, context: Context) -> int:
+    def in_the_same_line(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
         actor_position = actor_hero.position
         target_position = target_hero.position
         if (
@@ -106,6 +106,7 @@ class PositionRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         actor_position = actor_hero.position
         count = 0
@@ -130,6 +131,7 @@ class PositionRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         actor_position = actor_hero.position
         for element in elements:
@@ -147,7 +149,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
@@ -161,7 +163,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def has_partner_in_range(
-        range_value, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
@@ -176,7 +178,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def has_male_in_range(
-        range_value, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
@@ -192,7 +194,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def has_female_in_range(
-        range_value, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
@@ -213,6 +215,7 @@ class PositionRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         actor_position = actor_hero.position
         count = 0
@@ -253,6 +256,7 @@ class PositionRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         actor_position = actor_hero.position
         count = 0
@@ -273,6 +277,7 @@ class PositionRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         actor_position = actor_hero.position
         enemy_count = 0
@@ -293,6 +298,7 @@ class PositionRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive
     ) -> int:
         actor_position = actor_hero.position
         partner_count = 0
@@ -313,6 +319,7 @@ class PositionRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         is_attacker = _is_attacker(actor_hero, context)
         if is_attacker:
@@ -324,7 +331,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def has_harm_buff_partner_in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return check_buff_in_range(
             range_value, actor_hero, context, BuffTypes.Harm, True

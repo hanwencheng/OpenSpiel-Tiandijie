@@ -108,24 +108,25 @@ class Action:
 
     def action_to_string(self, context):
         # context.battlemap.display_map()
+        action_to_string = ""
+        if self.protector:
+            print(self.protector.id)
         if self.type == ActionTypes.MOVE:
             action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point}"
-            return action_to_string
         elif self.type == ActionTypes.PASS:
             action_to_string = f"{self.actor.name}选择跳过"
-            return action_to_string
         elif self.type == ActionTypes.NORMAL_ATTACK:
-            action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},对{self.protector if self.protector else self.targets[0].name}使用普通攻击"
-            return action_to_string
+            action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},对{self.targets[0].name}使用普通攻击"
+            if self.protector:
+                action_to_string += f",由{self.protector.name}护卫住"
         elif self.type == ActionTypes.SELF:
             action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},使用了{self.skill.temp.chinese_name}"
-            return action_to_string
         elif self.type in [ActionTypes.HEAL, ActionTypes.SKILL_ATTACK, ActionTypes.SUPPORT]:
             if self.skill.temp.target_type == SkillTargetTypes.TERRAIN:
                 action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},对{self.action_point}格子使用了{self.skill.temp.chinese_name}"
             else:
                 action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},对{self.protector if self.protector else self.targets[0].name}{self.action_point}使用了{self.skill.temp.chinese_name}"
-            return action_to_string
+        return action_to_string
         # elif self.type == ActionTypes.TELEPORT:
         #     action_to_string = f"{self.actor}从{self.initial_position}走到了{self.move_point},使用了{self.skill.temp.id},传送到了{self.action_point}"
 

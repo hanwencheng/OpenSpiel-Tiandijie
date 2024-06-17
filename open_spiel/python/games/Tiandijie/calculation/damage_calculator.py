@@ -75,11 +75,18 @@ def calculate_skill_damage(
 
     critical_damage_multiplier = (
         CRIT_MULTIPLIER
-        * get_critical_damage_modifier(attacker_instance, is_attacker, context)
+        * get_critical_damage_modifier(attacker_instance, target_instance, context)
         * get_critical_damage_reduction_modifier(
-            target_instance, not is_attacker, context
+            target_instance, attacker_instance, context
         )
     )
+    # critical_damage_multiplier = (
+    #     CRIT_MULTIPLIER
+    #     * get_critical_damage_modifier(attacker_instance, is_attacker, context)
+    #     * get_critical_damage_reduction_modifier(
+    #         target_instance, not is_attacker, context
+    #     )
+    # )
 
     if random() < critical_probability:
         # Critical hit occurs

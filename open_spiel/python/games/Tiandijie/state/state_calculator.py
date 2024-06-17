@@ -89,6 +89,7 @@ def check_protector(context: Context):
                 ma.magic_protect_range if is_magic else ma.physical_protect_range
             )
             protect_range = get_modifier(attr_name, defender, action.actor, context)
+            # protect_range = get_max_modifier(attr_name, defender, action.actor, context)
             if protect_range >= 1:
                 distance = abs(defender.position[0] - target.position[0]) + abs(
                     defender.position[1] - target.position[1]

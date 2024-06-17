@@ -105,6 +105,12 @@ def event_listener_calculator(
                     )
 
     # Calculate Talents
+    talent = actor_instance.temp.talent
+    for event_listener in talent.event_listeners:
+        if event_listener.event_type == event_type:
+            event_listener_containers.append(
+                EventListenerContainer(event_listener, talent)
+            )
 
     # Calculate Formation
     formation = context.get_formation_by_player_id(actor_instance.player_id)

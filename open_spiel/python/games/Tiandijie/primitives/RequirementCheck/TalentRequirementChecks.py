@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
     from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
-from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as RS
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
 from open_spiel.python.games.Tiandijie.primitives.talent.Talent import Talent
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
 from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
@@ -24,7 +24,7 @@ class TalentRequirementChecks:
 
     @staticmethod
     def huangyuanlangshen_requires_check(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         buff = actor_hero.get_buff_by_id("lieshang")
         if not buff:
@@ -39,7 +39,7 @@ class TalentRequirementChecks:
 
     @staticmethod
     def yaochixianshou_requires_check(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         enemies = context.get_enemies_in_diamond_range(actor_hero, 3)
         if not enemies:
@@ -124,7 +124,7 @@ class TalentRequirementChecks:
 
     @staticmethod
     def youmingcixin_requires_check(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ):
         partners = context.get_partners_in_diamond_range(actor_hero, 3)
         if not partners:
@@ -136,7 +136,7 @@ class TalentRequirementChecks:
 
     @staticmethod
     def heyururun_requires_check(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ):
         if Rs.action_is_active_skill(actor_hero, target_hero, context) and Rs.BuffChecks.self_buff_stack_reach(
             2, "shengming", actor_hero, target_hero, context
@@ -145,7 +145,7 @@ class TalentRequirementChecks:
 
     @staticmethod
     def youfenghuashen_requires_check(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ):
         partners = context.get_partners_in_diamond_range(actor_hero, 4)
         element_values = {partner.temp.element for partner in partners}

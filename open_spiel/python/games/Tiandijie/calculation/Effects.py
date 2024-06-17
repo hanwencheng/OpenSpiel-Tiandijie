@@ -1656,8 +1656,9 @@ class Effects:
     @staticmethod
     def add_self_field_buff(
         buff_list: List[str],
-        actor: Hero,
         duration: int,
+        actor: Hero,
+        target_instance: Hero,
         context: Context,
         field_buff: FieldBuff,
     ):
@@ -1671,7 +1672,7 @@ class Effects:
 
     @staticmethod
     def remove_self_field_buff(
-        buff_list: List[str], actor: Hero, duration: int, context: Context
+        buff_list: List[str], actor: Hero, target_instance: Hero, context: Context
     ):
         for buff_id in buff_list:
             _remove_actor_certain_field_buff(buff_id, actor)

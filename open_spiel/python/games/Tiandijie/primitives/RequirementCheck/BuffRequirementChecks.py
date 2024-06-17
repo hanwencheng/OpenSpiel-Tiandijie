@@ -18,6 +18,7 @@ class BuffRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         for buff in target_hero.buffs:
             if buff.temp.id == buff_id:
@@ -32,6 +33,7 @@ class BuffRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
     ) -> int:
         for buff in actor_hero.buffs:
             if buff.temp.id == buff_id:
@@ -41,7 +43,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def target_has_no_benefit_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         for buff in target_hero.buffs:
             if buff.temp.type == BuffTypes.Benefit:
@@ -50,7 +52,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def target_has_no_harm_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         for buff in target_hero.buffs:
             if buff.temp.type == BuffTypes.Harm:
@@ -59,7 +61,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def self_has_no_benefit_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         for buff in target_hero.buffs:
             if buff.temp.type == BuffTypes.Harm:
@@ -68,7 +70,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def self_has_no_harm_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         for buff in target_hero.buffs:
             if buff.temp.type == BuffTypes.Benefit:
@@ -77,31 +79,31 @@ class BuffRequirementChecks:
 
     @staticmethod
     def self_has_benefit_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return check_buff_on_target(actor_hero, target_hero, BuffTypes.Benefit, True)
 
     @staticmethod
     def target_has_benefit_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return check_buff_on_target(actor_hero, target_hero, BuffTypes.Benefit, False)
 
     @staticmethod
     def self_has_harm_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return check_buff_on_target(actor_hero, target_hero, BuffTypes.Harm, True)
 
     @staticmethod
     def target_has_harm_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return check_buff_on_target(actor_hero, target_hero, BuffTypes.Harm, False)
 
     @staticmethod
     def target_harm_buff_count(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         harm_buff_count = 0
         for buff in target_hero.buffs:
@@ -111,7 +113,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def target_benefit_buff_count(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         benefit_buff_count = 0
         for buff in target_hero.buffs:
@@ -121,7 +123,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def self_benefit_buff_count(
-        max_count: int, actor_hero: Hero, target_hero: Hero, context: Context
+        max_count: int, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         benefit_buff_count = 0
         for buff in actor_hero.buffs:
@@ -141,7 +143,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def target_harm_buff_count_bigger_than(
-        count: int, actor_hero: Hero, target_hero: Hero, context: Context
+        count: int, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         harm_buff_count = 0
         for buff in target_hero.buffs:
@@ -157,7 +159,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def target_has_certain_buff(
-        buff_id: str, actor_hero: Hero, target_hero: Hero, context: Context
+        buff_id: str, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         for buff in target_hero.buffs:
             if buff.temp.id == buff_id:
@@ -166,7 +168,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def self_has_certain_buff_in_list(
-        buff_list: [str], actor_hero: Hero, target_hero: Hero, context: Context
+        buff_list: [str], actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         self_buffs = [buff.temp.id for buff in actor_hero.buffs]
         count = 0
@@ -177,7 +179,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def self_has_no_certain_buff(
-        buff_id: str, actor_hero: Hero, target_hero: Hero, context: Context
+        buff_id: str, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         for buff in actor_hero.buffs:
             if buff.temp.id == buff_id:
@@ -186,7 +188,7 @@ class BuffRequirementChecks:
 
     @staticmethod
     def self_has_move_buff(
-        actor_hero: Hero, target_hero: Hero, context: Context
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         for buff in actor_hero.buffs:
             for k, v in buff.temp.modifier_effects.modifiers.items():
@@ -200,6 +202,7 @@ class BuffRequirementChecks:
         actor_hero: Hero,
         target_hero: Hero,
         context: Context,
+        primitive,
         buff: Buff,
     ) -> int:
         return 0 if buff.stack >= stack_value else 1

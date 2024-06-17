@@ -135,10 +135,6 @@ class TIANDIJIEGUI:
         self.create_map()
         self.init_hero_map()
         # 更改英灵位置
-        hero = self.get_hero_by_id("mohuahuangfushen0")
-        from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, \
-            get_max_life
-        print(get_max_life(hero_instance=hero, target_instance=None, context=self.now_state.context))
 
     def start_simulation(self):
         self.button_dic["button_train"].config(state="disabled")
@@ -190,13 +186,11 @@ class TIANDIJIEGUI:
                 return
             if player_id == human_player:
                 action = self.command_line_action(self.time_step)
-                self.add_text(f"Agent {player_id} chooses {self.env.get_state.action_to_string(action)}")
-                self.time_step = self.env.step([action])
+                self.time_step = self.env.step([action], self.add_text)
                 self.redraw_all()
             else:
                 agent_output = self.eval_agents[player_id].step(self.time_step)
-                self.add_text(f"Agent {player_id} chooses {self.env.get_state.action_to_string(agent_output.action)}")
-                self.time_step = self.env.step([agent_output.action])
+                self.time_step = self.env.step([agent_output.action], self.add_text)
                 self.redraw_hero_map()
 
         print(self.time_step.rewards)
@@ -477,21 +471,21 @@ class TIANDIJIEGUI:
                 if temp_skill:
                     if action.skill and action.skill.temp.chinese_name == temp_skill:
                         if action.skill.temp.target_type.value in [0, 1] and action.action_point == temp_target:
-                            print(0)
+                            # print(0)
                             self.input = self.now_state.legal_actions_dic[1].index(action)
                             break
                         elif action.skill.temp.target_type.value == 3:
-                            print(1)
+                            # print(1)
                             self.input = self.now_state.legal_actions_dic[1].index(action)
                             break
                 elif temp_target:
                     if temp_skill is None and action.type.value == ActionTypes.NORMAL_ATTACK.value:
-                        print(2)
+                        # print(2)
                         self.input = self.now_state.legal_actions_dic[1].index(action)
                         break
                 else:
                     if action.type.value == ActionTypes.MOVE.value:
-                        print(3)
+                        # print(3)
                         self.input = self.now_state.legal_actions_dic[1].index(action)
                         break
 

@@ -181,7 +181,7 @@ class Weapons(Enum):
         "幽日复苏",
         [
             ModifierEffect(
-                partial(Rs.BuffChecks.self_has_certain_buff_in_list, ["hanlan", "fenyu", "xuanyou"]),
+                partial(Rs.BuffChecks.self_has_certain_buff_in_list, ["hanlan", "fanyu", "xuanyou"]),
                 {Ma.physical_penetration_percentage: 5, Ma.magic_penetration_percentage: 5},
             ),
             ModifierEffect(
@@ -194,7 +194,7 @@ class Weapons(Enum):
                 EventTypes.rebirth_start,
                 1,
                 Rs.always_true,
-                partial(Effects.add_buffs, ["hanlan", "fenyu", "xuanyou"])
+                partial(Effects.add_buffs, ["hanlan", "fanyu", "xuanyou"])
             )
         ],
         [
