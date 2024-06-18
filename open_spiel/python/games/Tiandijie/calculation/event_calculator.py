@@ -2,8 +2,6 @@ from typing import List, Any
 from typing import TYPE_CHECKING
 
 
-from open_spiel.python.games.Tiandijie.primitives.Action import Action
-
 if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.Context import Context
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
@@ -46,8 +44,8 @@ def event_listener_calculator(
     if actor_instance.is_alive is False:
         return
     event_listener_containers: List[EventListenerContainer] = []
-    current_action: Action = context.get_last_action()
-    if current_action is None:
+    current_action = context.get_last_action()
+    if current_action is None and event_type != EventTypes.game_start:
         return
     # Calculated Buffs
     for buff in actor_instance.buffs:

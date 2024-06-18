@@ -55,7 +55,7 @@ class Context:
 
     def get_partners_in_diamond_range(self, hero: Hero, range_value: int) -> List[Hero]:
         base_position = hero.position
-        positions_list_in_range = calculate_diamond_area(base_position, range_value)
+        positions_list_in_range = calculate_diamond_area(base_position, range_value, self.battlemap)
         return [
             hero
             for hero in self.heroes
@@ -70,7 +70,7 @@ class Context:
 
     def get_enemies_in_diamond_range(self, hero: Hero, range_value: int) -> List[Hero]:
         base_position = hero.position
-        positions_list_in_range = calculate_diamond_area(base_position, range_value)
+        positions_list_in_range = calculate_diamond_area(base_position, range_value, self.battlemap)
         return [
             hero
             for hero in self.heroes
@@ -122,7 +122,7 @@ class Context:
         from open_spiel.python.games.Tiandijie.primitives.fieldbuff.fieldbuffs import FieldBuffsTemps
 
         for buff in FieldBuffsTemps:
-            benefit_buffs[buff.value.id] = buff.value
+            fieldbuffs[buff.value.id] = buff.value
         self.fieldbuffs_temps = fieldbuffs
 
     def init_heroes(self, heroes: List[Hero]):

@@ -436,7 +436,7 @@ class Skills(Enum):
         SkillTargetTypes.TERRAIN,
         0,
         Distance(DistanceType.NORMAL, 5),
-        Range(RangeType.POINT, 0, 1, 1),
+        Range(RangeType.POINT, 2, 1, 1),
         0,
         [],
         [

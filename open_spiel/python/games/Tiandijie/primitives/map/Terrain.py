@@ -17,3 +17,6 @@ class Terrain:
 
     def remove_buff(self):
         self.buff = None
+
+    def set_terrain(self, terrain_type: 'TerrainType'):
+        self.terrain_type = terrain_type

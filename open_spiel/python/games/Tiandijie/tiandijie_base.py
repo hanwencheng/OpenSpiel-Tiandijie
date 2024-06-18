@@ -140,9 +140,8 @@ class TianDiJieState(pyspiel.State):
                 legal_actions.extend(actor.actionable_list)
 
             elif action.additional_skill_list and len(action.additional_skill_list) != 0:
-                for additional_skill in action.additional_skill:
-                    new_action = Action(actor, additional_skill.targets, additional_skill.skill, action.move_point, additional_skill.targets[0].position)
-                    legal_actions.append(new_action)
+                actions = self.get_additional_skill_action(action.actor, action.additional_skill_list)
+                legal_actions.extend(actions)
 
             elif action.additional_move > 0:
                 other_hero_list = [hero for hero in hero_list if hero.id != actor.id]
@@ -214,6 +213,102 @@ class TianDiJieState(pyspiel.State):
 
     def setup_game_state(self, map_name, player0_heroes, player1_heroes):
         self.context.init_battlemap(map_name)
+
+    def get_additional_skill_action(self, actor, skills):
+        actions = []
+        new_action = Action(actor, [], None, actor.position, actor.position)
+        new_action.update_action_type(ActionTypes.PASS)
+        actions.append(new_action)
+        from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillTargetTypes, SkillType
+        from open_spiel.python.games.Tiandijie.calculation.Range import calculate_diamond_area, calculate_if_targe_in_diamond_range
+        from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_level2_modifier
+        from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
+        def get_new_action(self, hero_in_skill, skill, moveable_position, target_position):
+            new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)
+            if skill.temp.skill_type == SkillType.Support:
+                new_action.update_action_type(ActionTypes.SUPPORT)
+            elif skill.temp.skill_type == SkillType.Heal:
+                new_action.update_action_type(ActionTypes.HEAL)
+            elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
+                new_action.update_action_type(ActionTypes.SKILL_ATTACK)
+            return new_action
+
+        def get_hero_in_skill(target, target_hero_list, skill, moveable_position):
+            return [target] + [
+                effect_hero for effect_hero in target_hero_list
+                if effect_hero != target and skill.temp.range_instance.check_if_target_in_range(
+                    moveable_position, target.position, effect_hero.position, self.context.battlemap
+                )
+            ]
+
+        hero_list = self.context.heroes
+        for skill in skills:
+            if skill.temp.target_type == SkillTargetTypes.TERRAIN:
+                target_position_list = calculate_diamond_area(actor.position, skill.temp.distance.distance_value, self.context.battlemap)
+                target_position_list = [pos for pos in target_position_list if self.context.battlemap.get_terrain(pos).terrain_type in {
+                    TerrainType.NORMAL, TerrainType.ZHUOWU}]
+                for target_position in target_position_list:
+                    hero_in_skill = [actor]
+                    if skill.temp.skill_type in {SkillType.Support, SkillType.Heal}:
+                        partner_list = [hero for hero in hero_list if hero.player_id == actor.player_id and hero.player_id != actor.player_id]
+                        hero_in_skill.extend(partner for partner in partner_list if skill.temp.range_instance.check_if_target_in_range(actor.position, actor.position, partner.position, self.context.battlemap))
+                        new_action = Action(actor, hero_in_skill, skill, actor.position, actor.position)
+                        new_action.update_action_type(ActionTypes.SUPPORT) if skill.temp.skill_type == SkillType.Support else new_action.update_action_type(ActionTypes.HEAL)
+                        actions.append(new_action)
+                    elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
+                        enemy_list = [hero for hero in hero_list if hero.player_id != actor.player_id]
+                        hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(actor.position, enemy.position, target_position, self.context.battlemap)]
+                        new_action = Action(actor, hero_in_skill, skill, actor.position, target_position)
+                        new_action.update_action_type(ActionTypes.SKILL_ATTACK)
+                        actions.append(new_action)
+
+            elif skill.temp.target_type == SkillTargetTypes.SELF:
+                hero_in_skill = [actor]
+                if skill.temp.skill_type in {SkillType.Support, SkillType.Heal}:
+                    partner_list = [hero for hero in hero_list if hero.player_id == actor.player_id and hero.player_id != actor.player_id]
+                    hero_in_skill.extend(partner for partner in partner_list if skill.temp.range_instance.check_if_target_in_range(actor.position, actor.position, partner.position, self.context.battlemap))
+
+                    new_action = Action(actor, hero_in_skill, skill, actor.position, actor.position)
+                    new_action.update_action_type(ActionTypes.SELF)
+                    actions.append(new_action)
+                elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
+                    enemy_list = [hero for hero in hero_list if hero.player_id != actor.player_id]
+                    hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(actor.position, actor.position, enemy.position, self.context.battlemap)]
+
+                    if hero_in_skill:
+                        new_action = Action(actor, hero_in_skill, skill, actor.position, actor.position)
+                        new_action.update_action_type(ActionTypes.SELF)
+                        actions.append(new_action)
+            else:
+                target_hero_list = [
+                    hero for hero in hero_list if
+                    (skill.temp.target_type == SkillTargetTypes.ENEMY and hero.player_id != actor.player_id) or
+                    (skill.temp.target_type != SkillTargetTypes.ENEMY and hero.player_id == actor.player_id)
+                ]
+
+                skill_new_distance = (
+                        skill.temp.distance.distance_value +
+                        get_level2_modifier(actor, None, "active_skill_range", self.context) +
+                        get_level2_modifier(
+                            actor,
+                            None,
+                            "single_skill_range" if skill.temp.range_instance.range_value == 0 else "range_skill_range",
+                            self.context
+                        )
+                )
+
+                for target in target_hero_list:
+                    hero_in_skill = get_hero_in_skill(target, target_hero_list, skill, actor.position)
+
+                    if actor == target:
+                        new_action = get_new_action(actor, hero_in_skill, skill, actor.position,
+                                                    actor.position)
+                        actions.append(new_action)
+                    elif calculate_if_targe_in_diamond_range(actor.position, target.position,
+                                                             int(skill_new_distance)):
+                        new_action = get_new_action(actor, hero_in_skill, skill, actor.position, target.position)
+                        actions.append(new_action)
+            return actions
 
 
 class TianDiJieObserver:

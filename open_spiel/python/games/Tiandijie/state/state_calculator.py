@@ -5,7 +5,7 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.Context import Context
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
     from open_spiel.python.games.Tiandijie.primitives.Action import Action, ActionTypes
-from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     get_modifier,

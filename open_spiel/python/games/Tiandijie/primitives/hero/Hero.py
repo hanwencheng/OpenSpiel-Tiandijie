@@ -125,8 +125,6 @@ class Hero:
             move_range = self.temp.hide_professions.value[2] + get_level2_modifier(self, None, "move_range", context)
 
         self.initialize_movable_range(context.battlemap, hero_list, move_range)
-        if self.id == "mohuahuangfushen1":
-            print(0, len(self.actionable_list))
 
         # 处理可移动的Action
         for position in self.movable_range:
@@ -148,12 +146,12 @@ class Hero:
         for skill in filter(lambda s: s.cool_down == 0, self.enabled_skills):
             for moveable_position in self.movable_range:
                 if skill.temp.target_type == SkillTargetTypes.TERRAIN:
-                    target_position_list = calculate_diamond_area(moveable_position, skill.temp.distance.distance_value)
+                    target_position_list = calculate_diamond_area(moveable_position, skill.temp.distance.distance_value, context.battlemap)
                     target_position_list = [pos for pos in target_position_list if pos not in {hero.position for hero in hero_list}]
 
                     for target_position in target_position_list:
                         target_hero_list = [hero for hero in hero_list if hero.player_id != self.player_id]
-                        hero_in_skill = [enemy for enemy in target_hero_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, enemy.position, target_position)]
+                        hero_in_skill = [enemy for enemy in target_hero_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, enemy.position, target_position, context.battlemap)]
 
                         if hero_in_skill:
                             new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)
@@ -163,14 +161,14 @@ class Hero:
                     hero_in_skill = [self]
                     if skill.temp.skill_type == SkillType.Support:
                         partner_list = [hero for hero in hero_list if hero.player_id == self.player_id and hero.player_id != self.player_id]
-                        hero_in_skill.extend(partner for partner in partner_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, moveable_position, partner.position))
+                        hero_in_skill.extend(partner for partner in partner_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, moveable_position, partner.position, context.battlemap))
 
                         new_action = Action(self, hero_in_skill, skill, moveable_position, moveable_position)
                         new_action.update_action_type(ActionTypes.SELF)
                         self.actionable_list.append(new_action)
                     elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
                         enemy_list = [hero for hero in hero_list if hero.player_id != self.player_id]
-                        hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, moveable_position, enemy.position)]
+                        hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, moveable_position, enemy.position, context.battlemap)]
 
                         if hero_in_skill:
                             new_action = Action(self, hero_in_skill, skill, moveable_position, moveable_position)
@@ -191,7 +189,7 @@ class Hero:
                         return [target] + [
                             effect_hero for effect_hero in target_hero_list
                             if effect_hero != target and skill.temp.range_instance.check_if_target_in_range(
-                                moveable_position, target.position, effect_hero.position
+                                moveable_position, target.position, effect_hero.position, context.battlemap
                             )
                         ]
 

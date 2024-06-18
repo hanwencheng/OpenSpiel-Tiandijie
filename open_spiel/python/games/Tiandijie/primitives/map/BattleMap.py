@@ -31,10 +31,14 @@ class BattleMap:
             self.map = [[self._init_terrain_by_type_id(terrain_map[j][i]) for i in range(len(terrain_map[0]))] for j in range(len(terrain_map))]
 
     def get_terrain(self, position):
-        y, x = position
+        x, y = position
         if 0 <= y < len(self.map) and 0 <= x < len(self.map[0]):
-            return self.map[y][x]
+            return self.map[position[1]][position[0]]
         return False
+
+    def set_terrain(self, position, terrain_type):
+        print("set_terrain", position)
+        self.map[position[1]][position[0]].set_terrain(terrain_type)
 
     def set_terrain_type(self, position, terrain_type: TerrainType):
         self.map[position[1]][position[0]].terrain_type = terrain_type
@@ -46,8 +50,8 @@ class BattleMap:
     def hero_move(self, start, end):
         if start == end:
             return
-        self.map[end[1]][end[0]] = Terrain(TerrainType.HERO_SPAWN)
-        self.map[start[1]][start[0]] = Terrain(TerrainType.NORMAL)
+        self.map[end[1]][end[0]].set_terrain(TerrainType.HERO_SPAWN)
+        self.map[start[1]][start[0]].set_terrain(TerrainType.NORMAL)
 
     def add_terrain_buff(self, position, buff, duration):
         self.map[position[1]][position[0]].buff = TerrainBuff(buff, duration, 1)

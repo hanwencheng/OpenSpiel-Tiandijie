@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 from typing import Callable
 
 from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator, death_event_listener
-from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 
 from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
 from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import SkillTargetTypes
@@ -40,7 +40,6 @@ action_type_to_event_dict: dict[ActionTypes, tuple[EventTypes, EventTypes]] = {
     ActionTypes.SELF: (EventTypes.self_start, EventTypes.self_end),
     ActionTypes.PASS: (EventTypes.pass_start, EventTypes.pass_end),
     ActionTypes.SUPPORT: (None, None),
-    # ActionTypes.COUNTERATTACK: (EventTypes.counterattack_start, EventTypes.counterattack_end),
 }
 
 under_action_type_to_event_dict: dict[ActionTypes, tuple[EventTypes, EventTypes]] = {
@@ -277,28 +276,25 @@ def generate_legal_actions():
 
 
 def range_skill_events(actor_instance, counter_instances, action, context, apply_func):
-    skill_start_event_type = skill_type_to_event_dict[
-        action.skill.temp.target_type
-    ][0]
-    skill_end_event_type = skill_type_to_event_dict[
-        action.skill.temp.target_type
-    ][1]
-    event_listener_calculator(
-        actor_instance, counter_instances[0], EventTypes.skill_start, context
-    )
-    event_listener_calculator(
-        actor_instance, counter_instances[0], skill_start_event_type, context
-    )
-    for counter_instance in counter_instances:
-        calculation_events(
-            actor_instance, counter_instance, action, context, apply_func
-        )
-    event_listener_calculator(
-        actor_instance, counter_instances[0], skill_end_event_type, context
-    )
-    event_listener_calculator(
-        actor_instance, counter_instances[0], EventTypes.skill_end, context
-    )
+    skill_start_event_type, skill_end_event_type = skill_type_to_event_dict[action.skill.temp.target_type]
+
+    def trigger_event(event_type, counter_instance=None):
+        event_listener_calculator(actor_instance, counter_instance, event_type, context)
+
+    if not counter_instances:
+        trigger_event(EventTypes.skill_start)
+        trigger_event(skill_start_event_type)
+        trigger_event(skill_end_event_type)
+        trigger_event(EventTypes.skill_end)
+    else:
+        trigger_event(EventTypes.skill_start, counter_instances[0])
+        trigger_event(skill_start_event_type, counter_instances[0])
+
+        for counter_instance in counter_instances:
+            calculation_events(actor_instance, counter_instance, action, context, apply_func)
+
+        trigger_event(skill_end_event_type, counter_instances[0])
+        trigger_event(EventTypes.skill_end, counter_instances[0])
 
 
 def test(actor_instance, counter_instance, action, context, apply_func):

@@ -236,7 +236,7 @@ class TalentEffects:
         talent: Talent,
     ):
         if state == 1:
-            Effects.add_extra_skill("buqi", actor_instance, target_instance, context, talent)
+            Effects.add_extra_skill(["buqi"], actor_instance, target_instance, context, talent)
         elif state == 2:
             Effects.clear_terrain_by_buff_name("chiwuqi", context)
             Effects.add_self_buffs(

@@ -22,7 +22,7 @@ from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import Mod
 
 from typing import List
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import get_elemental_relationship, ElementRelationships
-from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions, Gender
 
@@ -40,7 +40,7 @@ class RequirementCheck:
         for hero in context.heroes:
             if hero.player_id != actor_hero.player_id:
                 if skill.temp.range_value.check_if_target_in_range(
-                    actor_hero.position, skill.target_point, hero.position
+                    actor_hero.position, skill.target_point, hero.position, context.battlemap
                 ):
                     counted_enemies += 1
         return min(maximum_count, counted_enemies)

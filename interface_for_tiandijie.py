@@ -8,7 +8,7 @@ from open_spiel.python import rl_environment
 from open_spiel.python import rl_tools
 from open_spiel.python.algorithms import tabular_qlearner
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
-from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 from open_spiel.python.games.Tiandijie.primitives.hero.heroes import HeroeTemps
 import threading
 import time
@@ -192,6 +192,7 @@ class TIANDIJIEGUI:
                 agent_output = self.eval_agents[player_id].step(self.time_step)
                 self.time_step = self.env.step([agent_output.action], self.add_text)
                 self.redraw_hero_map()
+            self.redraw_skill_terrain()
 
         print(self.time_step.rewards)
 
@@ -238,6 +239,14 @@ class TIANDIJIEGUI:
         for hero in self.heroes:
             if hero.id == str(player_id):
                 return hero
+
+    def redraw_skill_terrain(self):
+        for position, data in self.data_dict.items():
+            if self.now_state.context.battlemap.get_terrain(position).terrain_type.value[0] == TerrainType.CHIWUQI.value[0]:
+                image_path = f"open_spiel/python/games/Tiandijie/res/布旗.png"
+                image = self.load_image(image_path, (100, 100))
+                data["button"].config(image=image, width=100, height=100)
+                data["button"].image = image
 
     def remove_other_frame(self):
         self.config_frame.destroy()
@@ -313,8 +322,9 @@ class TIANDIJIEGUI:
 
     def redraw_all(self):
         self.check_all_heroes_position()
-        for position in self.move_range_set:
-            self.data_dict[position]["button"].config(bg="#D9D9D9", state="disabled", command=None)
+        for position, data in self.data_dict.items():
+            if data["button"].cget("bg") in {"green", "yellow", "orange"}:
+                data["button"].config(bg="#D9D9D9", state="disabled", command=None)
 
         action = self.now_state.context.get_last_action()
         if action.has_additional_action:
@@ -427,6 +437,21 @@ class TIANDIJIEGUI:
             self.skill_dic[skill.chinese_name] = tk.Button(self.map_container, width=4, height=2)
             self.skill_dic[skill.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
             self.skill_dic[skill.chinese_name].config(image=image, width=100, height=100, state="disabled")
+        for i, skill in enumerate(skill_list):
+            if skill in hero.enabled_skills:
+                continue
+            temp += 1
+            image_path = f"open_spiel/python/games/Tiandijie/res/{skill.temp.chinese_name}.png"
+            image = self.load_image(image_path, (100, 100))
+            self.skill_dic[skill.temp.chinese_name] = tk.Button(
+                self.map_container,
+                width=4,
+                height=2,
+                command=lambda t=skill.temp.chinese_name: self.select_skill(t)
+            )
+            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
+            self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100)
+
         self.confirm_action_button = tk.Button(self.map_container, text="确定", command=lambda h=hero: self.confirm_action(h))
         self.confirm_action_button.grid(row=len(self.map) + 1, column=5 + temp, padx=10, pady=10)
 
@@ -442,6 +467,7 @@ class TIANDIJIEGUI:
 
     def show_skill_action(self, skill_name):
         for action in self.now_state.legal_actions_dic[1]:
+            # print("show_skill_action", action.actor.position, action.actor.position == action.action_point)
             if action.actor == self.tentative_position['hero'] and action.move_point == self.tentative_position['position']:
                 if action.skill and action.skill.temp.chinese_name == skill_name:
                     self.data_dict[action.action_point]["button"].config(bg="orange", state="normal", command=lambda p=action.action_point: self.confirm_target(p))
@@ -465,27 +491,22 @@ class TIANDIJIEGUI:
             if data["button"].cget("bg") == "yellow":
                 temp_target = position
                 break
-
         for action in self.now_state.legal_actions_dic[1]:
             if action.actor == hero and action.move_point == self.tentative_position['position']:
                 if temp_skill:
                     if action.skill and action.skill.temp.chinese_name == temp_skill:
-                        if action.skill.temp.target_type.value in [0, 1] and action.action_point == temp_target:
-                            # print(0)
+                        if action.skill.temp.target_type.value in [0, 1, 2] and action.action_point == temp_target:
                             self.input = self.now_state.legal_actions_dic[1].index(action)
                             break
                         elif action.skill.temp.target_type.value == 3:
-                            # print(1)
                             self.input = self.now_state.legal_actions_dic[1].index(action)
                             break
                 elif temp_target:
                     if temp_skill is None and action.type.value == ActionTypes.NORMAL_ATTACK.value:
-                        # print(2)
                         self.input = self.now_state.legal_actions_dic[1].index(action)
                         break
                 else:
-                    if action.type.value == ActionTypes.MOVE.value:
-                        # print(3)
+                    if action.type.value in {ActionTypes.MOVE.value, ActionTypes.PASS.value}:
                         self.input = self.now_state.legal_actions_dic[1].index(action)
                         break
 

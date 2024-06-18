@@ -20,11 +20,11 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives import Context, Action
     from open_spiel.python.games.Tiandijie.primitives.buff import BuffTemp
     from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuffTemp import FieldBuffTemp
-    from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
     from open_spiel.python.games.Tiandijie.primitives.equipment.Equipments import Equipment
-    from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
     from open_spiel.python.games.Tiandijie.primitives.formation.Formation import Formation
 from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
+from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
+from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
 
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
@@ -617,9 +617,9 @@ class Effects:
         actor: Hero,
         target: Hero,
         context: Context,
-        buff: Buff or Talent,
+        primitive,
     ):
-        caster = context.get_hero_by_id(buff.caster_id)
+        caster = actor if type(primitive) == Skill else context.get_hero_by_id(primitive.caster_id)
         damage = get_attack(caster, actor, context, True) * multiplier
         calculate_fix_damage(damage, caster, actor, context)
 
@@ -820,7 +820,7 @@ class Effects:
 
         buff_range = Range(RangeType.DIAMOND, range_value)
         for position in buff_range.get_area(
-            actor_instance.position, actor_instance.position
+            actor_instance.position, actor_instance.position, context.battlemap
         ):
             context.battlemap.add_terrain_buff(
                 position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration
@@ -838,7 +838,7 @@ class Effects:
         from open_spiel.python.games.Tiandijie.primitives.map.TerrainBuff import TerrainBuffTemps
 
         buff_range = Range(RangeType.DIAMOND, range_value)
-        for position in buff_range.get_area(target_position, target_position):
+        for position in buff_range.get_area(target_position, target_position, context.battlemap):
             context.battlemap.add_terrain_buff(
                 position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration
             )
@@ -1615,18 +1615,10 @@ class Effects:
 
     @staticmethod
     def add_extra_skill(
-        skill_value: str, actor_hero: Hero, target_hero: Hero, context: Context, primary
-    ) -> int:
-        skill = context.get_skill_by_id(skill_value)
+        skill_value: List[str], actor_hero: Hero, target_hero: Hero, context: Context, primary
+    ):
         action = context.get_last_action()
-        targets = []
-        positions = skill.temp.range_value.get_area(action.move_point, action.actor)
-        for enemy in context.get_enemy_list_by_id(actor_hero.player_id):
-            if enemy.position in positions:
-                targets.append(enemy)
-        # 这里就直接计算出targets
-        action.update_additional_skill(Action.AdditionalSkill(skill, targets))
-        return 1
+        action.update_additional_skill(skill_value)
 
     @staticmethod
     def take_effect_of_linghui(
@@ -1647,7 +1639,7 @@ class Effects:
                 target_hero = partner
         calculate_reset_hero_actionable(actor_instance, target_hero, context)
         Effects.reduce_actor_certain_buff_stack(
-            "lingxi", 7, actor_instance, target_instance, context
+            "lingxi", 7, actor_instance, target_instance, context, buff
         )
         buff.cooldown = 3
 
@@ -1991,6 +1983,7 @@ class Effects:
         Effects.add_terrain_by_target_position(
             "chiwuqi", 15, 2, target_position, context
         )
+        Effects.remove_actor_certain_buff("chiqi", actor_instance, target_instance, context, skill)
         context.battlemap.set_terrain_type(target_position, TerrainType.CHIWUQI)
 
     @staticmethod

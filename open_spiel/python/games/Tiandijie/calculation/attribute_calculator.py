@@ -14,7 +14,7 @@ from open_spiel.python.games.Tiandijie.primitives.hero.Element import (
 
 from open_spiel.python.games.Tiandijie.helpers import is_normal_attack_magic
 
-from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (

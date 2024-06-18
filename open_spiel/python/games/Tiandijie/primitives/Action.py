@@ -1,28 +1,17 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
-import enum
 from typing import List
 from open_spiel.python.games.Tiandijie.calculation.PathFinding import a_star_search
 from open_spiel.python.games.Tiandijie.basics import Position
+from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skills
 
 if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
-    from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
 from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType, SkillTargetTypes
-
-
-class ActionTypes(enum.Enum):
-    HEAL = 0
-    SKILL_ATTACK = 1
-    SUMMON = 2
-    SELF = 3
-    MOVE = 4
-    NORMAL_ATTACK = 5
-    TELEPORT = 6
-    SUPPORT = 7
-    PASS = 8
+from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 
 
 class AdditionalSkill:
@@ -89,9 +78,9 @@ class Action:
             self.has_additional_action = True
             self.additional_move = additional_move
 
-    def update_additional_skill(self, additional_skill_list: [AdditionalSkill]):
+    def update_additional_skill(self, additional_skill_list):
         self.has_additional_action = True
-        self.additional_skill_list = additional_skill_list
+        self.additional_skill_list = [Skill(0, Skills.get_skill_by_id(skill)) for skill in additional_skill_list]
 
     def update_additional_action(self, additional_move: int, context):
         actor = self.actor

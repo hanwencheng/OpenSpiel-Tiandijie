@@ -366,6 +366,12 @@ class Talents(Enum):
         ],
         [
             EventListener(
+                EventTypes.game_start,
+                2,
+                partial(Rs.always_true),
+                partial(Effects.add_self_buffs, ["chiqi"], 15),
+            ),
+            EventListener(
                 EventTypes.action_end,
                 2,
                 partial(Rs.BuffChecks.self_has_certain_buff_in_list, ["chiqi"]),
@@ -1103,18 +1109,18 @@ class Talents(Enum):
                 Rs.always_true,
                 partial(Effects.add_self_buffs, ["huwei"], 2),
             ),
-            # EventListener(
-            #     EventTypes.skill_end,
-            #     2,
-            #     partial(Rs.skill_has_no_damage),
-            #     partial(Effects.add_self_field_buff, "huilingjie", 1),
-            # ),
-            # EventListener(
-            #     EventTypes.skill_end,
-            #     2,
-            #     partial(Rs.skill_has_damage),
-            #     partial(Effects.add_self_field_buff, "xuanmiejie", 1),
-            # ),
+            EventListener(
+                EventTypes.skill_end,
+                2,
+                partial(Rs.skill_has_no_damage),
+                partial(Effects.add_self_field_buff, ["huilingjie"], 1),
+            ),
+            EventListener(
+                EventTypes.skill_end,
+                2,
+                partial(Rs.skill_has_damage),
+                partial(Effects.add_self_field_buff, ["xuanmiejie"], 1),
+            ),
         ],
     )
 

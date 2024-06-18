@@ -68,20 +68,21 @@ class NormalAttackTemp(SkillTemp):
         skill_target_type: SkillTargetTypes,
         max_cool_down: int,
         distance: Distance,
-        range_vale: Range,
+        range_value: Range,
         multiplier: float,
         effects: List[ModifierEffect] = None,
         event_listeners: List[SkillListener] = None,
     ):
         super().__init__(
             skill_temp_id,
+            "a",
             cost,
             skill_element,
             skill_type,
             skill_target_type,
             max_cool_down,
             distance,
-            range_vale,
+            range_value,
             multiplier,
             effects,
             event_listeners,
@@ -97,7 +98,7 @@ class NormalAttackTemp(SkillTemp):
         self.target_type = skill_target_type
         self.max_cool_down = 0
         self.distance = distance
-        self.range_value = range_vale
+        self.range_value = range_value
         self.multiplier = multiplier
         self.modifier_effects = effects
         self.event_listeners = event_listeners

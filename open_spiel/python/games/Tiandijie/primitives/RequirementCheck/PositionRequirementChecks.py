@@ -339,7 +339,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def has_harm_buff_enemy_in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context,  primitive
     ) -> int:
         return check_buff_in_range(
             range_value, actor_hero, context, BuffTypes.Harm, False
@@ -347,7 +347,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def has_benefit_buff_partner_in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context,  primitive
     ) -> int:
         return check_buff_in_range(
             range_value, actor_hero, context, BuffTypes.Benefit, True
@@ -355,7 +355,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def has_benefit_buff_enemy_in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context,  primitive
     ) -> int:
         return check_buff_in_range(
             range_value, actor_hero, context, BuffTypes.Benefit, False
@@ -363,7 +363,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def life_not_full_in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context,  primitive
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
@@ -376,7 +376,7 @@ class PositionRequirementChecks:
 
     @staticmethod
     def is_actionable_in_range(
-        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context
+        range_value: int, actor_hero: Hero, target_hero: Hero, context: Context,  primitive
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
@@ -389,11 +389,11 @@ class PositionRequirementChecks:
 
     @staticmethod
     def self_in_certain_terrianbuff(
-        terrain_buff: str, actor_hero: Hero, target_hero: Hero, context: Context
+        terrain_buff: str, actor_hero: Hero, target_hero: Hero, context: Context,  primitive
     ) -> int:
         position = actor_hero.position
         battlemap = context.battlemap
-        if battlemap[position[0]][position[1]].buff.temp.id == terrain_buff:
+        if battlemap.map[position[0]][position[1]].buff and battlemap.map[position[0]][position[1]].buff.temp.id == terrain_buff:
             return 1
         return 0
 

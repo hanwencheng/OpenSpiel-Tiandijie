@@ -425,6 +425,50 @@ class FieldBuffsTemps(Enum):
         [],
     )
 
+    # 法阵内友方免疫「属性降低」类「有害状态」（不可驱散）
+    huilingjie = FieldBuffTemp(
+        "huilingjie",
+        "zhenyin",
+        2,
+        [],
+        [
+            # EventListener(
+            #     EventTypes.get_buff_start,
+            #     1,
+            #     partial(RS.huilingjie_requires_check, 1),
+            #     partial(Effects.add_buffs),
+            # ),
+            # EventListener(
+            #     EventTypes.get_buff_end,
+            #     1,
+            #     partial(RS.huilingjie_requires_check, 1),
+            #     partial(Effects.add_buffs),
+            # ),
+        ],
+    )
+
+    # 法阵内敌方无法获得「有益状态」（不可驱散）
+    xuanmiejie = FieldBuffTemp(
+        "xuanmiejie",
+        "zhenyin",
+        2,
+        [],
+        [
+            # EventListener(
+            #     EventTypes.get_buff_start,
+            #     1,
+            #     partial(RS.huilingjie_requires_check, 2),
+            #     partial(Effects.add_buffs, ["wuhui"], 1),
+            # ),
+            # EventListener(
+            #     EventTypes.get_buff_end,
+            #     1,
+            #     partial(RS.huilingjie_requires_check, 2),
+            #     partial(Effects.remove_actor_certain_buff, "wuhui"),
+            # ),
+        ],
+    )
+
     @classmethod
     def get_buff_temp_by_id(cls, buff_id):
         """Return the BuffTemp with the specified ID, or None if not found."""
