@@ -58,7 +58,7 @@ class FieldBuffsTemps(Enum):
     # 灭破空间	其他	不可驱散	不可扩散	不可偷取	自身2格范围内，友方主动发起对战，且优先攻击时，「对战中」伤害提高10%，若攻击者气血不满额外提升15%。（1回合限定发动2次）
     miepokongjian = FieldBuffTemp(
         "miepokongjian",
-        "zhenyi",
+        "zhenyin",
         2,
         [
             ModifierEffect(
@@ -415,36 +415,15 @@ class FieldBuffsTemps(Enum):
         ],
     )
 
-    sanquehuisheng = FieldBuffTemp(
-        "sanquehuisheng",
-        "mohuahuangfushen",
-        2,
-        [
-            ModifierEffect(partial(RS.sanquehuisheng_requires_check), {ma.magic_attack_percentage: -20, ma.attack_percentage: -20}),
-        ],
-        [],
-    )
-
     # 法阵内友方免疫「属性降低」类「有害状态」（不可驱散）
     huilingjie = FieldBuffTemp(
         "huilingjie",
         "zhenyin",
         2,
-        [],
         [
-            # EventListener(
-            #     EventTypes.get_buff_start,
-            #     1,
-            #     partial(RS.huilingjie_requires_check, 1),
-            #     partial(Effects.add_buffs),
-            # ),
-            # EventListener(
-            #     EventTypes.get_buff_end,
-            #     1,
-            #     partial(RS.huilingjie_requires_check, 1),
-            #     partial(Effects.add_buffs),
-            # ),
+            ModifierEffect(partial(RS.self_and_caster_is_partner), {ma.is_attribute_reduction_immune: True})
         ],
+        [],
     )
 
     # 法阵内敌方无法获得「有益状态」（不可驱散）
@@ -454,18 +433,18 @@ class FieldBuffsTemps(Enum):
         2,
         [],
         [
-            # EventListener(
-            #     EventTypes.get_buff_start,
-            #     1,
-            #     partial(RS.huilingjie_requires_check, 2),
-            #     partial(Effects.add_buffs, ["wuhui"], 1),
-            # ),
-            # EventListener(
-            #     EventTypes.get_buff_end,
-            #     1,
-            #     partial(RS.huilingjie_requires_check, 2),
-            #     partial(Effects.remove_actor_certain_buff, "wuhui"),
-            # ),
+            EventListener(
+                EventTypes.get_buff_start,
+                1,
+                partial(RS.self_and_caster_is_enemy),
+                partial(Effects.take_effect_of_xuanmiejie, 1),
+            ),
+            EventListener(
+                EventTypes.get_buff_end,
+                2,
+                partial(RS.self_and_caster_is_enemy),
+                partial(Effects.take_effect_of_xuanmiejie, 2),
+            ),
         ],
     )
 

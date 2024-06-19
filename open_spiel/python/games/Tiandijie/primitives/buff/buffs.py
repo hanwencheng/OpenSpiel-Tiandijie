@@ -319,6 +319,8 @@ class BuffTemps(Enum):
                 partial(RS.self_all_active_skills_in_cooldown), {ma.move_range: -1}
             ),
         ],
+        [],
+        3,
     )
 
     # 仙躯	其他	不可驱散	不可扩散	不可偷取	法术免伤提高20%，代替2格内友方承受法术攻击（遭受攻击「对战后」消失并回复50%气血）
@@ -384,6 +386,7 @@ class BuffTemps(Enum):
                 partial(Effects.take_effect_of_xiayi),
             ),
         ],
+        3,
     )
 
     #  信步	有益	可驱散	可扩散	可偷取	免疫「移动力降低」
@@ -446,7 +449,7 @@ class BuffTemps(Enum):
                 EventTypes.move_end,
                 1,
                 partial(RS.move_less_or_equal_than, 1),
-                partial(Effects.replace_self_buff, "bingjie", "xuanyun", 1),
+                partial(Effects.replace_self_buff, "bingjie", "yunxuan", 1),
             )
         ],
     )
@@ -998,6 +1001,7 @@ class BuffTemps(Enum):
             )
         ],
         [],
+        2,
     )
 
     # 凝冰	有益	不可驱散	不可扩散	不可偷取	伤害提高1%，物理穿透提高1%（上限4层）
@@ -1018,6 +1022,7 @@ class BuffTemps(Enum):
             )
         ],
         [],
+        4,
     )
 
     # 剑意激荡	其他	不可驱散	不可扩散	不可偷取	普攻附带0.5目标（物攻+法攻）的伤害（无法被减免）。魔天凛意附带0.75目标（物攻+法攻）的伤害（无法被减免）；若会心大于对方，则附带1目标（物攻+法攻）的伤害（无法被减免）
@@ -1584,12 +1589,13 @@ class BuffTemps(Enum):
         ],
         [
             EventListener(
-                EventTypes.buff_end,
+                EventTypes.lose_buff_end,
                 1,
                 RS.always_true,
                 partial(Effects.take_effect_of_yudi),
             ),
         ],
+        3,
     )
 
     # 御火	其他	不可驱散	不可扩散	不可偷取	火属相免伤80%，受到攻击后消失。
@@ -1642,7 +1648,7 @@ class BuffTemps(Enum):
                 partial(Effects.remove_actor_certain_buff, "xinlian"),
             ),
             EventListener(
-                EventTypes.buff_end,
+                EventTypes.lose_buff_end,
                 1,
                 RS.always_true,
                 partial(Effects.heal_self_by_caster_magic_attack, 0.7),
@@ -1769,6 +1775,7 @@ class BuffTemps(Enum):
                 partial(Effects.increase_actor_certain_buff_stack, "chuti"),
             )
         ],
+        3,
     )
 
     # 恩念	其他	不可驱散	不可扩散	不可偷取	主动攻击「对战后」自身受到1次「固定伤害」（当前气血的50%）（不可驱散）
@@ -1902,6 +1909,7 @@ class BuffTemps(Enum):
             ),
         ],
         [],
+        4,
     )
 
     # 护佑	其他	不可驱散	不可扩散	不可偷取	双防+20%，遭受暴击后恢复30%气血
@@ -2162,6 +2170,7 @@ class BuffTemps(Enum):
                 partial(Effects.increase_actor_certain_buff_stack, "silie"),
             ),
         ],
+        7,
     )
 
     # 断步I	有害	不可驱散	不可扩散	不可偷取	移动力上限变为4（不可驱散）
@@ -2429,6 +2438,7 @@ class BuffTemps(Enum):
             ),
         ],
         [],
+        4,
     )
 
     # 星狩	其他	不可驱散	不可扩散	不可偷取	射程和绝学范围+2，无法移动，使用绝学后为2格范围气血最低的1个友方恢复气血（恢复量为施术者物攻的0.7倍）。
@@ -2583,6 +2593,7 @@ class BuffTemps(Enum):
                 ),
             ),
         ],
+        5,
     )
 
     # 杳影	其他	不可驱散	不可扩散	不可偷取	「对战中」闪避一次攻击，且只可使用「逐星破日」或普通攻击（触发后移除，无法驱散）
@@ -2874,14 +2885,7 @@ class BuffTemps(Enum):
                 {ma.move_range: 1},
             ),
         ],
-        [
-            EventListener(
-                EventTypes.buff_start,
-                1,
-                partial(RS.BuffChecks.buff_stack_bigger_than, 2),
-                partial(Effects.add_self_buffs, ["shizhou", "shensuan"], 1),
-            )
-        ],
+        [],
     )
 
     # 活血	有益	可驱散	可扩散	可偷取	物攻，物防额外+20%
@@ -3930,6 +3934,7 @@ class BuffTemps(Enum):
             ),
         ],
         [],
+        4,
     )
 
     # 血咒	其他	不可驱散	不可扩散	不可偷取	伤害和免伤提高20%，「对战后」恢复伤害数值50%的气血。行动结束时，损失自身当前气血25%。
@@ -4226,13 +4231,13 @@ class BuffTemps(Enum):
                 partial(Effects.take_effect_of_chaozai),
             ),
             EventListener(
-                EventTypes.buff_end,
+                EventTypes.lose_buff_end,
                 1,
                 RS.always_true,
                 partial(Effects.add_self_buffs, ["xuruo"], 1),
             ),
             EventListener(
-                EventTypes.buff_end,
+                EventTypes.lose_buff_end,
                 1,
                 RS.always_true,
                 partial(Effects.reduce_actor_certain_buff_stack, ["hunpozhili"], 3),
@@ -4595,9 +4600,9 @@ class BuffTemps(Enum):
             [],
             [
                 EventListener(
-                    EventTypes.buff_start,
+                    EventTypes.get_buff_end,
                     1,
-                    partial(RS.BuffChecks.self_buff_stack_reach, 6, "kuli"),
+                    partial(RS.BuffChecks.get_certain_buff_and_stack_reach, 6, "kuli"),
                     partial(Effects.reduce_self_ramdon_damage_skill_cooldown, 2),
                 )
             ],
@@ -4887,7 +4892,7 @@ class BuffTemps(Enum):
         [],
         [
             EventListener(
-                EventTypes.buff_end,
+                EventTypes.lose_buff_end,
                 1,
                 RS.always_true,
                 partial(Effects.add_buffs, ["xusun"], 1),
@@ -4916,9 +4921,9 @@ class BuffTemps(Enum):
         [],
         [
             EventListener(
-                EventTypes.buff_start,
+                EventTypes.get_buff_end,
                 1,
-                RS.always_true,
+                partial(RS.BuffChecks.get_certain_buff, "yanzu"),
                 partial(Effects.heal_self, 0.15),
             ),
         ],
@@ -4977,6 +4982,7 @@ class BuffTemps(Enum):
                 partial(Effects.heal_self_by_caster_magic_attack, 0.2),
             ),
         ],
+        5,
     )
 
     # 魉生	其他	不可驱散	不可扩散	不可偷取	法攻+4%/5%/6%/7%、免伤+1%/2%/3%/4%，（上限5层，若本回合未主动攻击或释放绝学，行动结束时，减少1层）
@@ -5098,15 +5104,15 @@ class BuffTemps(Enum):
         ],
         [
             EventListener(
-                EventTypes.buff_start,
+                EventTypes.get_buff_end,
                 1,
-                RS.always_true,
+                partial(RS.BuffChecks.get_certain_buff, "yanzu"),
                 partial(Effects.remove_actor_certain_buff, "kongxing"),
             ),
             EventListener(
-                EventTypes.buff_start,
+                EventTypes.get_buff_end,
                 1,
-                RS.always_true,
+                partial(RS.BuffChecks.get_certain_buff, "yanzu"),
                 partial(Effects.remove_actor_certain_buff, "baonu"),
             ),
         ],
@@ -5138,9 +5144,9 @@ class BuffTemps(Enum):
         [],
         [
             EventListener(
-                EventTypes.buff_start,
+                EventTypes.get_buff_end,
                 1,
-                partial(RS.BuffChecks.self_buff_stack_reach, 6, "juexingzhili"),
+                partial(RS.BuffChecks.get_certain_buff_and_stack_reach, 6, "juexingzhili"),
                 partial(Effects.add_buffs, ["shengqiangzhili"], 2),
             ),
         ],
@@ -5191,7 +5197,15 @@ class BuffTemps(Enum):
                 },
             ),
         ],
-        [],
+        [
+            EventListener(
+                EventTypes.get_buff_end,
+                1,
+                partial(RS.BuffChecks.get_certain_buff_and_stack_reach, 5, "juexin"),
+                partial(Effects.transfer_buff_to_other_buff, "juexin", "zhilu")
+            ),
+        ],
+        5,
     )
 
     # 心念	其他	不可驱散	不可扩散	不可偷取	达到2层后消耗并获得「波旬降临」状态，处于「波旬降临」状态时无法获得（上限2层）
@@ -5204,7 +5218,7 @@ class BuffTemps(Enum):
         [],
         [
             EventListener(
-                EventTypes.buff_start,
+                EventTypes.get_buff_end,
                 1,
                 partial(RS.BuffChecks.self_buff_stack_reach, 2, "xinnian"),
                 partial(Effects.add_buffs, ["boxunjianglin"]),
@@ -5627,6 +5641,7 @@ class BuffTemps(Enum):
                 partial(Effects.take_effect_of_linghui),
             ),
         ],
+        14,
     )
 
     # 疫瘴	其他	不可驱散	不可扩散	不可偷取	携带者受到驱散「有害状态」的效果作用时，每层本状态防止1个「有害状态」（仅限满足可驱散）被驱散，并消耗对应层数（最多叠加3层，不可驱散）
@@ -5832,6 +5847,7 @@ class BuffTemps(Enum):
         False,
         [],
         [],
+        6,
     )
 
     # 魅惑	其他	不可驱散	不可扩散	不可偷取	受到暴击概率+30%，无法选中施加者（无法驱散）。
@@ -5862,6 +5878,7 @@ class BuffTemps(Enum):
         False,
         [],
         [],
+        3,
     )
     
     # 微澜   其他 不可驱散  不可扩散  不可偷取 行动结束时,为3格范围内所有友方驱散1个「有害状态」, 并恢复气血（恢复量为施术者法攻的0.4倍）

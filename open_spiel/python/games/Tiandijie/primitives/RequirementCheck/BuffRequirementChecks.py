@@ -206,3 +206,16 @@ class BuffRequirementChecks:
         buff: Buff,
     ) -> int:
         return 0 if buff.stack >= stack_value else 1
+
+    @staticmethod
+    def get_certain_buff(buff_id: str, actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
+        if primitive.temp.id == buff_id:
+            return 1
+        return 0
+
+    @staticmethod
+    def get_certain_buff_and_stack_reach(reach_number: int, buff_id: str, actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
+        if primitive.temp.id == buff_id:
+            if primitive.stack >= reach_number:
+                return 1
+        return 0

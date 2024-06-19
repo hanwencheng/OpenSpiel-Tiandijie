@@ -12,6 +12,7 @@ from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import (
     calculate_fix_heal,
     calculate_reset_hero_actionable,
     calculate_fix_shield,
+    calculate_add_buff,
 )
 from open_spiel.python.games.Tiandijie.helpers import random_select
 
@@ -54,21 +55,8 @@ def _add_buffs(
     context: Context,
     level: int = 1,
 ):
-    new_buffs = [Buff(b, duration, caster.id, level) for b in buff_temp]
-    for new_buff in new_buffs:
-        existing_buff = next(
-            (buff for buff in target.buffs if buff.temp.id == new_buff.temp.id), None
-        )
-        if existing_buff is not None:
-            # Replace the existing buff if the new buff has a higher level
-            if new_buff.level > existing_buff.level:
-                target.buffs.remove(existing_buff)
-                target.buffs.append(new_buff)
-            else:
-                _increase_actor_certain_buff_stack(new_buff.temp.id, target, 1)
-                existing_buff.duration = duration
-        else:
-            target.buffs.append(new_buff)
+    for buff in buff_temp:
+        calculate_add_buff(buff, duration, level, caster, target, context)
 
 
 def _remove_actor_certain_buff(buff_temp_id: str, actor: Hero):
@@ -91,7 +79,7 @@ def _increase_actor_certain_buff_stack(
 ):
     for buff in actor.buffs:
         if buff.temp.id == buff_temp_id:
-            if buff.stack >= get_buff_max_stack(buff.temp):
+            if buff.stack >= buff.temp.max_stack:
                 return
             buff.stack += increase_stack
             break
@@ -1749,6 +1737,24 @@ class Effects:
             caster, caster, [context.get_field_buff_temp_by_id("jingjue")], 1, context
         )
         buff.trigger += 1
+
+    @staticmethod
+    def take_effect_of_huilingjie(
+        state, actor_instance: Hero, target_instance: Hero, context: Context, buff: FieldBuff
+    ):
+        if state == 1:
+            actor_instance.buffs.append(Buff(context.get_buff_by_id("bingqing"), 1, actor_instance))
+        else:
+            actor_instance.buffs = [buff for buff in actor_instance.buffs if buff.temp.id != "bingqing"]
+
+    @staticmethod
+    def take_effect_of_xuanmiejie(
+        state, actor_instance: Hero, target_instance: Hero, context: Context, buff: FieldBuff
+    ):
+        if state == 1:
+            actor_instance.buffs.append(Buff(context.get_buff_by_id("wuhui"), 1, actor_instance))
+        else:
+            actor_instance.buffs = [buff for buff in actor_instance.buffs if buff.temp.id != "wuhui"]
 
     # Weapons Effects
 

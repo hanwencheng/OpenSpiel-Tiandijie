@@ -113,6 +113,7 @@ class ModifierAttributes:
     is_only_attack_to_caster = "is_only_attack_to_caster"  # 只能攻击施法者
     is_attack_to_caster_disable = "is_attack_to_caster_disable"  # 禁止攻击施法者
     is_immunity_fix_damage = "is_immunity_fix_damage"  # 免疫固伤
+    is_attribute_reduction_immune = "is_attribute_reduction_immune"  # 免疫属性降低类buff
 
     is_wufangjiejie_disabled = "wufangjiejie_disabled"
     is_jixing_disabled = "jixing_disabled"

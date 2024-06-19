@@ -112,8 +112,11 @@ class EventTypes(enum.Enum):
     enemy_skill_end = "enemy_skill_end"
 
     # buff
-    buff_start = "buff_start"
-    buff_end = "buff_end"
+    get_buff_start = "get_buff_start"   # 获得buff计算
+    get_buff_end = "get_buff_end"
+
+    lose_buff_start = "lose_buff_start"
+    lose_buff_end = "lose_buff_end"       # buff消失时计算
 
     hero_death = "hero_death"
     other_hero_death = "other_hero_death"

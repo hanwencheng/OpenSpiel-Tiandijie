@@ -80,15 +80,3 @@ def cast_buff(
                 elif buff.temp.id == immune_buff_id:
                     target_hero.buffs.remove(buff)
     target_hero.buffs.append(Buff(buff_temp, duration, caster_id, level, stack, 0, 0))
-    if FieldBuffsTemps.get_buff_temp_by_id(buff_temp.id):
-        target_hero.field_buffs.append(
-            FieldBuff(
-                FieldBuffsTemps.get_buff_temp_by_id(buff_temp.id),
-                duration,
-                caster_id,
-                level,
-                stack,
-                0,
-                0,
-            )
-        )

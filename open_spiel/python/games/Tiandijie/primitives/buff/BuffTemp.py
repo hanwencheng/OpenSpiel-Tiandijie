@@ -25,6 +25,7 @@ class BuffTemp:
         stealable,
         modifier_effects: List[List[ModifierEffect]] or List[ModifierEffect] = None,
         on_event: List[List[ModifierEffect]] or List[EventListener] = None,
+        max_stack: int = 1,
     ):
         if modifier_effects is None:
             modifier_effects = [[]]
@@ -49,6 +50,7 @@ class BuffTemp:
         self.expandable: bool = expandable
         self.modifier_effects: List[List[ModifierEffect]] or List[ModifierEffect] = modifier_effects
         self.event_listeners: List[EventListener] = on_event
+        self.max_stack = max_stack
         # self.field_buff: FieldBuffTemp = FieldBuffsTemps.get_buff_temp_by_id(buff_id)
 
     def __getitem__(self, key):

@@ -1113,13 +1113,13 @@ class Talents(Enum):
                 EventTypes.skill_end,
                 2,
                 partial(Rs.skill_has_no_damage),
-                partial(Effects.add_self_field_buff, ["huilingjie"], 1),
+                partial(Effects.add_self_field_buff, ["huilingjie"], 2),
             ),
             EventListener(
                 EventTypes.skill_end,
                 2,
                 partial(Rs.skill_has_damage),
-                partial(Effects.add_self_field_buff, ["xuanmiejie"], 1),
+                partial(Effects.add_self_field_buff, ["xuanmiejie"], 2),
             ),
         ],
     )

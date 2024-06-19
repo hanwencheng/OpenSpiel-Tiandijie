@@ -584,7 +584,7 @@ class Skills(Enum):
         [],
         [
             EventListener(
-                EventTypes.battle_start,
+                EventTypes.skill_start,
                 1,
                 partial(Rs.always_true),
                 partial(Effects.add_buffs, ["shimo"], 2),

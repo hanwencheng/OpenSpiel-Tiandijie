@@ -86,8 +86,11 @@ class Hero:
     def get_buff_by_id(self, buff_id: str) -> Buff:
         return [buff for buff in self.buffs if buff.id == buff_id][0]
 
-    def get_field_buff_by_id(self, field_name: str) -> FieldBuff:
-        return [buff for buff in self.field_buffs if buff.temp.id == field_name][0]
+    def get_field_buff_by_id(self, field_name: str):
+        for field_buff in self.field_buffs:
+            if field_buff.temp.id == field_name:
+                return field_buff
+        return False
 
     def reset_actionable(self, context, move_range=None):
         self.actionable = True

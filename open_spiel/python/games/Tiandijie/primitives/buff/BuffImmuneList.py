@@ -29,22 +29,22 @@ immune_dict = {
     "zhilu": ["juexin"],
     "shengqiangzhili": ["juexingzhili"],
     "wendulengque": ["zhuneng"],
-    "chaozai": "hunpozhili",
+    "chaozai": ["hunpozhili"],
+    "wuyouyu": ["yunxuan"],
 }
 
-# 阻止获得buff
-immune_all_benefit_list: List[str] = ["wuhui"]
+# 免疫buff
+immune_all_benefit_list: List[str] = []
 immune_all_harm_list: List[str] = [
     "bingqing",
     "tianjiyin",
     "wucui_tianjiyin",
     "fantian",
 ]
-immune_xuanyun_list: List[str] = ["wuyouyu"]
 
-# 免疫buff
+# 阻止获得buff
 prevent_all_benefit_list: List[str] = immune_all_benefit_list + ["duozui"]
-prevent_all_harm_list: List[str] = immune_all_harm_list + [""]
+prevent_all_harm_list: List[str] = immune_all_harm_list + ["wuhui"]
 
 # 免疫拉拽
 immune_drag_list: List[str] = ["bixian"]
@@ -59,6 +59,5 @@ immune_physical_defense_reduction_list: List[str] = ["pifang"]
 immune_magic_defense_reduction_list: List[str] = ["pifang"]
 
 immune_dict_from_equipment = {
-    # 免疫「移动力降低」
     "huanniaojie": ["jinliao"],
 }

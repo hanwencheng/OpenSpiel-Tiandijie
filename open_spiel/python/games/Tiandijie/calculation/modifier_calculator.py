@@ -126,24 +126,28 @@ def get_buff_modifier(
                     modifier_value = get_modifier_attribute_value(
                         actor_instance, modifier_effects.modifier, attr_name
                     )
+                    if (attr_name in ["attack_percentage", "defense_percentage", "life_percentage", "magic_attack_percentage", "magic_defense_percentage", "luck_percentage"]
+                            and get_buff_modifier("is_attribute_reduction_immune", actor_instance, target_instance, context)
+                            and modifier_value < 0
+                    ):
+                        modifier_value = 0
+
                     basic_modifier_value += (
                         is_requirement_meet
-                        * calculate_buff_with_max_stack(buff, modifier_value, attr_name)
+                        * modifier_value * buff.stack
                     )
-    for field_buff in context.fieldbuffs_temps.values():
-        field_target_instances = context.get_hero_list_by_id(field_buff.caster_id)
+    for field_temp_buff in context.fieldbuffs_temps.values():
+        field_target_instances = context.get_hero_list_by_id(field_temp_buff.caster_id)
         for (
             field_target_instance
         ) in field_target_instances:  # 双方同时上阵相同hero的情况
-            if (
-                field_target_instance
-                and field_target_instance.get_field_buff_by_id(field_buff.id)
+            if (field_target_instance.get_field_buff_by_id(field_temp_buff.id)
                 and calculate_if_targe_in_diamond_range(
-                    actor_instance, field_target_instance, field_buff.buff_range
+                    actor_instance.position, field_target_instance.position, field_temp_buff.buff_range
                 )
             ):
                 field_buff_instance = field_target_instance.get_field_buff_by_id(
-                    field_buff.id
+                    field_temp_buff.id
                 )
                 field_buff_modifier_levels_effects = (
                     field_buff_instance.temp.modifier_effects
@@ -216,6 +220,9 @@ def get_level2_modifier(
     accumulated_passives_modifier = get_passives_modifier(
         actor_instance.enabled_passives, attr_name
     )
+    accumulated_buff_modifier = get_buff_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
 
     return (
         accumulated_talents_modifier
@@ -224,6 +231,7 @@ def get_level2_modifier(
         + accumulated_equipments_modifier
         + formation_modifier
         + accumulated_passives_modifier
+        + accumulated_buff_modifier
     )
 
 

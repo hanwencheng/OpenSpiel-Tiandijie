@@ -412,7 +412,7 @@ class RequirementCheck:
     @staticmethod
     def skill_has_damage(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
         action = context.get_last_action()
-        if action.skill and action.total_damage == 0:
+        if action.skill and action.total_damage != 0:
             return 1
         return 0
 
@@ -684,9 +684,8 @@ class RequirementCheck:
 
     @staticmethod
     def self_and_caster_is_partner(
-        actor_hero: Hero, target_hero: Hero, context: Context, buff: FieldBuff
+        actor_hero: Hero, target_hero: Hero, context: Context, buff
     ) -> int:
-        action = context.get_last_action()
         caster = context.get_hero_by_id(buff.caster_id)
         return caster.player_id == actor_hero.player_id
 

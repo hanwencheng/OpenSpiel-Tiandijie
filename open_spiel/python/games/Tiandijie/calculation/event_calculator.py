@@ -76,21 +76,41 @@ def event_listener_calculator(
                     )
 
     # Calculated FieldBuffs
-    for field_buff in context.fieldbuffs_temps.values():
-        target_instance = context.get_hero_by_id(field_buff.caster_id)
-        if (
-            target_instance
-            and target_instance.get_field_buff_by_id(field_buff.id)
-            and calculate_if_targe_in_diamond_range(
-                actor_instance, target_instance, field_buff.buff_range
-            )
-        ):
-            field_buff_event_listeners: List[EventListener] = field_buff.event_listeners
-            for event_listener in field_buff_event_listeners:
-                if event_listener.event_type == event_type:
-                    event_listener_containers.append(
-                        EventListenerContainer(event_listener, field_buff)
-                    )
+    for field_temp_buff in context.fieldbuffs_temps.values():
+        field_target_instances = context.get_hero_list_by_id(field_temp_buff.caster_id)
+        for (
+            field_target_instance
+        ) in field_target_instances:  # 双方同时上阵相同hero的情况
+            if (field_target_instance.get_field_buff_by_id(field_temp_buff.id)
+                and calculate_if_targe_in_diamond_range(
+                    actor_instance.position, field_target_instance.position, field_temp_buff.buff_range
+                )
+            ):
+                field_buff_event_listeners: List[EventListener] = field_temp_buff.event_listeners
+                for event_listener in field_buff_event_listeners:
+                    field_buff = field_target_instance.get_field_buff_by_id(field_temp_buff.id)
+                    if event_listener.event_type == event_type:
+                        probability = event_listener.requirement(
+                            actor_instance,
+                            counter_instance,
+                            context,
+                            field_buff,
+                        )
+                        if probability > 0 and random() < probability:
+                            event_listener.listener_effects(
+                                actor_instance,
+                                counter_instance,
+                                context,
+                                field_buff,
+                            )
+
+
+
+
+
+                        # event_listener_containers.append(
+                        #     EventListenerContainer(event_listener, field_buff)
+                        # )
 
     # Calculated Skills
     if event_type in skill_related_events:
@@ -182,7 +202,9 @@ def action_end_event(actor_instance: 'Hero', context):
     for buff in actor_instance.buffs:
         buff.duration -= 1
         if buff.duration == 0:
-            actor_instance.buffs.remove(buff)
+            from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import calculate_remove_buff
+
+            calculate_remove_buff(buff, actor_instance, context)
     for buff in actor_instance.field_buffs:
         buff.duration -= 1
         if buff.duration == 0:
