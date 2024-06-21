@@ -423,6 +423,7 @@ class Effects:
         duration: int,
         level: int,
         context: Context,
+        primary,
     ):
         _add_buffs(
             actor,
@@ -437,12 +438,12 @@ class Effects:
     def add_caster_buffs(
         buff_list: List[str],
         duration: int,
-        is_attacker: bool,
+        actor: Hero,
+        target: Hero,
         context: Context,
         buff: Buff,
     ):
         caster = context.get_hero_by_id(buff.caster_id)
-        actor = context.actor
         _add_buffs(
             actor,
             caster,
@@ -477,6 +478,7 @@ class Effects:
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
+        primary,
     ):
         if check_is_attacker(actor_instance, context):
             damage = (
@@ -491,6 +493,7 @@ class Effects:
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
+        primary,
     ):
         if check_is_attacker(actor_instance, context):
             damage = (
@@ -504,6 +507,7 @@ class Effects:
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
+        primary,
     ):
         if check_is_attacker(actor_instance, context):
             damage = (
@@ -519,6 +523,7 @@ class Effects:
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
+        primary,
     ):
         enemies = context.get_enemies_in_square_range(actor_instance, range_value)
         for enemy in enemies:
@@ -709,6 +714,7 @@ class Effects:
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
+        primary,
     ):
         buff_temps = [
             context.get_harm_buff_temp_by_id(buff_temp_id)
@@ -719,7 +725,7 @@ class Effects:
 
     @staticmethod
     def reduce_target_benefit_buff_duration(
-        duration_reduction: int, is_attacker: bool, context: Context
+        duration_reduction: int, is_attacker: bool, context: Context, primary
     ):
         action = context.get_action_by_side(is_attacker)
         for target in action.targets:
@@ -738,6 +744,7 @@ class Effects:
         duration: int,
         is_attacker: bool,
         context: Context,
+        primary,
     ):
         actor = context.get_actor_by_side_in_battle(is_attacker)
         action = context.get_action_by_side(is_attacker)
@@ -752,6 +759,7 @@ class Effects:
         duration: int,
         is_attacker: bool,
         context: Context,
+        primary,
     ):
         actor = context.get_actor_by_side_in_battle(is_attacker)
         partners = context.get_partners_in_diamond_range(actor, range_value)
@@ -766,6 +774,7 @@ class Effects:
         duration: int,
         is_attacker: bool,
         context: Context,
+        primary,
     ):
         actor = context.get_actor_by_side_in_battle(is_attacker)
         partners = context.get_partners_in_diamond_range(actor, range_value)
@@ -775,7 +784,7 @@ class Effects:
 
     @staticmethod
     def remove_partner_selected_buffs(
-        buff_temp: BuffTemp, range_value: int, is_attacker: bool, context: Context
+        buff_temp: BuffTemp, range_value: int, is_attacker: bool, context: Context, primary
     ):
         actor = context.get_actor_by_side_in_battle(is_attacker)
         partners = context.get_partners_in_diamond_range(actor, range_value)
@@ -783,11 +792,6 @@ class Effects:
             partner.buffs = [
                 buff for buff in partner.buffs if buff.temp.id != buff_temp.id
             ]
-
-    @staticmethod
-    def clear_terrain_in_range(target_position: Position, context: Context):
-        battlemap = context.battlemap
-        battlemap[target_position[1]][target_position[0]] = TerrainType.NORMAL
 
     @staticmethod
     def clear_terrain_by_buff_name(buff_id: str, context: Context):
@@ -800,8 +804,8 @@ class Effects:
         duration: int,
         range_value: int,
         actor_instance: Hero,
-        tager_position: Position,
         context: Context,
+        primary,
     ):
         from open_spiel.python.games.Tiandijie.calculation.Range import Range, RangeType
         from open_spiel.python.games.Tiandijie.primitives.map.TerrainBuff import TerrainBuffTemps
@@ -866,6 +870,7 @@ class Effects:
         actor_instance: Hero,
         target_instance: Hero or None,
         context: Context,
+        primary,
     ):
         actor_max_life = get_max_life(actor_instance, target_instance, context)
         calculate_fix_damage(
@@ -891,13 +896,13 @@ class Effects:
 
     @staticmethod
     def remove_target_certain_buff(
-        buff_temp_id: str, actor: Hero, target: Hero, context: Context
+        buff_temp_id: str, actor: Hero, target: Hero, context: Context, primary
     ):
         _remove_actor_certain_buff(buff_temp_id, target)
 
     @staticmethod
     def remove_actor_harm_buffs(
-        count: int, actor: Hero, target: Hero, context: Context
+        count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         # collect all harm buffs in target.buffs and remove count number of them
         harm_buffs = [buff for buff in actor.buffs if buff.temp.type == BuffTypes.Harm]
@@ -905,7 +910,7 @@ class Effects:
             _remove_actor_certain_buff(harm_buff.temp.id, actor)
 
     @staticmethod
-    def remove_self_harm_buffs(count: int, actor: Hero, target: Hero, context: Context):
+    def remove_self_harm_buffs(count: int, actor: Hero, target: Hero, context: Context, primary):
         harm_buffs = [buff for buff in actor.buffs if buff.temp.type == BuffTypes.Harm]
         for harm_buff in harm_buffs[:count]:
             _remove_actor_certain_buff(harm_buff.temp.id, actor)
@@ -925,7 +930,7 @@ class Effects:
 
     @staticmethod
     def remove_partner_harm_buffs_in_range(
-        count: int, range_value: int, actor: Hero, target: Hero, context: Context
+        count: int, range_value: int, actor: Hero, target: Hero, context: Context, primary
     ):
 
         partners = context.get_enemies_in_diamond_range(actor, range_value)
@@ -938,7 +943,7 @@ class Effects:
 
     @staticmethod
     def remove_actor_benefit_buffs(
-        count: int, actor: Hero, target: Hero, context: Context
+        count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         harm_buffs = [
             buff for buff in actor.buffs if buff.temp.type == BuffTypes.Benefit
@@ -948,7 +953,7 @@ class Effects:
 
     @staticmethod
     def remove_target_benefit_buffs(
-        count: int, actor: Hero, target: Hero, context: Context
+        count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         # collect all benefit buffs in target.buffs and remove count number of them
         benefit_buffs = [
@@ -959,7 +964,7 @@ class Effects:
 
     @staticmethod
     def increase_target_harm_buff_level(
-        buff_level: int, actor: Hero, target: Hero, context: Context
+        buff_level: int, actor: Hero, target: Hero, context: Context, primary
     ):
         harm_buffs = [buff for buff in target.buffs if buff.temp.type == BuffTypes.Harm]
         for buff in harm_buffs:
@@ -989,6 +994,7 @@ class Effects:
                 duration=2,
                 is_attacker=is_attacker,
                 context=Context,
+                primary=buff,
             )
 
     @staticmethod
@@ -1008,19 +1014,19 @@ class Effects:
 
     @staticmethod
     def reverse_target_harm_buffs(
-        buff_count: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         _reserve_buffs(actor, target, False, buff_count, context)
 
     @staticmethod
     def reverse_target_benefit_buffs(
-        buff_count: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         _reserve_buffs(actor, target, True, buff_count, context)
 
     @staticmethod
     def reverse_target_benefit_buffs_in_range(
-        buff_count: int, range_value: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, range_value: int, actor: Hero, target: Hero, context: Context, primary
     ):
         enemies = context.get_enemies_in_square_range(actor, range_value)
         for enemy in enemies:
@@ -1028,26 +1034,26 @@ class Effects:
 
     @staticmethod
     def reverse_self_harm_buffs(
-        buff_count: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         _reserve_buffs(actor, actor, False, buff_count, context)
 
     @staticmethod
     def reverse_self_benefit_buffs(
-        buff_count: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         _reserve_buffs(actor, actor, True, buff_count, context)
 
     @staticmethod
     def add_self_random_harm_buff(
-        buff_count: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         harm_buffs = random_select(context.harm_buffs_temps, buff_count)
         _add_buffs(actor, actor, harm_buffs, 2, context)
 
     @staticmethod
     def add_self_random_benefit_buff(
-        buff_count: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, actor: Hero, target: Hero, context: Context, primary
     ):
         benefit_buffs = random_select(context.benefit_buffs, buff_count)
         _add_buffs(actor, actor, benefit_buffs, 2, context)
@@ -1078,7 +1084,7 @@ class Effects:
 
     @staticmethod
     def add_partner_random_benefit_buff(
-        buff_count: int, range_value: int, actor: Hero, target: Hero, context: Context
+        buff_count: int, range_value: int, actor: Hero, target: Hero, context: Context, primary
     ):
         benefit_buffs = random_select(context.benefit_buffs, buff_count)
         partners = context.get_partners_in_diamond_range(actor, range_value)
@@ -1327,7 +1333,7 @@ class Effects:
 
     @staticmethod
     def reduce_target_energy(
-        energy_value: int, actor: Hero, target: Hero, context: Context
+        energy_value: int, actor: Hero, target: Hero, context: Context, primary
     ):
         _reduce_actor_energy(target, energy_value)
 
@@ -1371,7 +1377,7 @@ class Effects:
             return
         buff.trigger += 1
         Effects.heal_self(0.25, actor, actor, context, buff)
-        Effects.remove_actor_harm_buffs(1, actor, actor, context)
+        Effects.remove_actor_harm_buffs(1, actor, actor, context, buff)
 
     # 以3格范围内物攻/法攻最高的敌人为中心，对其2格范围内所有敌方造成1次「固定伤害」伤害（最大气血的12%），并施加1层「燃烧」状态，持续2回合。
     @staticmethod
@@ -1505,7 +1511,7 @@ class Effects:
     ):
         if buff.trigger >= 1:
             return
-        Effects.reverse_self_harm_buffs(2, actor_instance, actor_instance, context)
+        Effects.reverse_self_harm_buffs(2, actor_instance, actor_instance, context, buff)
         Effects.heal_self(0.3, actor_instance, target_instance, context, buff)
 
         benefit_buffs = [
@@ -1596,7 +1602,7 @@ class Effects:
 
     @staticmethod
     def transfer_buff_to_other_buff(
-        buff_id: str, target_buff_id: str, actor: Hero, target: Hero, context: Context
+        buff_id: str, target_buff_id: str, actor: Hero, target: Hero, context: Context, primary
     ):
         _remove_actor_certain_buff(buff_id, actor)
         _add_buffs(actor, target, [context.get_buff_by_id(target_buff_id)], 2, context)
@@ -1631,6 +1637,13 @@ class Effects:
         )
         buff.cooldown = 3
 
+    @staticmethod
+    def take_effect_of_qijin(actor_instance: Hero, target_instance: Hero, context: Context, buff: Buff):
+        enemies = context.get_enemies_in_diamond_range(actor_instance, 2)
+        if enemies:
+            enemy = random_select(enemies, 1)
+            Effects.add_buffs(["yunxuan"], 1, actor_instance, enemy, context, buff)
+
     # Field buffs
 
     @staticmethod
@@ -1652,7 +1665,7 @@ class Effects:
 
     @staticmethod
     def remove_self_field_buff(
-        buff_list: List[str], actor: Hero, target_instance: Hero, context: Context
+        buff_list: List[str], actor: Hero, target_instance: Hero, context: Context, primary
     ):
         for buff_id in buff_list:
             _remove_actor_certain_field_buff(buff_id, actor)
@@ -1767,7 +1780,7 @@ class Effects:
     ):
         equipment.cooldown = 2
         Effects.heal_self(0.35, actor_instance, actor_instance, context, equipment)
-        Effects.remove_actor_harm_buffs(1, actor_instance, actor_instance, context)
+        Effects.remove_actor_harm_buffs(1, actor_instance, actor_instance, context, equipment)
 
     # Equipment Effects
 
@@ -2033,7 +2046,6 @@ class Effects:
         elif state == 2:
             actor_instance.special_mark = True
 
-
     @staticmethod
     def take_effect_of_diyuzhizhen(
         actor_instance: Hero,
@@ -2063,7 +2075,7 @@ class Effects:
     ):
         action = context.get_last_action()
         for target in action.targets:
-            Effects.add_certain_buff_with_level(actor_instance, target, "luanshen", 2, 2, context)
+            Effects.add_certain_buff_with_level(actor_instance, target, "luanshen", 2, 2, context, skill)
             if target.temp.element in {Elements.DARK, Elements.WATER}:
                 Effects.add_buffs(["yazhi"], 1, actor_instance, target, context, skill)
 

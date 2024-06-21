@@ -58,6 +58,25 @@ class PositionRequirementChecks:
         return 0
 
     @staticmethod
+    def not_in_range_of_enemy_caster(
+        range_value: int,
+        actor_hero: Hero,
+        target_hero: Hero,
+        context: Context,
+        buff: Buff,
+    ) -> int:
+        caster_hero_id = buff.caster_id
+        caster = context.get_hero_by_id(caster_hero_id)
+        if caster.player_id != actor_hero.player_id:
+            actor_position = actor_hero.position
+            caster_position = caster.position
+            if calculate_if_targe_in_diamond_range(
+                actor_position, caster_position, range_value
+            ):
+                return 0
+        return 1
+
+    @staticmethod
     def no_partners_in_range(
         range_value: int, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:

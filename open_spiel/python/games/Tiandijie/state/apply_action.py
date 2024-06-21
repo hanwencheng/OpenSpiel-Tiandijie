@@ -40,6 +40,8 @@ action_type_to_event_dict: dict[ActionTypes, tuple[EventTypes, EventTypes]] = {
     ActionTypes.SELF: (EventTypes.self_start, EventTypes.self_end),
     ActionTypes.PASS: (EventTypes.pass_start, EventTypes.pass_end),
     ActionTypes.SUPPORT: (None, None),
+    ActionTypes.EFFECT_ENEMY: (None, None),
+
 }
 
 under_action_type_to_event_dict: dict[ActionTypes, tuple[EventTypes, EventTypes]] = {
@@ -55,7 +57,9 @@ under_action_type_to_event_dict: dict[ActionTypes, tuple[EventTypes, EventTypes]
     ),
     ActionTypes.SUMMON: (None, None),
     ActionTypes.SELF: (None, None),
-    # ActionTypes.PASS: (None, None),
+    ActionTypes.PASS: (None, None),
+    ActionTypes.SUPPORT: (None, None),
+    ActionTypes.EFFECT_ENEMY: (None, None),
 }
 
 skill_type_to_event_dict: dict[SkillTargetTypes, tuple[EventTypes, EventTypes]] = {
@@ -257,6 +261,9 @@ def apply_action(context: Context, action: Action):
 
     elif action.type == ActionTypes.SUPPORT:
         test(actor, action.targets[0], action, context, apply_support)
+
+    elif action.type == ActionTypes.EFFECT_ENEMY:
+        attack_or_skill_events(actor, action.targets[0], action, context, apply_effect_enemy)
     #
     # elif action.type == ActionTypes.PASS:
     #     pass

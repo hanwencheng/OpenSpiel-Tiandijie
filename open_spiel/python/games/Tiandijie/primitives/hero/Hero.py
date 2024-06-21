@@ -194,6 +194,8 @@ class Hero:
                             new_action.update_action_type(ActionTypes.HEAL)
                         elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
                             new_action.update_action_type(ActionTypes.SKILL_ATTACK)
+                        elif skill.temp.skill_type in {SkillType.EFFECT_ENEMY}:
+                            new_action.update_action_type(ActionTypes.EFFECT_ENEMY)
                         return new_action
 
                     def get_hero_in_skill(target, target_hero_list, skill, moveable_position):

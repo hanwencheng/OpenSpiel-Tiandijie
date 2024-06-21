@@ -322,7 +322,7 @@ class Skills(Enum):
         "决战无双",
         2,
         Elements.NONE,
-        SkillType.EFFECT_ENEMY,     # todo
+        SkillType.EFFECT_ENEMY,
         SkillTargetTypes.ENEMY,
         2,
         Distance(DistanceType.NORMAL, 5),
@@ -344,7 +344,7 @@ class Skills(Enum):
             ),
             EventListener(
                 EventTypes.skill_end,
-                2,
+                1,
                 partial(Rs.always_true),
                 partial(Effects.take_effect_of_juezhanwushuang),
             )

@@ -251,7 +251,7 @@ class FieldBuffsTemps(Enum):
                 EventTypes.action_end,
                 1,
                 partial(RS.self_and_caster_is_enemy),
-                partial(Effects.remove_actor_benefit_buffs, buff_count=2),
+                partial(Effects.remove_actor_benefit_buffs, 2),
             ),
             EventListener(
                 EventTypes.action_end,

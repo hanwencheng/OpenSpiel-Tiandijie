@@ -45,3 +45,7 @@ def apply_self(actor: Hero, target: Hero or None, action: Action, context: Conte
 
 def apply_support(actor_instance: Hero, counter_instances: Hero or None, action: Action, context: Context):
     pass
+
+
+def apply_effect_enemy(actor_instance: Hero, counter_instances: Hero or None, action: Action, context: Context):
+    pass

@@ -2790,7 +2790,7 @@ class BuffTemps(Enum):
                 EventTypes.action_end,
                 1,
                 partial(RS.BuffChecks.buff_stack_bigger_than, 4),
-                partial(Effects.add_buffs, ["yunxuan"], 1),
+                partial(Effects.take_effect_of_qijin),
             ),
         ],
     )
@@ -5237,7 +5237,7 @@ class BuffTemps(Enum):
                 EventTypes.action_end,
                 1,
                 partial(RS.PositionChecks.in_range_of_enemy_caster, 3),
-                partial(Effects.add_buffs, ["jinbi"], 1),
+                partial(Effects.transfer_buff_to_other_buff, "suolian", "jinbi"),
             ),
         ],
     )
@@ -5302,8 +5302,8 @@ class BuffTemps(Enum):
             EventListener(
                 EventTypes.action_end,
                 1,
-                partial(RS.PositionChecks.in_range_of_enemy_caster, 3),
-                partial(Effects.add_buffs, ["xunji"], 1),
+                partial(RS.PositionChecks.not_in_range_of_enemy_caster, 3),
+                partial(Effects.add_caster_buffs, ["xunjie"], 1),
             ),
         ],
     )

@@ -211,7 +211,7 @@ class TalentEffects:
                 for buff in partner.buffs:
                     if buff.temp.id == "shengxi":
                         Effects.remove_actor_harm_buffs(
-                            1, partner, target_hero, context
+                            1, partner, target_hero, context, talent
                         )
                         calculate_fix_heal(
                             get_attack(actor_hero, target_hero, context, True) * 0.3,
@@ -327,6 +327,7 @@ class TalentEffects:
                 1,
                 min(move_range, 3),
                 context,
+                talent,
             )
 
     @staticmethod
@@ -359,7 +360,7 @@ class TalentEffects:
                 Effects.add_fixed_damage_by_caster_magic_attack(
                     0.1, actor_instance, enemy, context, buff
                 )
-                Effects.remove_target_benefit_buffs(1, actor_instance, enemy, context)
+                Effects.remove_target_benefit_buffs(1, actor_instance, enemy, context, talent)
 
             counts = Counter(mark)
             duplicates = [element for element, count in counts.items() if count >= 2]
