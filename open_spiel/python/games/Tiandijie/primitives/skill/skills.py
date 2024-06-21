@@ -322,7 +322,7 @@ class Skills(Enum):
         "决战无双",
         2,
         Elements.NONE,
-        SkillType.Magical,
+        SkillType.EFFECT_ENEMY,     # todo
         SkillTargetTypes.ENEMY,
         2,
         Distance(DistanceType.NORMAL, 5),
@@ -466,7 +466,7 @@ class Skills(Enum):
         2,
         Elements.FIRE,
         SkillType.Magical,
-        SkillTargetTypes.TERRAIN,
+        SkillTargetTypes.DIRECTION,
         3,
         Distance(DistanceType.NORMAL, 1),
         Range(RangeType.CROSS, 5, 5, 5),

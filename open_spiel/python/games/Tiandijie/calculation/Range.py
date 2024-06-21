@@ -85,6 +85,27 @@ def calculate_diamond_area(action_point: tuple, range_value: int, battle_map):
     return list(area_set)
 
 
+def calculate_diamond_area_exclude_hero_position(action_point: tuple, range_value: int, battle_map):    # todo 逻辑暂时未修改
+    area_set = set()
+    for i in range(range_value + 1):
+        for j in range(range_value + 1):
+            if i + j <= range_value:
+                if i + j == 0:
+                    points = [(action_point[0], action_point[1])]
+                else:
+                    points = [
+                        (action_point[0] + i, action_point[1] + j),
+                        (action_point[0] + i, action_point[1] - j),
+                        (action_point[0] - i, action_point[1] + j),
+                        (action_point[0] - i, action_point[1] - j)
+                    ]
+                # 筛选出坐标点在合法范围内的点
+                for point in points:
+                    if 0 <= point[0] <= battle_map.width-1 and 0 <= point[1] <= battle_map.height-1:
+                        area_set.add(point)
+    return list(area_set)
+
+
 def calculate_archer_area(action_point: Position, range_value: int):
     area_map = []
     for i in range(range_value + 1):

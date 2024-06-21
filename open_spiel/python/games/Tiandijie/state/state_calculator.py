@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
     from open_spiel.python.games.Tiandijie.primitives.Action import Action, ActionTypes
 from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
-
+from open_spiel.python.games.Tiandijie.calculation.Range import RangeType
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     get_modifier,
     get_skill_modifier,
@@ -42,7 +42,8 @@ def check_if_counterattack_first(action: Action, context: Context):
 def check_if_in_battle(action: Action, context: Context):
     if action.type == ActionTypes.NORMAL_ATTACK or (
         action.type == ActionTypes.SKILL_ATTACK
-        and action.skill.temp.range_instance.range_value == 0
+        and action.skill.temp.skill_type == SkillTargetTypes.ENEMY
+        and action.skill.temp.range_instance.range_type == RangeType.POINT
     ):
         defender = action.get_defender_hero_in_battle()
         be_protected = action.targets[0]

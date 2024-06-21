@@ -75,6 +75,10 @@ skill_type_to_event_dict: dict[SkillTargetTypes, tuple[EventTypes, EventTypes]] 
         EventTypes.skill_for_self_start,
         EventTypes.skill_for_self_end,
     ),
+    SkillTargetTypes.DIRECTION: (
+        EventTypes.skill_for_direction_start,
+        EventTypes.skill_for_direction_end,
+    ),
 }
 
 

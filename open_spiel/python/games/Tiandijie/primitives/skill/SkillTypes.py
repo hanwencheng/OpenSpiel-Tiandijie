@@ -6,6 +6,7 @@ class SkillTargetTypes(enum.Enum):
     PARTNER = 1
     TERRAIN = 2
     SELF = 3
+    DIRECTION = 4
 
 
 class SkillType(enum.IntEnum):

@@ -83,6 +83,9 @@ class EventTypes(enum.Enum):
     # skill for partners
     skill_for_partner_start = "skill_for_partner_start"
     skill_for_partner_end = "skill_for_partner_end"
+    # skill_for_direction
+    skill_for_direction_start = "skill_for_direction_start"
+    skill_for_direction_end = "skill_for_direction_end"
     # range_damage
     skill_range_damage_start = "range_damage_start"
     skill_range_damage_end = "range_damage_end"

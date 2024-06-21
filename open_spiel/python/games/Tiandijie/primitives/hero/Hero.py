@@ -149,18 +149,27 @@ class Hero:
         # 处理技能的Action
         for skill in filter(lambda s: s.cool_down == 0, self.enabled_skills):
             for moveable_position in self.movable_range:
-                if skill.temp.target_type == SkillTargetTypes.TERRAIN:
+                if skill.temp.target_type == SkillTargetTypes.DIRECTION:
+                    target_position_list = calculate_diamond_area(moveable_position, skill.temp.distance.distance_value,
+                                                                  context.battlemap)
+                    target_position_list.remove(moveable_position)
+
+                    for target_position in target_position_list:
+                        target_hero_list = [hero for hero in hero_list if hero.player_id != self.player_id]
+                        hero_in_skill = [enemy for enemy in target_hero_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, enemy.position, target_position, context.battlemap)]
+                        new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)
+                        new_action.update_action_type(ActionTypes.SKILL_ATTACK)
+                        self.actionable_list.append(new_action)
+                elif skill.temp.target_type == SkillTargetTypes.TERRAIN:
                     target_position_list = calculate_diamond_area(moveable_position, skill.temp.distance.distance_value, context.battlemap)
                     target_position_list = [pos for pos in target_position_list if pos not in {hero.position for hero in hero_list}]
 
                     for target_position in target_position_list:
                         target_hero_list = [hero for hero in hero_list if hero.player_id != self.player_id]
                         hero_in_skill = [enemy for enemy in target_hero_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, enemy.position, target_position, context.battlemap)]
-
-                        if hero_in_skill:
-                            new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)
-                            new_action.update_action_type(ActionTypes.SKILL_ATTACK)
-                            self.actionable_list.append(new_action)
+                        new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)
+                        new_action.update_action_type(ActionTypes.SKILL_ATTACK)
+                        self.actionable_list.append(new_action)
                 elif skill.temp.target_type == SkillTargetTypes.SELF:
                     hero_in_skill = [self]
                     if skill.temp.skill_type == SkillType.Support:
@@ -173,11 +182,9 @@ class Hero:
                     elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
                         enemy_list = [hero for hero in hero_list if hero.player_id != self.player_id]
                         hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, moveable_position, enemy.position, context.battlemap)]
-
-                        if hero_in_skill:
-                            new_action = Action(self, hero_in_skill, skill, moveable_position, moveable_position)
-                            new_action.update_action_type(ActionTypes.SELF)
-                            self.actionable_list.append(new_action)
+                        new_action = Action(self, hero_in_skill, skill, moveable_position, moveable_position)
+                        new_action.update_action_type(ActionTypes.SELF)
+                        self.actionable_list.append(new_action)
                 else:
                     def get_new_action(self, hero_in_skill, skill, moveable_position, target_position):
                         new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)

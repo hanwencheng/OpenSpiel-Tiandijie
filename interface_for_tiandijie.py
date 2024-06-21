@@ -499,12 +499,12 @@ class TIANDIJIEGUI:
 
             if temp_skill:
                 if action.skill and action.skill.temp.chinese_name == temp_skill:
-                    if temp_target and action.skill.temp.target_type.value in [0, 1, 2] and action.action_point == temp_target:
+                    if action.skill.temp.target_type.value == 3:
                         self.input = legal_actions.index(action)
-                        break
-                    elif action.skill.temp.target_type.value == 3:
-                        self.input = legal_actions.index(action)
-                        break
+                    else:
+                        if action.action_point == temp_target:
+                            self.input = legal_actions.index(action)
+                            break
             else:
                 if temp_target:
                     if temp_skill is None and action.type.value == ActionTypes.NORMAL_ATTACK.value:

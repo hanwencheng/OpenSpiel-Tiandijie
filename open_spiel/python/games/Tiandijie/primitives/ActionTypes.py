@@ -10,3 +10,4 @@ class ActionTypes(enum.Enum):
     TELEPORT = 6
     SUPPORT = 7
     PASS = 8
+    EFFECT_ENEMY = 9
