@@ -55,20 +55,11 @@ def event_listener_calculator(
             return
         if current_action.additional_move > 0:
             return
-        if len(context.actions) >= 2:
-            previous_action = context.actions[-2]
-            if previous_action.actor.id == actor_instance.id:
-                if previous_action.additional_skill_list is not None:
-                    return
-                if previous_action.additional_move > 0:
-                    current_action.skill = previous_action.skill
-                    return
+        if len(context.actions) >= 2 and context.actions[-2].additional_move > 0:
+            current_action.skill = context.actions[-2].skill
 
-    # 如果事件类型是 before_action_end，并且当前动作列表满足特定条件，直接返回
-    if event_type == EventTypes.before_action_end and len(context.actions) >= 2:
-        previous_action = context.actions[-2]
-        if previous_action.actor.id == actor_instance.id and previous_action.additional_skill_list is not None:
-            return
+    if event_type == EventTypes.before_action_end and len(context.actions) >= 2 and context.actions[-2].actor.id == actor_instance.id and context.actions[-2].additional_skill_list is not None:
+        return
 
     # Calculated Buffs
     for buff in actor_instance.buffs:
