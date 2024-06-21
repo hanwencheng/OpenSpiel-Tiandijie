@@ -238,13 +238,10 @@ class TalentEffects:
         if state == 1:
             Effects.add_extra_skill(["buqi"], actor_instance, target_instance, context, talent)
         elif state == 2:
-            Effects.clear_terrain_by_buff_name("chiwuqi", context)
-            Effects.add_self_buffs(
-                ["chiqi"], 15, actor_instance, target_instance, context, talent
-            )
+            Effects.remove_jinwuqi(context)
         else:
-            Effects.clear_terrain_by_buff_name("chiwuqi", context)
-            context.battlemap.remove_terrain_by_name(TerrainType.CHIWUQI)
+            Effects.clear_terrain_by_buff_name("jinwuqi", context)
+            context.battlemap.remove_terrain_by_name(TerrainType.JINWUQI)
 
     # 行动结束前，可额外使用绝学「光·自在」/「雷·自在」（间隔2回合触发，使用后将切换所有专属绝学并刷新冷却时间且保留当前气力）
     @staticmethod
@@ -381,7 +378,7 @@ class TalentEffects:
                 Effects.add_fixed_damage_by_caster_physical_attack(
                     0.3, actor_instance, enemy, context, talent
                 )
-        Effects.add_terrain_by_target_position(
+        Effects.add_terrain_buff_by_target_position(
             "ice", 2, 1, target_instance.position, context
         )
 

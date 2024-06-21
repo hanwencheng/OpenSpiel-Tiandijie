@@ -50,6 +50,7 @@ class Hero:
         self.energy: int = 0
         self.shield: int = 0
         self.receive_damage: int = 0
+        self.special_mark = False
 
     def initialize_attributes(self):
         initial_attributes = generate_max_level_attributes(

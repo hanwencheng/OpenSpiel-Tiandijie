@@ -242,7 +242,7 @@ class TIANDIJIEGUI:
 
     def redraw_skill_terrain(self):
         for position, data in self.data_dict.items():
-            if self.now_state.context.battlemap.get_terrain(position).terrain_type.value[0] == TerrainType.CHIWUQI.value[0]:
+            if self.now_state.context.battlemap.get_terrain(position).terrain_type.value[0] == TerrainType.JINWUQI.value[0]:
                 image_path = f"open_spiel/python/games/Tiandijie/res/布旗.png"
                 image = self.load_image(image_path, (100, 100))
                 data["button"].config(image=image, width=100, height=100)
@@ -491,24 +491,28 @@ class TIANDIJIEGUI:
             if data["button"].cget("bg") == "yellow":
                 temp_target = position
                 break
-        for action in self.now_state.legal_actions_dic[1]:
-            if action.actor == hero and action.move_point == self.tentative_position['position']:
-                if temp_skill:
-                    if action.skill and action.skill.temp.chinese_name == temp_skill:
-                        if action.skill.temp.target_type.value in [0, 1, 2] and action.action_point == temp_target:
-                            self.input = self.now_state.legal_actions_dic[1].index(action)
-                            break
-                        elif action.skill.temp.target_type.value == 3:
-                            self.input = self.now_state.legal_actions_dic[1].index(action)
-                            break
-                elif temp_target:
+        legal_actions = self.now_state.legal_actions_dic[1]
+
+        for action in legal_actions:
+            if action.actor != hero or action.move_point != self.tentative_position['position']:
+                continue
+
+            if temp_skill:
+                if action.skill and action.skill.temp.chinese_name == temp_skill:
+                    if temp_target and action.skill.temp.target_type.value in [0, 1, 2] and action.action_point == temp_target:
+                        self.input = legal_actions.index(action)
+                        break
+                    elif action.skill.temp.target_type.value == 3:
+                        self.input = legal_actions.index(action)
+                        break
+            else:
+                if temp_target:
                     if temp_skill is None and action.type.value == ActionTypes.NORMAL_ATTACK.value:
-                        self.input = self.now_state.legal_actions_dic[1].index(action)
+                        self.input = legal_actions.index(action)
                         break
-                else:
-                    if action.type.value in {ActionTypes.MOVE.value, ActionTypes.PASS.value}:
-                        self.input = self.now_state.legal_actions_dic[1].index(action)
-                        break
+                elif action.type.value in {ActionTypes.MOVE.value, ActionTypes.PASS.value}:
+                    self.input = legal_actions.index(action)
+                    break
 
     def update_hero_position(self, hero, button):
         hero_id = hero.id

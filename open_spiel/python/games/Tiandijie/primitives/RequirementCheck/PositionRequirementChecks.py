@@ -392,8 +392,7 @@ class PositionRequirementChecks:
         terrain_buff: str, actor_hero: Hero, target_hero: Hero, context: Context,  primitive
     ) -> int:
         position = actor_hero.position
-        battlemap = context.battlemap
-        if battlemap.map[position[0]][position[1]].buff and battlemap.map[position[0]][position[1]].buff.temp.id == terrain_buff:
+        if context.battlemap.get_terrain(position).buff and context.battlemap.get_terrain(position).buff.temp.id == terrain_buff:
             return 1
         return 0
 

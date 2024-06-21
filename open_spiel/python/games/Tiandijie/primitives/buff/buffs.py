@@ -3315,14 +3315,7 @@ class BuffTemps(Enum):
                 {ma.shield_percentage: 0.5, ma.is_extra_action_disabled: True},
             ),
         ],
-        [
-            EventListener(
-                EventTypes.action_end,
-                1,
-                RS.always_true,
-                partial(Effects.remove_actor_certain_buff, "ranyan"),
-            ),
-        ],
+        [],
     )
 
     # 狂乱	有益	可驱散	不可扩散	不可偷取	物攻提高12%，伤害提高12%

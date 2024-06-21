@@ -82,12 +82,10 @@ class Action:
         self.has_additional_action = True
         self.additional_skill_list = [Skill(0, Skills.get_skill_by_id(skill)) for skill in additional_skill_list]
 
-    def update_additional_action(self, additional_move: int, context):
+    def update_additional_action(self, additional_move, context):
         actor = self.actor
-        action_disabled = get_buff_modifier("is_extra_action_disabled", actor, None, context)
-        if not action_disabled:
-            self.has_additional_action = True
-            self.additional_action = additional_move
+        self.has_additional_action = True
+        self.additional_action = additional_move
 
     def update_moves(self, battle_map, enemies_list) -> List[Position]:
         return a_star_search(self.initial_position, self.move_point, battle_map, self.actor.temp.flyable, enemies_list)

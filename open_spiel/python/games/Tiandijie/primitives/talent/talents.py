@@ -372,14 +372,14 @@ class Talents(Enum):
                 partial(Effects.add_self_buffs, ["chiqi"], 15),
             ),
             EventListener(
-                EventTypes.action_end,
-                2,
+                EventTypes.before_action_end,
+                3,
                 partial(Rs.BuffChecks.self_has_certain_buff_in_list, ["chiqi"]),
                 partial(TalentEffects.take_effect_of_qilinquanyu, 1),
             ),
             EventListener(
-                EventTypes.action_end,
-                1,
+                EventTypes.before_action_end,
+                2,
                 partial(Rs.PositionChecks.self_in_certain_terrianbuff, "jinwuqi"),
                 partial(TalentEffects.take_effect_of_qilinquanyu, 2),
             ),

@@ -26,6 +26,7 @@ skill_related_events = [
     EventTypes.under_skill_single_damage_end,
     EventTypes.under_skill_range_damage_start,
     EventTypes.under_skill_range_damage_end,
+    EventTypes.action_end,
 ]
 
 
@@ -47,6 +48,28 @@ def event_listener_calculator(
     current_action = context.get_last_action()
     if current_action is None and event_type != EventTypes.game_start:
         return
+    # 有额外技能的话不结算action_end，在额外技能处结算action_end, 且在释放技能的action无需计算before_action_end
+    ignore_event_types = {EventTypes.action_end, EventTypes.before_action_end}
+    if event_type in ignore_event_types:
+        if current_action.additional_skill_list is not None:
+            return
+        if current_action.additional_move > 0:
+            return
+        if len(context.actions) >= 2:
+            previous_action = context.actions[-2]
+            if previous_action.actor.id == actor_instance.id:
+                if previous_action.additional_skill_list is not None:
+                    return
+                if previous_action.additional_move > 0:
+                    current_action.skill = previous_action.skill
+                    return
+
+    # 如果事件类型是 before_action_end，并且当前动作列表满足特定条件，直接返回
+    if event_type == EventTypes.before_action_end and len(context.actions) >= 2:
+        previous_action = context.actions[-2]
+        if previous_action.actor.id == actor_instance.id and previous_action.additional_skill_list is not None:
+            return
+
     # Calculated Buffs
     for buff in actor_instance.buffs:
         buff_event_levels_listeners = buff.temp.event_listeners
@@ -104,16 +127,8 @@ def event_listener_calculator(
                                 field_buff,
                             )
 
-
-
-
-
-                        # event_listener_containers.append(
-                        #     EventListenerContainer(event_listener, field_buff)
-                        # )
-
     # Calculated Skills
-    if event_type in skill_related_events:
+    if current_action:
         skill = current_action.skill
         if skill:
             for event_listener in skill.temp.event_listeners:

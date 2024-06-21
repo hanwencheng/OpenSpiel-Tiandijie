@@ -258,6 +258,7 @@ def apply_action(context: Context, action: Action):
     #     pass
 
     # TODO Calculate Critical Damage Events
+    event_listener_calculator(actor, None, EventTypes.before_action_end, context)
     event_listener_calculator(actor, None, EventTypes.action_end, context)
 
     # 将此类event改写成fieldbuff光环效果

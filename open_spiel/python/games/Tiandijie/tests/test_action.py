@@ -1,11 +1,12 @@
 import unittest
 from open_spiel.python.games.Tiandijie.primitives.Context import Context
 from open_spiel.python.games.Tiandijie.primitives.Action import ActionTypes
-from state.apply_action import apply_action
+from open_spiel.python.games.Tiandijie.state.apply_action import apply_action
 # from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender
 from open_spiel.python.games.Tiandijie.primitives.Action import Action
 # from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_modifier
+from open_spiel.python.games.Tiandijie.main import State
 
 class TestHero(unittest.TestCase):
     def test_hero(self):
@@ -22,23 +23,74 @@ class TestHero(unittest.TestCase):
         game_context.init_heroes_position()
 
         game_context.battlemap.display_map()
-
-        # actor1 = game_context.get_heroes_by_player_id(0)[0]
-        # actor2 = game_context.get_heroes_by_player_id(1)[0]
-        #
-
-        from main import State
+        test_action = None
 
         game_state = State(game_context)
         print(f"现在是玩家{game_state._cur_player}的行动")
         legal_actions = game_state._legal_actions(game_state._cur_player)
-        zhenyin0 = game_context.get_hero_by_id("zhenyin0")
-        print(get_modifier("physical_protect_range", zhenyin0, None, game_context))
-        fuyayu1 = game_context.get_hero_by_id("fuyayu1")
-        print()
-        # test_action = Action(fuyayu0, [fuyayu1], None, fuyayu0.position, fuyayu1.position)
-        # test_action.update_action_type(ActionTypes.NORMAL_ATTACK)
+        from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, \
+            get_max_life
+
+        zhujin0 = game_context.get_hero_by_id("zhujin0")
+        for action in legal_actions:
+            if action.actor.id =="zhujin0" and action.type == ActionTypes.PASS:
+                test_action = action
+                break
+        game_state._apply_action(test_action)
+        print("-----------------------")
+        print(f"现在是玩家{game_state._cur_player}的行动")
+        legal_actions = game_state._legal_actions(game_state._cur_player)
+        for action in legal_actions:
+            if action.actor.id =="zhujin0" and action.skill and action.action_point == (9, 3):
+                test_action = action
+                break
+        game_state._apply_action(test_action)
+        for i in range(9):
+            print("-----------------------")
+            print(f"现在是玩家{game_state._cur_player}的行动")
+            legal_actions = game_state._legal_actions(game_state._cur_player)
+            for action in legal_actions:
+                if action.type == ActionTypes.PASS:
+                    test_action = action
+                    break
+            game_state._apply_action(test_action)
+        print("-----------------------")
+        print(f"现在是玩家{game_state._cur_player}的行动")
+
+
+        # zhenyin1 = game_context.get_hero_by_id("zhenyin1")
+        # # for action in legal_actions:
+        # #     if action.actor.id == "zhenyin1" and action.skill and action.skill.temp.id == "diyuzhizhen":
+        # #         test_action = action
+        # #         break
+        #
+        # for action in legal_actions:
+        #     if action.actor.id == "zhenyin1" and action.type == ActionTypes.PASS:
+        #         test_action = action
+        #         break
         # game_state._apply_action(test_action)
+        # print(get_max_life(zhenyin1, None, game_context))
+        # from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
+        # zhenyin1.buffs.append(Buff(game_context.get_buff_by_id("zhilu"),12, "zhenyin1"))
+        # print(get_max_life(zhenyin1, None, game_context))
+        # mohuahuangfushen1 = game_context.get_hero_by_id("mohuahuangfushen1")
+        # print("-----------------------")
+        # print(f"现在是玩家{game_state._cur_player}的行动")
+        # legal_actions = game_state._legal_actions(game_state._cur_player)
+        #
+        # huoyong0 = game_context.get_hero_by_id("huoyong0")
+        # for action in legal_actions:
+        #     if action.actor.id == "huoyong0":
+        #         if action.move_point == huoyong0.position:
+        #             if action.skill and action.skill.temp.id == "tianshuangxuewu":
+        #                 if action.action_point == mohuahuangfushen1.position:
+        #                     test_action = action
+        #                     break
+        #
+        # game_state._apply_action(test_action)
+        # for buff in mohuahuangfushen1.buffs:
+        #     print(1111, buff.temp.id)
+
         # test_actor = test_action.actor
         # for action in legal_actions:
         #     if action.actor.id == "mohuahuangfushen0" and action.skill and action.skill.temp.id == "leiyinwanyu" and len(action.targets) >= 3 and action.move_point == (4, 8):

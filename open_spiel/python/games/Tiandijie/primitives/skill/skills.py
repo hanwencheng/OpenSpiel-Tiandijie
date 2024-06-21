@@ -322,7 +322,7 @@ class Skills(Enum):
         "决战无双",
         2,
         Elements.NONE,
-        SkillType.EFFECT_ENEMY,
+        SkillType.Magical,
         SkillTargetTypes.ENEMY,
         2,
         Distance(DistanceType.NORMAL, 5),
@@ -401,19 +401,13 @@ class Skills(Enum):
         2,
         Elements.FIRE,
         SkillType.Magical,
-        SkillTargetTypes.ENEMY,  # Todo 后续确认一下
+        SkillTargetTypes.ENEMY,
         3,
         Distance(DistanceType.NORMAL, 3),
         Range(RangeType.DIAMOND, 2, 5, 5),
         0.5,
         [],
         [
-            EventListener(
-                EventTypes.skill_end,
-                1,
-                partial(Rs.always_true),
-                partial(Effects.add_self_buffs, ["chiqi"], 15),
-            ),
             EventListener(
                 EventTypes.skill_end,
                 3,
@@ -471,10 +465,10 @@ class Skills(Enum):
         "焰染穿云",
         2,
         Elements.FIRE,
-        SkillType.EFFECT_ENEMY,
-        SkillTargetTypes.ENEMY,
-        0,
-        Distance(DistanceType.NORMAL, 5),
+        SkillType.Magical,
+        SkillTargetTypes.TERRAIN,
+        3,
+        Distance(DistanceType.NORMAL, 1),
         Range(RangeType.CROSS, 5, 5, 5),
         0,
         [],
@@ -482,8 +476,14 @@ class Skills(Enum):
             EventListener(
                 EventTypes.skill_end,
                 1,
-                partial(Rs.PositionChecks.self_in_certain_terrianbuff, "jinwuqi", 2),
-                partial(Effects.take_effect_of_yanranchuanyun),
+                partial(Rs.always_true),
+                partial(Effects.take_effect_of_yanranchuanyun, 1),
+            ),
+            EventListener(
+                EventTypes.before_action_end,
+                1,
+                partial(Rs.PositionChecks.self_in_certain_terrianbuff, "jinwuqi"),
+                partial(Effects.take_effect_of_yanranchuanyun, 2),
             )
         ],
     )

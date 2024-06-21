@@ -66,6 +66,7 @@ class EventTypes(enum.Enum):
     teleport_start = "teleport_start"
     teleport_end = "teleport_end"
 
+    before_action_end = "before_action_end"
     action_end = "action_end"
 
     # all_skill

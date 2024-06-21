@@ -13,4 +13,4 @@ class TerrainType(Enum):
     HERO_SPAWN = (3, False, False, "Hero Spawn")
     EFFECT_SPAWN = (4, True, True, "Effect Spawn")
     ZHUOWU = (5, True, True, "DIE")
-    CHIWUQI = (6, False, False, "CHIWUQI")
+    JINWUQI = (6, False, False, "JINWUQI")

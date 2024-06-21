@@ -13,6 +13,7 @@ from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import (
     calculate_reset_hero_actionable,
     calculate_fix_shield,
     calculate_add_buff,
+    calculate_additional_action,
 )
 from open_spiel.python.games.Tiandijie.helpers import random_select
 
@@ -274,8 +275,7 @@ class Effects:
         context: Context,
         buff: Buff or Talent,
     ):
-        action = context.get_last_action()
-        action.update_additional_action(additional_move, context)
+        calculate_additional_action(actor, context, additional_move)
 
     @staticmethod
     def take_effect_of_xiayi(
@@ -815,7 +815,7 @@ class Effects:
             )
 
     @staticmethod
-    def add_terrain_by_target_position(
+    def add_terrain_buff_by_target_position(
         terrain_buff: str,
         duration: int,
         range_value: int,
@@ -828,7 +828,7 @@ class Effects:
         buff_range = Range(RangeType.DIAMOND, range_value)
         for position in buff_range.get_area(target_position, target_position, context.battlemap):
             context.battlemap.add_terrain_buff(
-                position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration
+                position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration,
             )
 
     @staticmethod
@@ -1970,13 +1970,38 @@ class Effects:
         skill: Skill,
     ):
         action = context.get_last_action()
-        for target in action.targets:
-            buff_list = ["ranshao"]
-            position = target.position
-            terrain_buff = context.battlemap.get_terrain(position).buff
-            if terrain_buff and "chiwuqi" == terrain_buff.temp.id:
-                buff_list.append("wangxiao")
-            Effects.add_buffs(buff_list, 2, actor_instance, target, context, skill)
+        # 先查看是不是自己的金乌旗
+        terrain_position = context.battlemap.get_terrain_position_by_type(TerrainType.JINWUQI)
+        if terrain_position:
+            terrain = context.battlemap.get_terrain(terrain_position)
+            caster = terrain.caster_id
+            if actor_instance.id == caster:
+                buff_list = ["ranshao"]
+                for target in action.targets:
+                    position = target.position
+                    terrain_buff = context.battlemap.get_terrain(position).buff
+                    if terrain_buff and "jinwuqi" == terrain_buff.temp.id:
+                        buff_list.append("wangxiao")
+                    Effects.add_buffs(buff_list, 2, actor_instance, target, context, skill)
+                Effects.remove_jinwuqi(context)
+
+    @staticmethod
+    def remove_jinwuqi(context: Context):
+        position = context.battlemap.get_terrain_position_by_type(TerrainType.JINWUQI)
+        if position is not None:
+            terrain = context.battlemap.get_terrain(position)
+            caster_id = terrain.caster_id
+            Effects.add_buffs(["chiqi"], 15, context.get_hero_by_id(caster_id), context.get_hero_by_id(caster_id), context, None)
+            context.battlemap.init_terrain(position)
+            Effects.clear_terrain_by_buff_name("jinwuqi", context)
+
+    @staticmethod
+    def set_jinwuqi(actor_instance, target_position, context: Context):
+        context.battlemap.set_terrain(target_position, TerrainType.JINWUQI, actor_instance.id)
+        Effects.add_terrain_buff_by_target_position(
+            "jinwuqi", 15, 2, target_position, context
+        )
+
 
     @staticmethod
     def take_effect_of_buqi(
@@ -1986,22 +2011,28 @@ class Effects:
         skill: Skill,
     ):
         target_position = context.get_last_action().action_point
-        Effects.add_terrain_by_target_position(
-            "chiwuqi", 15, 2, target_position, context
-        )
+        Effects.remove_jinwuqi(context)
         Effects.remove_actor_certain_buff("chiqi", actor_instance, target_instance, context, skill)
-        context.battlemap.set_terrain_type(target_position, TerrainType.CHIWUQI)
+        Effects.set_jinwuqi(actor_instance, target_position, context)
+        if actor_instance.special_mark:
+            actor_instance.special_mark = False
+            calculate_additional_action(actor_instance, context)
+            Effects.add_self_buffs(["ranyan"], 2, actor_instance, None, context, skill)
 
     @staticmethod
     def take_effect_of_yanranchuanyun(
+        state,
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
         skill: Skill,
     ):
-        action = context.get_last_action()
-        Effects.add_self_buffs(["ranyan"], 2, actor_instance, None, context, skill)
-        action.update_additional_action(3, context)
+        if state == 1:
+            action = context.get_last_action()
+            action.update_additional_move(actor_instance, 3, context)
+        elif state == 2:
+            actor_instance.special_mark = True
+
 
     @staticmethod
     def take_effect_of_diyuzhizhen(

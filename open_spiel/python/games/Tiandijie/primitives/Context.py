@@ -37,7 +37,7 @@ class Context:
         self.heroes: List[Hero] = []
         self.formation: List[Formation] = []
         self.actions: List[Action] = []
-        self.harm_buffs_temps: Dict[str, BuffTemp] = {}
+        self.harm_buffs_temps: List[BuffTemp] = []
         self.benefit_buffs_temps: Dict[str, BuffTemp] = {}
         self.fieldbuffs_temps: Dict[str, FieldBuffTemp] = {}
         self.all_buffs_temps: Dict[str, BuffTemp] = {}
@@ -107,13 +107,13 @@ class Context:
         from open_spiel.python.games.Tiandijie.primitives.buff.buffs import BuffTemps
 
         all_buffs = {}
-        harm_buffs = {}
+        harm_buffs = []
         benefit_buffs = {}
         fieldbuffs = {}
         for buff in BuffTemps:
             all_buffs[buff.value.id] = buff.value
             if buff.value.type == BuffTypes.Harm:
-                harm_buffs[buff.value.id] = buff.value
+                harm_buffs.append(buff.value)
             elif buff.value.type == BuffTypes.Benefit:
                 benefit_buffs[buff.value.id] = buff.value
         self.all_buffs_temps = all_buffs
@@ -231,7 +231,9 @@ class Context:
                     self.formation.append(formation)
 
     def get_harm_buff_temp_by_id(self, buff_temp_id: str) -> BuffTemp:
-        return self.harm_buffs_temps[buff_temp_id]
+        for buff in self.harm_buffs_temps:
+            if buff.id == buff_temp_id:
+                return buff
 
     def get_buff_by_id(self, buff_id: str) -> BuffTemp:
         return self.all_buffs_temps[buff_id]
