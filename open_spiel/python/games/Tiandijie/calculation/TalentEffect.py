@@ -318,7 +318,9 @@ class TalentEffects:
         actor_instance: Hero, target_instance: Hero, context: Context, talent: Talent
     ):
         action = context.get_last_action()
-        move_range = actor_instance.move_range - action.moves
+        enemies = context.get_enemy_list_by_id(actor_instance.player_id)
+        move_count = action.get_moves(context.battlemap, enemies)
+        move_range = actor_instance.move_range - move_count
         if move_range >= 1:
             Effects.add_certain_buff_with_level(
                 actor_instance,

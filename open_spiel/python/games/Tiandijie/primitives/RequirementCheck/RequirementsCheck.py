@@ -95,7 +95,9 @@ class RequirementCheck:
     ):
         action = context.get_last_action()
         if actor_hero == action.actor:
-            if action.moves <= max_move:
+            enemies = context.get_enemy_list_by_id(actor_hero.player_id)
+            move_count = action.get_moves(context.battlemap, enemies)
+            if move_count <= max_move:
                 return True
         return False
 
@@ -105,7 +107,9 @@ class RequirementCheck:
     ):
         action = context.get_last_action()
         if actor_hero == action.actor:
-            if action.moves > max_move:
+            enemies = context.get_enemy_list_by_id(actor_hero.player_id)
+            move_count = action.get_moves(context.battlemap, enemies)
+            if move_count > max_move:
                 return True
         return False
 
@@ -568,7 +572,9 @@ class RequirementCheck:
     ) -> int:
         action = context.get_last_action()
         if actor_hero in action.targets:
-            return min(action.moves, 3)
+            enemies = context.get_enemy_list_by_id(actor_hero.player_id)
+            move_count = action.get_moves(context.battlemap, enemies)
+            return min(move_count, 3)
         return 0
 
     @staticmethod
@@ -577,7 +583,9 @@ class RequirementCheck:
     ) -> int:
         action = context.get_last_action()
         if _is_attacker(actor_hero, context) and action.is_in_battle:
-            return min(action.moves, min_value)
+            enemies = context.get_enemy_list_by_id(actor_hero.player_id)
+            move_count = action.get_moves(context.battlemap, enemies)
+            return min(move_count, min_value)
         return 0
 
     @staticmethod

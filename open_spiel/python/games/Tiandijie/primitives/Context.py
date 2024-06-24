@@ -146,6 +146,9 @@ class Context:
     def get_heroes_by_player_id(self, player_id: int) -> List[Hero]:
         return [hero for hero in self.heroes if hero.player_id == player_id]
 
+    def get_died_heroes_by_player_id(self, player_id: int) -> List[Hero]:
+        return [hero for hero in self.cemetery if hero.player_id == player_id]
+
     def get_heroes_by_counter_player_id(self, player_id: int) -> List[Hero]:
         return [hero for hero in self.heroes if hero.player_id != player_id]
 
@@ -246,7 +249,7 @@ class Context:
             h for h in self.heroes if h.id == hero_id and h.player_id != hero.player_id
         ][0]
 
-    def get_enemy_list_by_id(self, player_id: str) -> [Hero]:
+    def get_enemy_list_by_id(self, player_id: int) -> [Hero]:
         return [h for h in self.heroes if h.player_id != player_id]
 
     def init_battlemap(self, map_id: str):
@@ -308,7 +311,8 @@ class Context:
         zhenyin.equipments = [Equipments.feiquanmingyu.value, Equipments.lingyuepeihuan_yan.value,
                               Equipments.yanshanpei.value, Equipments.huanniaojie.value]
         zhenyin.enabled_passives = []
-        zhenyin.enabled_skills = []
+        # zhenyin.enabled_skills = [Skill(0, Skills.shiguizhaohuan.value), Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
+        zhenyin.enabled_skills = [Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
         zhenyin.stones = [Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing")]
         hero_list.append(zhenyin)
 
@@ -375,7 +379,8 @@ class Context:
         zhenyin.equipments = [Equipments.feiquanmingyu.value, Equipments.lingyuepeihuan_yan.value,
                               Equipments.yanshanpei.value, Equipments.huanniaojie.value]
         zhenyin.enabled_passives = []
-        zhenyin.enabled_skills = [Skill(0, Skills.shiguizhaohuan.value), Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
+        # zhenyin.enabled_skills = [Skill(0, Skills.shiguizhaohuan.value), Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
+        zhenyin.enabled_skills = [Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
         zhenyin.stones = [Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing")]
         hero_list.append(zhenyin)
 
@@ -401,11 +406,11 @@ class Context:
         score = 0.0
         for hero in self.cemetery:
             if hero.player_id != player:
-                score += 50000
-                score += hero.receive_damage
-        for hero in self.heroes:
-            if hero.player_id != player:
-                score += hero.receive_damage
+                score += 100000
+        #         score += hero.receive_damage
+        # for hero in self.heroes:
+        #     if hero.player_id != player:
+        #         score += hero.receive_damage
         return score
 
     def get_hero_by_hero_id(self, id: str) -> Hero:

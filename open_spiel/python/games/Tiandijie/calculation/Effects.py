@@ -883,7 +883,8 @@ class Effects:
     ):
         caster = context.get_hero_by_id(primary.caster_id)
         action = context.get_last_action()
-        move_count = len(action.moves)
+        enemies = context.get_enemy_list_by_id(actor_instance.player_id)
+        move_count = action.get_moves(context.battlemap, enemies)
         actor_max_life = get_max_life(actor_instance, caster, context)
         multiplier = min(percentage * move_count, max_percentage)
         calculate_fix_damage(actor_max_life * multiplier, caster, actor_instance, context)

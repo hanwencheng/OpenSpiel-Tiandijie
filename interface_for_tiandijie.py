@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import messagebox, StringVar, OptionMenu
 from absl import flags, app
@@ -17,6 +18,7 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
+EpisodeTime = 3000
 
 
 class TIANDIJIEGUI:
@@ -31,8 +33,8 @@ class TIANDIJIEGUI:
         self.num_actions = self.env.action_spec()["num_actions"]
         self.agents = []
         for idx in range(self.num_players):
-            if os.path.exists(f"qlearner_model{idx}.pkl"):
-                with open(f"qlearner_model{idx}.pkl", "rb") as f:
+            if os.path.exists(f"qlearner_model_test{idx}x{EpisodeTime}.pkl"):
+                with open(f"qlearner_model_test{idx}x{EpisodeTime}.pkl", "rb") as f:
                     self.agents.append(pickle.load(f))
                 print("读取")
             else:
@@ -56,7 +58,7 @@ class TIANDIJIEGUI:
 
         self.map_options = ["妖山幻境", "天宫幻境", "城隅幻境"]
         self.map_name = self.map_options[0]
-        self.hero_options = [member.value.name for member in HeroeTemps]
+        self.hero_options = [member.value.temp_id for member in HeroeTemps]
         self.choose_heroes_0 = self.hero_options[:5]
         self.choose_heroes_1 = self.hero_options[:5]
 
@@ -72,9 +74,9 @@ class TIANDIJIEGUI:
         for i in range(len(self.choose_heroes_1)):
             tk.Label(self.config_frame, text=self.choose_heroes_1[i], fg="red").grid(row=i + 1, column=10)
 
-        tk.Button(self.config_frame, text="确认", command=self.go_tiandijie).grid(row=len(self.choose_heroes_0) + 1,
+        tk.Button(self.config_frame, text="confirm", command=self.go_tiandijie).grid(row=len(self.choose_heroes_0) + 1,
                                                                                   column=1)
-        tk.Button(self.config_frame, text="修改配置", command=self.create_new_window).grid(
+        tk.Button(self.config_frame, text="hero_config", command=self.create_new_window).grid(
             row=len(self.choose_heroes_0) + 1, column=2)
 
     def create_new_window(self):
@@ -145,7 +147,7 @@ class TIANDIJIEGUI:
         self.heroes = self.now_state.context.heroes
         self.cemetery = self.now_state.context.cemetery
         self.init_hero_map()
-        self.add_text("模拟开始")
+        self.add_text("SIMULATE_START")
         self._paused = False
         threading.Thread(target=self.simulation_worker).start()
 
@@ -172,7 +174,7 @@ class TIANDIJIEGUI:
         self.heroes = self.now_state.context.heroes
         self.cemetery = self.now_state.context.cemetery
         self.init_hero_map()
-        self.add_text("与AI对战")
+        self.add_text("BATTLE_WITH_AI")
 
         threading.Thread(target=self.battle_with_qlearner_worker).start()
 
@@ -181,7 +183,7 @@ class TIANDIJIEGUI:
         while not self.time_step.last() and not self._terminal:
             player_id = self.time_step.observations["current_player"]
             if player_id == pyspiel.PlayerId.TERMINAL:
-                self.add_text("游戏结束")
+                self.add_text("GAME_OVER")
                 print(self.time_step.rewards)
                 return
             if player_id == human_player:
@@ -214,12 +216,12 @@ class TIANDIJIEGUI:
         return action
 
     def thread_paused(self):
-        self.button_dic["button_paused"].config(command=self.thread_continue, text="继续")
+        self.button_dic["button_paused"].config(command=self.thread_continue, text="GO_ON")
         self.button_dic["button_next_step"].config(state="active")
         self._paused = True
 
     def thread_continue(self):
-        self.button_dic["button_paused"].config(command=self.thread_paused, text="暂停")
+        self.button_dic["button_paused"].config(command=self.thread_paused, text="PAUSED")
         self.button_dic["button_next_step"].config(state="disabled")
         self._paused = False
         threading.Thread(target=self.simulation_worker).start()
@@ -259,30 +261,30 @@ class TIANDIJIEGUI:
         for row in range(len(self.map)):
             for column in range(len(self.map[0])):
                 # 创建一个不可编辑的标签
-                label = tk.Button(self.map_container, borderwidth=1, relief="solid", width=6, height=3,
+                label = tk.Button(self.map_container, borderwidth=1, relief="solid", width=10, height=5,
                                   state="disabled")
-                label.grid(row=row, column=column, padx=5, pady=5)
+                label.grid(row=row, column=column, padx=10, pady=10)
                 if self.map[row][column].terrain_type.value[0] == TerrainType.IMPASSABLE_OBSTACLE.value[0]:
                     self.set_grid_to_impassable(label)
                 self.data_dict[(row, column)] = {'button': label, 'hero': None}  # 添加其他数据项
 
         # 创建第一个按钮
-        self.button_dic["button_train"] = tk.Button(self.map_container, text="训练", command=self.Episode_for_agent)
+        self.button_dic["button_train"] = tk.Button(self.map_container, text="TRAIN", command=self.Episode_for_agent)
         self.button_dic["button_train"].grid(row=len(self.map) + 1, column=0, padx=10, pady=10)
 
         # 创建第二个按钮
-        self.button_dic["button_simulate"] = tk.Button(self.map_container, text="模拟", command=self.start_simulation)
+        self.button_dic["button_simulate"] = tk.Button(self.map_container, text="SIMULATE", command=self.start_simulation)
         self.button_dic["button_simulate"].grid(row=len(self.map) + 1, column=1, padx=10, pady=10)
 
-        self.button_dic["button_paused"] = tk.Button(self.map_container, text="暂停", command=self.thread_paused,
+        self.button_dic["button_paused"] = tk.Button(self.map_container, text="PAUSED", command=self.thread_paused,
                                                      state="disabled")
         self.button_dic["button_paused"].grid(row=len(self.map) + 1, column=2, padx=10, pady=10)
 
-        self.button_dic["button_next_step"] = tk.Button(self.map_container, text="下一步", command=self.next_step,
+        self.button_dic["button_next_step"] = tk.Button(self.map_container, text="NEXT_STEP", command=self.next_step,
                                                         state="disabled")
         self.button_dic["button_next_step"].grid(row=len(self.map) + 1, column=3, padx=10, pady=10)
 
-        self.button_dic["battle_with_qlearner"] = tk.Button(self.map_container, text="与AI对战",
+        self.button_dic["battle_with_qlearner"] = tk.Button(self.map_container, text="VS_Q_LEARNER",
                                                             command=self.battle_with_qlearner)
         self.button_dic["battle_with_qlearner"].grid(row=len(self.map) + 1, column=4, padx=10, pady=10)
 
@@ -368,11 +370,11 @@ class TIANDIJIEGUI:
         for position, data in self.data_dict.items():
             if data["hero"] and data["hero"].id == hero.id:
                 data["hero"] = None
-                data["button"].config(image='', width=6, height=3, bg="#D9D9D9", state="disabled")
+                data["button"].config(image='', width=10, height=5, bg="#D9D9D9", state="disabled")
                 break
 
     def expected_move_hero(self, hero, position):
-        self.data_dict[self.tentative_position['position']]["button"].config(image='', width=6, height=3, bg="green")
+        self.data_dict[self.tentative_position['position']]["button"].config(image='', width=10, height=5, bg="green")
         self.update_hero_photo(hero, self.data_dict[position]['button'])
         self.tentative_position['position'] = position
         self.show_normal_attack_action()
@@ -452,7 +454,7 @@ class TIANDIJIEGUI:
             self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
             self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100)
 
-        self.confirm_action_button = tk.Button(self.map_container, text="确定", command=lambda h=hero: self.confirm_action(h))
+        self.confirm_action_button = tk.Button(self.map_container, text="confirm_AC", command=lambda h=hero: self.confirm_action(h))
         self.confirm_action_button.grid(row=len(self.map) + 1, column=5 + temp, padx=10, pady=10)
 
     def select_skill(self, name):
@@ -529,7 +531,7 @@ class TIANDIJIEGUI:
                       state="normal" if hero.actionable else "disabled")
 
     def remove_hero_photo(self, data):
-        data["button"].config(image='', width=6, height=3, bg="#D9D9D9")
+        data["button"].config(image='', width=100, height=100, bg="#D9D9D9")
 
     def set_grid_to_impassable(self, button):
         image_path = f"open_spiel/python/games/Tiandijie/res/IMPASSABLE_OBSTACLE.png"
@@ -547,8 +549,8 @@ class TIANDIJIEGUI:
         threading.Thread(target=self.Episode_for_agent_worker).start()
 
     def Episode_for_agent_worker(self):
-        self.add_text("训练开始")
-        for cur_episode in range(3000):
+        self.add_text("Episode_Start")
+        for cur_episode in range(EpisodeTime):
             if self._terminal:
                 return
             self.add_text(f"Episode:{cur_episode}")
@@ -556,6 +558,7 @@ class TIANDIJIEGUI:
             while not time_step.last() and not self._terminal:
                 player_id = time_step.observations["current_player"]
                 if player_id == pyspiel.PlayerId.TERMINAL:
+                    print("Episode_for_agent_worker_TERMINAL", time_step.rewards)
                     break
                 agent_output = self.agents[player_id].step(time_step)
                 time_step = self.env.step([agent_output.action])
@@ -563,9 +566,9 @@ class TIANDIJIEGUI:
             for agent in self.agents:
                 agent.step(time_step)
 
-        with open("qlearner_model0.pkl", "wb") as f:
+        with open(f"qlearner_model_test0x{EpisodeTime}.pkl", "wb") as f:
             pickle.dump(self.agents[0], f)
-        with open("qlearner_model1.pkl", "wb") as f:
+        with open(f"qlearner_model_test1x{EpisodeTime}.pkl", "wb") as f:
             pickle.dump(self.agents[1], f)
         print("Done")
 

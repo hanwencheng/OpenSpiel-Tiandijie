@@ -4888,7 +4888,7 @@ class BuffTemps(Enum):
                 EventTypes.lose_buff_end,
                 1,
                 RS.always_true,
-                partial(Effects.add_buffs, ["xusun"], 1),
+                partial(Effects.add_self_buffs, ["xusun"], 1),
             ),
         ],
     )

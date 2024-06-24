@@ -87,8 +87,9 @@ class Action:
         self.has_additional_action = True
         self.additional_action = additional_move
 
-    def update_moves(self, battle_map, enemies_list) -> List[Position]:
-        return a_star_search(self.initial_position, self.move_point, battle_map, self.actor.temp.flyable, enemies_list)
+    def get_moves(self, battle_map, enemies_list) -> int:
+        path_list = a_star_search(self.initial_position, self.move_point, battle_map, self.actor.temp.flyable, enemies_list)
+        return len(path_list)
 
     def refresh_move_point(self, battle_map):
         battle_map.hero_move(self.initial_position, self.move_point)
@@ -99,21 +100,26 @@ class Action:
         if self.protector:
             print(self.protector.id)
         if self.type == ActionTypes.MOVE:
-            action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point}"
+            action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point}"
         elif self.type == ActionTypes.PASS:
-            action_to_string = f"{self.actor.name}选择跳过"
+            action_to_string = f"{self.actor.id} chooses pass"
         elif self.type == ActionTypes.NORMAL_ATTACK:
-            action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},对{self.targets[0].name}使用普通攻击"
+            action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use normal attack to{self.targets[0].id}{self.action_point}"
             if self.protector:
-                action_to_string += f",由{self.protector.name}护卫住"
+                action_to_string += f",was protected by {self.protector.id}"
         elif self.type == ActionTypes.SELF:
-            action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},使用了{self.skill.temp.chinese_name}"
+            action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use {self.skill.temp.id}"
         elif self.type in [ActionTypes.HEAL, ActionTypes.SKILL_ATTACK, ActionTypes.SUPPORT]:
             if self.skill.temp.target_type == SkillTargetTypes.TERRAIN:
-                action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},对{self.action_point}格子使用了{self.skill.temp.chinese_name}"
+                action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point}, use {self.skill.temp.id} to terrain {self.action_point}"
             else:
-                action_to_string = f"{self.actor.name}{self.initial_position}走到了{self.move_point},对{self.protector if self.protector else self.targets[0].name}{self.action_point}使用了{self.skill.temp.chinese_name}"
+                action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use {self.skill.temp.id} to {self.targets[0].id}{self.action_point}"
+                if self.protector:
+                    action_to_string += f",was protected by {self.protector.id}"
         return action_to_string
         # elif self.type == ActionTypes.TELEPORT:
         #     action_to_string = f"{self.actor}从{self.initial_position}走到了{self.move_point},使用了{self.skill.temp.id},传送到了{self.action_point}"
 
+    @staticmethod
+    def self_calculation(actor, move_point):
+        return a_star_search(actor.position, move_point, actor.temp.flyable, actor.temp.move_range)
