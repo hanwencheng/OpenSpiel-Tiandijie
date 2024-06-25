@@ -32,8 +32,8 @@ class TIANDIJIEGUI:
         self.num_actions = self.env.action_spec()["num_actions"]
         self.agents = []
         for idx in range(self.num_players):
-            if os.path.exists(f"qlearner_model_{idx}x{EpisodeTime}.pkl"):
-                with open(f"qlearner_model_{idx}x{EpisodeTime}.pkl", "rb") as f:
+            if os.path.exists(f"qlearner_model_test{idx}x{EpisodeTime}.pkl"):
+                with open(f"qlearner_model_test{idx}x{EpisodeTime}.pkl", "rb") as f:
                     self.agents.append(pickle.load(f))
                 print("读取")
             else:
@@ -260,7 +260,7 @@ class TIANDIJIEGUI:
         for row in range(len(self.map)):
             for column in range(len(self.map[0])):
                 # 创建一个不可编辑的标签
-                label = tk.Button(self.map_container, borderwidth=1, relief="solid", width=10, height=5,
+                label = tk.Button(self.map_container, borderwidth=1, relief="solid", width=10, height=5,# text=100,compound='left',
                                   state="disabled")
                 label.grid(row=row, column=column, padx=10, pady=10)
                 if self.map[row][column].terrain_type.value[0] == TerrainType.IMPASSABLE_OBSTACLE.value[0]:
@@ -477,7 +477,10 @@ class TIANDIJIEGUI:
                 data["button"].config(bg="#D9D9D9", state="disabled")
 
     def confirm_target(self, position):
-        self.data_dict[position]["button"].config(bg="yellow")
+        if self.data_dict[position]["button"].cget("bg") == "yellow":
+            self.data_dict[position]["button"].config(bg="orange")
+        else:
+            self.data_dict[position]["button"].config(bg="yellow")
 
     def confirm_action(self, hero):
         temp_skill = None

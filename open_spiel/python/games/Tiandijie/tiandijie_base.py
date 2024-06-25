@@ -142,6 +142,7 @@ class TianDiJieState(pyspiel.State):
 
             elif action.additional_skill_list and len(action.additional_skill_list) != 0:
                 actions = self.get_additional_skill_action(action.actor, action.additional_skill_list)
+                # actions = get_skill_action(action.actor, action.additional_skill_list, self.context, self.context.heroes)
                 legal_actions.extend(actions)
 
             elif action.additional_move > 0:
@@ -253,13 +254,13 @@ class TianDiJieState(pyspiel.State):
                     hero_in_skill = [actor]
                     if skill.temp.skill_type in {SkillType.Support, SkillType.Heal}:
                         partner_list = [hero for hero in hero_list if hero.player_id == actor.player_id and hero.player_id != actor.player_id]
-                        hero_in_skill.extend(partner for partner in partner_list if skill.temp.range_instance.check_if_target_in_range(actor.position, actor.position, partner.position, self.context.battlemap))
+                        hero_in_skill.extend(partner for partner in partner_list if skill.temp.range_instance.check_if_target_in_range(actor.position, target_position, partner.position, self.context.battlemap))
                         new_action = Action(actor, hero_in_skill, skill, actor.position, actor.position)
                         new_action.update_action_type(ActionTypes.SUPPORT) if skill.temp.skill_type == SkillType.Support else new_action.update_action_type(ActionTypes.HEAL)
                         actions.append(new_action)
                     elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
                         enemy_list = [hero for hero in hero_list if hero.player_id != actor.player_id]
-                        hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(actor.position, enemy.position, target_position, self.context.battlemap)]
+                        hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(actor.position, target_position, enemy.position, self.context.battlemap)]
                         new_action = Action(actor, hero_in_skill, skill, actor.position, target_position)
                         new_action.update_action_type(ActionTypes.SKILL_ATTACK)
                         actions.append(new_action)

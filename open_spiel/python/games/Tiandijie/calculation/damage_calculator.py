@@ -31,7 +31,6 @@ def calculate_skill_damage(
     attacker_instance: Hero, target_instance: Hero, action: Action, context: Context
 ):
     hero_id = attacker_instance.id
-    is_attacker = action.is_attacker(hero_id)
     skill = action.skill
     is_magic = action.is_magic
 
@@ -51,21 +50,29 @@ def calculate_skill_damage(
         )
         * defender_elemental_multiplier
     )
-
+    # print("calculate_skill_damage111", target_instance.id,
+    #       "get_attack", get_attack(attacker_instance, target_instance, context, is_magic),
+    #       "attacker_elemental_multiplier", attacker_elemental_multiplier,
+    #       "get_defense_with_penetration", get_defense_with_penetration(attacker_instance, target_instance, context, is_magic),
+    #       "defender_elemental_multiplier", defender_elemental_multiplier,
+    #       "attack_defense_difference", attack_defense_difference)
     # Calculating base damage
 
+    actual_damage = (
+            attack_defense_difference
+            * get_damage_modifier(attacker_instance, target_instance, skill, is_magic, context)
+            * get_damage_reduction_modifier(target_instance, attacker_instance, is_magic, context)
+    )
     if skill:
         damage_multiplier = skill.temp.multiplier
-        actual_damage = (
-            attack_defense_difference
-            * damage_multiplier
-            * get_damage_modifier(attacker_instance, target_instance, skill, is_magic, context)
-            * get_damage_reduction_modifier(
-                target_instance, attacker_instance, is_magic, context
-            )
-        )
-    else:
-        actual_damage = attack_defense_difference
+        actual_damage = actual_damage * damage_multiplier
+        # print("calculate_skill_damage222", target_instance.id,
+        #       "damage_multiplier", damage_multiplier,
+        #       "get_damage_modifier", get_damage_modifier(attacker_instance, target_instance, skill, is_magic, context),
+        #       "get_damage_reduction_modifier", get_damage_reduction_modifier(
+        #         target_instance, attacker_instance, is_magic, context
+        #         ),
+        #       )
 
     critical_probability = (
         get_critical_hit_probability(attacker_instance, target_instance, context)
@@ -80,20 +87,25 @@ def calculate_skill_damage(
             target_instance, attacker_instance, context
         )
     )
-    # critical_damage_multiplier = (
-    #     CRIT_MULTIPLIER
-    #     * get_critical_damage_modifier(attacker_instance, is_attacker, context)
-    #     * get_critical_damage_reduction_modifier(
-    #         target_instance, not is_attacker, context
-    #     )
-    # )
 
+    # print("calculate_skill_damage222", target_instance.id,
+    #       "CRIT_MULTIPLIER", CRIT_MULTIPLIER,
+    #       "critical_probability", critical_probability,
+    #       "get_critical_damage_modifier", get_critical_damage_modifier(attacker_instance, target_instance, context),
+    #       "get_critical_damage_reduction_modifier", get_critical_damage_reduction_modifier(
+    #         target_instance, attacker_instance, context
+    #         ),
+    #       )
     if random() < critical_probability:
         # Critical hit occurs
-        target_instance.take_harm(actual_damage * critical_damage_multiplier)
+        # print("Critical hit occurs333", target_instance.id,
+        #       actual_damage * critical_damage_multiplier
+        #       )
+        target_instance.take_harm(attacker_instance, actual_damage * critical_damage_multiplier, context)
     else:
         # No critical hit
-        target_instance.take_harm(actual_damage)
+        # print("No critical hit333", target_instance.id, actual_damage)
+        target_instance.take_harm(attacker_instance, actual_damage, context)
 
 
 def calculate_fix_damage(
@@ -102,7 +114,7 @@ def calculate_fix_damage(
     defender_fix_damage_reduction = get_fixed_damage_reduction_modifier(
         target_instance, actor_instance, context
     )
-    target_instance.take_harm(damage * defender_fix_damage_reduction)
+    target_instance.take_harm(actor_instance, damage * defender_fix_damage_reduction, context)
 
 
 def calculate_magic_damage(
@@ -111,7 +123,7 @@ def calculate_magic_damage(
     actual_damage = damage * get_damage_reduction_modifier(
         defender_instance, actor_instance, True, context
     )
-    defender_instance.take_harm(actual_damage)
+    defender_instance.take_harm(actor_instance, actual_damage, context)
 
 
 def calculate_physical_damage(
@@ -120,4 +132,4 @@ def calculate_physical_damage(
     actual_damage = damage * get_damage_reduction_modifier(
         defender_instance, actor_instance, False, context
     )
-    defender_instance.take_harm(actual_damage)
+    defender_instance.take_harm(actor_instance, actual_damage, context)

@@ -149,7 +149,7 @@ class Range:
         self.width = width
 
     def get_area(
-        self, base_position: Position, action_point: Position, battle_map
+        self, base_position: Position, action_point: Position, battle_map       # base_position初始的方向,action_point是技能释放的位置
     ) -> List[Position]:
         if self.range_type == RangeType.DIRECTIONAL:
             return calculate_direction_area(
@@ -158,18 +158,18 @@ class Range:
         elif self.range_type == RangeType.POINT:
             return [action_point]
         elif self.range_type == RangeType.DIAMOND:
-            return calculate_diamond_area(base_position, self.range_value, battle_map)
+            return calculate_diamond_area(action_point, self.range_value, battle_map)
         elif self.range_type == RangeType.ARCHER:
-            return calculate_archer_area(base_position, self.range_value)
+            return calculate_archer_area(action_point, self.range_value)
         elif self.range_type == RangeType.CROSS:
-            return calculate_cross_area(base_position, self.range_value)
+            return calculate_cross_area(action_point, self.range_value)
         else:
-            return calculate_square_area(base_position, self.range_value)
+            return calculate_square_area(action_point, self.range_value)
 
     def check_if_target_in_range(
         self, base_position: Position, action_point: Position, target_position: Position, battle_map
     ) -> bool:
-        area_map = self.get_area(base_position, action_point, battle_map)
+        area_map = self.get_area(base_position, action_point, battle_map)       # base_position初始的方向,action_point是技能释放的位置
         return target_position in area_map
 
 

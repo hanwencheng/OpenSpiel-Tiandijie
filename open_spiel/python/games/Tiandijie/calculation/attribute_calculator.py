@@ -240,7 +240,7 @@ def get_damage_modifier(
         + accumulated_skill_damage_modifier
         + accumulated_passive_damage_modifier
         + get_action_type_damage_modifier(attacker_instance, counter_instance, context)
-    )
+    ) / 100
 
     # B-type damage increase (Additive)
     level1_damage_modifier = (
