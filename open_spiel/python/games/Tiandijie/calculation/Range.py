@@ -22,7 +22,7 @@ def calculate_direction_area(
         current_action_point[0] - base_point[0] > 0
         and base_point[1] == current_action_point[1]
     ):
-        print("in right direction")
+        # print("in right direction")
         for i in range(length):
             for j in range(width):
                 area_map.append(
@@ -33,9 +33,9 @@ def calculate_direction_area(
         base_point[0] - current_action_point[0] > 0
         and base_point[1] == current_action_point[1]
     ):
-        print("in left direction")
+        # print("in left direction")
         for i in range(length):
-            for j in range(ceil(width / 2) + 1):
+            for j in range(width):
                 area_map.append(
                     (base_point[0] - i - 1, base_point[1] - floor(width / 2) + j)
                 )
@@ -44,7 +44,7 @@ def calculate_direction_area(
         base_point[0] == current_action_point[0]
         and base_point[1] - current_action_point[1] > 0
     ):
-        print("in top direction")
+        # print("in top direction")
         for i in range(length):
             for j in range(width):
                 area_map.append(
@@ -55,7 +55,7 @@ def calculate_direction_area(
         current_action_point[0] == base_point[0]
         and current_action_point[1] - base_point[1] > 0
     ):
-        print("in bottom direction")
+        # print("in bottom direction")
         for i in range(length):
             for j in range(width):
                 area_map.append(

@@ -122,6 +122,7 @@ class EventTypes(enum.Enum):
     lose_buff_start = "lose_buff_start"
     lose_buff_end = "lose_buff_end"       # buff消失时计算
 
+    before_hero_death = "before_hero_death"
     hero_death = "hero_death"
     other_hero_death = "other_hero_death"
     rebirth_start = "rebirth_start"

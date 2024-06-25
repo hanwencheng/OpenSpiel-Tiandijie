@@ -14,7 +14,7 @@ from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
 )
 from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 from open_spiel.python.games.Tiandijie.calculation.Range import check_if_target_in_skill_attack_range
-from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import SkillTargetTypes
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType, SkillTargetTypes
 
 
 def check_if_counterattack(actor: Hero, target: Hero, context: Context):
@@ -42,24 +42,25 @@ def check_if_counterattack_first(action: Action, context: Context):
 def check_if_in_battle(action: Action, context: Context):
     if action.type == ActionTypes.NORMAL_ATTACK or (
         action.type == ActionTypes.SKILL_ATTACK
-        and action.skill.temp.skill_type == SkillTargetTypes.ENEMY
+        and action.skill.temp.target_type == SkillTargetTypes.ENEMY
         and action.skill.temp.range_instance.range_type == RangeType.POINT
+        and (action.skill.temp.skill_type in {SkillType.Physical, SkillType.Magical})
     ):
-        defender = action.get_defender_hero_in_battle()
-        be_protected = action.targets[0]
+        # defender = action.get_defender_hero_in_battle()
+        # be_protected = action.targets[0]
         # if check_if_counterattack(action.actor, defender, context):
-        if (
-            action.type == ActionTypes.NORMAL_ATTACK
-            and calculate_if_targe_in_diamond_range(
-                # action.action_point, be_protected.position, action.actor.temp.hide_professions.value[1]
-                action.action_point, be_protected.position, get_attack_range(action.actor, context)
-            )
-            or (action.skill and check_if_target_in_skill_attack_range(
-                action.actor, be_protected, action.skill
-            ))
-        ):
-            action.update_is_in_battle(True)
-            return True
+        # if (
+        #     action.type == ActionTypes.NORMAL_ATTACK
+        #     and calculate_if_targe_in_diamond_range(
+        #         # action.action_point, be_protected.position, action.actor.temp.hide_professions.value[1]
+        #         action.action_point, be_protected.position, get_attack_range(action.actor, context)
+        #     )
+        #     or (action.skill and check_if_target_in_skill_attack_range(
+        #         action.actor, be_protected, action.skill
+        #     ))
+        # ):
+        action.update_is_in_battle(True)
+        return True
     else:
         return False
 

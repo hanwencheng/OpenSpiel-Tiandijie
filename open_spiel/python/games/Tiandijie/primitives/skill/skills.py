@@ -430,7 +430,7 @@ class Skills(Enum):
         SkillTargetTypes.TERRAIN,
         0,
         Distance(DistanceType.NORMAL, 5),
-        Range(RangeType.POINT, 2, 1, 1),
+        Range(RangeType.DIAMOND, 2, 1, 1),
         0,
         [],
         [
@@ -445,13 +445,13 @@ class Skills(Enum):
                 EventTypes.skill_end,
                 1,
                 partial(Rs.always_true),
-                partial(Effects.add_fixed_damage_by_caster_magic_attack, 0.2),
+                partial(Effects.take_effect_of_buqi, 1),
             ),
             EventListener(
                 EventTypes.skill_end,
                 1,
                 partial(Rs.always_true),
-                partial(Effects.take_effect_of_buqi),
+                partial(Effects.take_effect_of_buqi, 2),
             )
         ],
     )
@@ -469,8 +469,8 @@ class Skills(Enum):
         SkillTargetTypes.DIRECTION,
         3,
         Distance(DistanceType.NORMAL, 1),
-        Range(RangeType.CROSS, 5, 5, 5),
-        0,
+        Range(RangeType.DIRECTIONAL, 5, 5, 1),
+        0.3,
         [],
         [
             EventListener(

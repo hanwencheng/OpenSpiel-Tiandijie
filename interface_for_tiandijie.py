@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import messagebox, StringVar, OptionMenu
 from absl import flags, app
@@ -18,7 +17,7 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = 3000
+EpisodeTime = 5000
 
 
 class TIANDIJIEGUI:
@@ -33,8 +32,8 @@ class TIANDIJIEGUI:
         self.num_actions = self.env.action_spec()["num_actions"]
         self.agents = []
         for idx in range(self.num_players):
-            if os.path.exists(f"qlearner_model_test{idx}x{EpisodeTime}.pkl"):
-                with open(f"qlearner_model_test{idx}x{EpisodeTime}.pkl", "rb") as f:
+            if os.path.exists(f"qlearner_model_{idx}x{EpisodeTime}.pkl"):
+                with open(f"qlearner_model_{idx}x{EpisodeTime}.pkl", "rb") as f:
                     self.agents.append(pickle.load(f))
                 print("读取")
             else:
@@ -531,7 +530,7 @@ class TIANDIJIEGUI:
                       state="normal" if hero.actionable else "disabled")
 
     def remove_hero_photo(self, data):
-        data["button"].config(image='', width=100, height=100, bg="#D9D9D9")
+        data["button"].config(image='', width=10, height=5, bg="#D9D9D9")
 
     def set_grid_to_impassable(self, button):
         image_path = f"open_spiel/python/games/Tiandijie/res/IMPASSABLE_OBSTACLE.png"

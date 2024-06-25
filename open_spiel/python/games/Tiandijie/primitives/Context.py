@@ -53,13 +53,13 @@ class Context:
         else:
             return None  # Return None if there are no actions
 
-    def get_partners_in_diamond_range(self, hero: Hero, range_value: int) -> List[Hero]:
-        base_position = hero.position
+    def get_partners_in_diamond_range(self, actor_instance: Hero, range_value: int) -> List[Hero]:
+        base_position = actor_instance.position
         positions_list_in_range = calculate_diamond_area(base_position, range_value, self.battlemap)
         return [
             hero
             for hero in self.heroes
-            if hero.position in positions_list_in_range and hero.player_id == hero.player_id
+            if hero.position in positions_list_in_range and hero.player_id == actor_instance.player_id
         ]
 
     def get_all_partners(self, hero: Hero) -> List[Hero]:
@@ -68,13 +68,21 @@ class Context:
     def get_all_partners_position(self, hero: Hero):
         return [partner_hero.position for partner_hero in self.heroes if partner_hero.player_id == hero.player_id]
 
-    def get_enemies_in_diamond_range(self, hero: Hero, range_value: int) -> List[Hero]:
-        base_position = hero.position
+    def get_enemies_in_diamond_range(self, actor_instance: Hero, range_value: int) -> List[Hero]:
+        base_position = actor_instance.position
         positions_list_in_range = calculate_diamond_area(base_position, range_value, self.battlemap)
         return [
             hero
             for hero in self.heroes
-            if hero.position in positions_list_in_range and hero.player_id != hero.player_id
+            if hero.position in positions_list_in_range and hero.player_id != actor_instance.player_id
+        ]
+
+    def get_enemies_in_diamond_range_by_target_point(self, actor_instance, base_position, range_value: int) -> List[Hero]:
+        positions_list_in_range = calculate_diamond_area(base_position, range_value, self.battlemap)
+        return [
+            hero
+            for hero in self.heroes
+            if hero.position in positions_list_in_range and hero.player_id != actor_instance.player_id
         ]
 
     def get_enemies_in_square_range(self, actor_instance, base_position, range_value: int) -> List[Hero]:
@@ -85,22 +93,22 @@ class Context:
             if hero.position in positions_list_in_range and hero.player_id != actor_instance.player_id
         ]
 
-    def get_enemies_in_cross_range(self, hero: Hero, range_value: int) -> List[Hero]:
-        base_position = hero.position
+    def get_enemies_in_cross_range(self, actor_instance: Hero, range_value: int) -> List[Hero]:
+        base_position = actor_instance.position
         positions_list_in_range = calculate_cross_area(base_position, range_value)
         return [
             hero
             for hero in self.heroes
-            if hero.position in positions_list_in_range and hero.player_id != hero.player_id
+            if hero.position in positions_list_in_range and hero.player_id != actor_instance.player_id
         ]
 
-    def get_partner_in_square_range(self, hero: Hero, range_value: int) -> List[Hero]:
-        base_position = hero.position
+    def get_partner_in_square_range(self, actor_instance: Hero, range_value: int) -> List[Hero]:
+        base_position = actor_instance.position
         positions_list_in_range = calculate_square_area(base_position, range_value)
         return [
             hero
             for hero in self.heroes
-            if hero.position in positions_list_in_range and hero.player_id == hero.player_id
+            if hero.position in positions_list_in_range and hero.player_id == actor_instance.player_id
         ]
 
     def load_buffs(self):

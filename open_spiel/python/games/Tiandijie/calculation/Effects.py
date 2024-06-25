@@ -602,7 +602,7 @@ class Effects:
     ):
         caster = context.get_hero_by_id(buff.caster_id)
         damage = get_attack(caster, actor, context, False) * multiplier
-        calculate_fix_damage(damage, caster, actor, context)
+        calculate_fix_damage(damage, caster, target, context)
 
     @staticmethod
     def add_fixed_damage_by_caster_magic_attack(
@@ -614,7 +614,7 @@ class Effects:
     ):
         caster = actor if type(primitive) == Skill else context.get_hero_by_id(primitive.caster_id)
         damage = get_attack(caster, actor, context, True) * multiplier
-        calculate_fix_damage(damage, caster, actor, context)
+        calculate_fix_damage(damage, caster, target, context)
 
     @staticmethod
     def add_fixed_damage_by_target_max_life(
@@ -2019,19 +2019,26 @@ class Effects:
 
     @staticmethod
     def take_effect_of_buqi(
+        state: int,
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
         skill: Skill,
     ):
-        target_position = context.get_last_action().action_point
-        Effects.remove_jinwuqi(context)
-        Effects.remove_actor_certain_buff("chiqi", actor_instance, target_instance, context, skill)
-        Effects.set_jinwuqi(actor_instance, target_position, context)
-        if actor_instance.special_mark:
-            actor_instance.special_mark = False
-            calculate_additional_action(actor_instance, context)
-            Effects.add_self_buffs(["ranyan"], 2, actor_instance, None, context, skill)
+        if state == 1:
+            action = context.get_last_action()
+            enemies = context.get_enemies_in_diamond_range_by_target_point(actor_instance, action.action_point, 2)
+            for enemy in enemies:
+                Effects.add_fixed_damage_by_caster_magic_attack(0.2, actor_instance, enemy, context, skill)
+        elif state == 2:
+            target_position = context.get_last_action().action_point
+            Effects.remove_jinwuqi(context)
+            Effects.remove_actor_certain_buff("chiqi", actor_instance, target_instance, context, skill)
+            Effects.set_jinwuqi(actor_instance, target_position, context)
+            if actor_instance.special_mark:
+                actor_instance.special_mark = False
+                calculate_additional_action(actor_instance, context)
+                Effects.add_self_buffs(["ranyan"], 2, actor_instance, None, context, skill)
 
     @staticmethod
     def take_effect_of_yanranchuanyun(

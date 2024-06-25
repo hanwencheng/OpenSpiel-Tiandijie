@@ -240,8 +240,13 @@ class TalentEffects:
         elif state == 2:
             Effects.remove_jinwuqi(context)
         else:
-            Effects.clear_terrain_by_buff_name("jinwuqi", context)
-            context.battlemap.remove_terrain_by_name(TerrainType.JINWUQI)
+            position = context.battlemap.get_terrain_position_by_type(TerrainType.JINWUQI)
+            if position is not None:
+                terrain = context.battlemap.get_terrain(position)
+                caster_id = terrain.caster_id
+                if caster_id == talent.caster_id:
+                    context.battlemap.init_terrain(position)
+                    Effects.clear_terrain_by_buff_name("jinwuqi", context)
 
     # 行动结束前，可额外使用绝学「光·自在」/「雷·自在」（间隔2回合触发，使用后将切换所有专属绝学并刷新冷却时间且保留当前气力）
     @staticmethod
@@ -483,6 +488,6 @@ class TalentEffects:
                     target_enemy, actor_instance, context
                 ):
                     target_enemy = enemy
-            Effects.add_fixed_damage_by_caster_magic_attack(
+            Effects.add_fixed_damage_by_caster_physical_attack(
                 0.9, actor_instance, target_enemy, context, talent
             )

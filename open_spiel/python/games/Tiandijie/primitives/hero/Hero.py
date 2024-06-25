@@ -5,7 +5,7 @@ from typing import List
 from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import generate_max_level_attributes, multiply_attributes
 from typing import TYPE_CHECKING
 from open_spiel.python.games.Tiandijie.calculation.PathFinding import bfs_move_range
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range, calculate_direction_area
 from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillTargetTypes, SkillType
 from open_spiel.python.games.Tiandijie.primitives.Action import Action, ActionTypes
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_level2_modifier
@@ -183,7 +183,7 @@ class Hero:
                         enemy_list = [hero for hero in hero_list if hero.player_id != self.player_id]
                         hero_in_skill = [enemy for enemy in enemy_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, moveable_position, enemy.position, context.battlemap)]
                         new_action = Action(self, hero_in_skill, skill, moveable_position, moveable_position)
-                        new_action.update_action_type(ActionTypes.SELF)
+                        new_action.update_action_type(ActionTypes.SKILL_ATTACK)
                         self.actionable_list.append(new_action)
                 else:
                     def get_new_action(self, hero_in_skill, skill, moveable_position, target_position):

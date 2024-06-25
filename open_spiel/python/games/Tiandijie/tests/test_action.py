@@ -26,7 +26,6 @@ class TestHero(unittest.TestCase):
         test_action = None
 
         game_state = State(game_context)
-        print(f"现在是玩家{game_state._cur_player}的行动")
         legal_actions = game_state._legal_actions(game_state._cur_player)
         from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, \
             get_max_life

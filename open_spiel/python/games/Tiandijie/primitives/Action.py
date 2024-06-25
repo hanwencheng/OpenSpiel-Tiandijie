@@ -113,7 +113,7 @@ class Action:
             if self.skill.temp.target_type == SkillTargetTypes.TERRAIN:
                 action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point}, use {self.skill.temp.id} to terrain {self.action_point}"
             else:
-                action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use {self.skill.temp.id} to {self.targets[0].id}{self.action_point}"
+                action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use {self.skill.temp.id} to {self.targets[0].id if self.targets else ''}, {self.action_point}"
                 if self.protector:
                     action_to_string += f",was protected by {self.protector.id}"
         return action_to_string

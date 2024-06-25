@@ -185,6 +185,8 @@ def event_listener_calculator(
     if event_type == EventTypes.skill_start:
         skill = current_action.skill
         skill.cool_down = skill.temp.max_cool_down+1
+    if event_type == EventTypes.before_action_end:
+        before_action_end_event(actor_instance, context)
     if event_type == EventTypes.action_end:
         action_end_event(actor_instance, context)
     if event_type == EventTypes.turn_start:
@@ -216,11 +218,6 @@ def action_end_event(actor_instance: 'Hero', context):
         if buff.duration == 0:
             actor_instance.field_buffs.remove(buff)
 
-    for skill in actor_instance.enabled_skills:
-        skill.cool_down -= 1
-        if skill.cool_down < 0:
-            skill.cool_down = 0
-
     actor_instance.temp.talent.cooldown -= 1
     if actor_instance.temp.talent.cooldown < 0:
         actor_instance.temp.talent.cooldown = 0
@@ -228,6 +225,13 @@ def action_end_event(actor_instance: 'Hero', context):
     action = context.get_last_action()
     if not action.has_additional_action:
         actor_instance.actionable = False
+
+
+def before_action_end_event(actor_instance: 'Hero', context):
+    for skill in actor_instance.enabled_skills:
+        skill.cool_down -= 1
+        if skill.cool_down < 0:
+            skill.cool_down = 0
 
 
 def new_turn_event(actor_instance: 'Hero', context):
