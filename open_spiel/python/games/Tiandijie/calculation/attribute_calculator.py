@@ -380,14 +380,8 @@ def get_critical_hit_probability(
     critical_stones_percentage_modifier = accumulate_stone_attribute(
         actor_hero.stones, ma.critical_percentage
     )
-    # TODO
-    #  add stones suit effect
 
-    luck_attribute = actor_hero.initial_attributes.luck
-    total_luck = luck_attribute * (
-        1
-        + get_level2_modifier(actor_hero, counter_instance, ma.luck, context, is_basic)
-    )
+    total_luck = get_luck(actor_hero, counter_instance, context, is_basic)
     level2_critical_modifier = get_level2_modifier(
         actor_hero, counter_instance, ma.critical_percentage, context
     )
@@ -395,6 +389,15 @@ def get_critical_hit_probability(
         total_luck / 10 + level2_critical_modifier + critical_stones_percentage_modifier
     )
     return total_critical / 100
+
+
+def get_luck(actor_hero: Hero, counter_instance: Hero, context: Context, is_basic: bool = False) -> float:
+    luck_attribute = actor_hero.initial_attributes.luck
+    total_luck = luck_attribute * (
+        1
+        + get_level2_modifier(actor_hero, counter_instance, ma.luck, context, False)
+    )
+    return total_luck
 
 
 def get_critical_hit_resistance(

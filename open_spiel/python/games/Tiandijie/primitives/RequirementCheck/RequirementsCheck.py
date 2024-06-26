@@ -438,7 +438,7 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
-        if action.skill.temp.range_instance.range_value == 0:
+        if action.skill and action.skill.temp.range_instance.range_value == 0:
             return 1
         return 0
 

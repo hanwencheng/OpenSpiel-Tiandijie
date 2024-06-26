@@ -1,3 +1,4 @@
+import math
 import tkinter as tk
 from tkinter import messagebox, StringVar, OptionMenu
 from absl import flags, app
@@ -10,6 +11,7 @@ from open_spiel.python.algorithms import tabular_qlearner
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 from open_spiel.python.games.Tiandijie.primitives.hero.heroes import HeroeTemps
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_max_life, get_attack, get_defense, get_luck
 import threading
 import time
 import os
@@ -17,7 +19,62 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = 5000
+EpisodeTime = 9000
+
+
+class Tooltip:
+    def __init__(self, widget, text=None):
+        self.widget = widget
+        self.text = text
+        self.tooltip_window = None
+        self.show_tooltip = False  # 初始状态为不显示
+        self.locked = False
+        self.test = 0
+
+    def enter(self, event=None):
+        self.test += 1
+        print(self.test)
+        if not self.locked:
+            self.locked = True
+            if self.show_tooltip:
+                self.show()
+
+    def leave(self, event=None):
+        time.sleep(0.5)
+        self.hide()
+        self.locked = False
+
+    def config_tooltip_hide(self):
+        self.widget.bind("<Enter>")
+        self.widget.bind("<Leave>")
+        self.show_tooltip = False
+        self.text = None
+
+    def config_tooltip_text(self, text):
+        self.widget.bind("<Enter>", self.enter)
+        self.widget.bind("<Leave>", self.leave)
+        self.show_tooltip = True
+        self.text = text
+
+    def show(self):
+        if not self.tooltip_window:
+            x, y, _, _ = self.widget.bbox("insert")
+            x += self.widget.winfo_rootx() + 25
+            y += self.widget.winfo_rooty() + 20
+
+            self.tooltip_window = tk.Toplevel(self.widget)
+            self.tooltip_window.wm_overrideredirect(True)
+            self.tooltip_window.wm_geometry("+%d+%d" % (x, y))
+
+            label = tk.Label(self.tooltip_window, text=self.text, justify='left',
+                             background="#ffffe0", relief='solid', borderwidth=1,
+                             wraplength=200)
+            label.pack(ipadx=1)
+
+    def hide(self):
+        if self.tooltip_window:
+            self.tooltip_window.destroy()
+            self.tooltip_window = None
 
 
 class TIANDIJIEGUI:
@@ -32,8 +89,8 @@ class TIANDIJIEGUI:
         self.num_actions = self.env.action_spec()["num_actions"]
         self.agents = []
         for idx in range(self.num_players):
-            if os.path.exists(f"qlearner_model_test{idx}x{EpisodeTime}.pkl"):
-                with open(f"qlearner_model_test{idx}x{EpisodeTime}.pkl", "rb") as f:
+            if os.path.exists(f"2xqlearner_model_{idx}x{EpisodeTime}.pkl"):
+                with open(f"2xqlearner_model_{idx}x{EpisodeTime}.pkl", "rb") as f:
                     self.agents.append(pickle.load(f))
                 print("读取")
             else:
@@ -260,12 +317,13 @@ class TIANDIJIEGUI:
         for row in range(len(self.map)):
             for column in range(len(self.map[0])):
                 # 创建一个不可编辑的标签
-                label = tk.Button(self.map_container, borderwidth=1, relief="solid", width=10, height=5,# text=100,compound='left',
+                button = tk.Button(self.map_container, borderwidth=1, relief="solid", width=10, height=5,# text=100,compound='left',
                                   state="disabled")
-                label.grid(row=row, column=column, padx=10, pady=10)
+                button.grid(row=row, column=column, padx=10, pady=10)
                 if self.map[row][column].terrain_type.value[0] == TerrainType.IMPASSABLE_OBSTACLE.value[0]:
-                    self.set_grid_to_impassable(label)
-                self.data_dict[(row, column)] = {'button': label, 'hero': None}  # 添加其他数据项
+                    self.set_grid_to_impassable(button)
+                tooltip = Tooltip(button)
+                self.data_dict[(row, column)] = {'button': button, 'hero': None, 'tooltip': tooltip}  # 添加其他数据项
 
         # 创建第一个按钮
         self.button_dic["button_train"] = tk.Button(self.map_container, text="TRAIN", command=self.Episode_for_agent)
@@ -309,14 +367,14 @@ class TIANDIJIEGUI:
     def init_hero_map(self):
         for hero in self.heroes:
             self.data_dict[hero.position]['hero'] = hero
-            self.update_hero_position(hero, self.data_dict[hero.position]['button'])
+            self.update_hero_position(hero, self.data_dict[hero.position])
 
     def redraw_hero_map(self):
         for hero in self.heroes:
             if not self.data_dict[hero.position]["hero"]:
                 self.remove_hero_position_in_data_dict(hero)
                 self.data_dict[hero.position]["hero"] = hero
-                self.update_hero_position(hero, self.data_dict[hero.position]['button'])
+                self.update_hero_position(hero, self.data_dict[hero.position])
         for hero in self.cemetery:
             self.remove_hero_position_in_data_dict(hero)
         self.check_all_actionable_heroes()
@@ -345,7 +403,7 @@ class TIANDIJIEGUI:
                 self.remove_hero_position_in_data_dict(data["hero"])
                 if hero:
                     self.data_dict[hero.position]['hero'] = hero
-                    self.update_hero_position(hero, self.data_dict[hero.position]['button'])
+                    self.update_hero_position(hero, self.data_dict[hero.position])
                 data["hero"] = None
             if data["button"].cget("image") and not data["hero"] and self.map[position[0]][position[1]].terrain_type.value[0] != TerrainType.IMPASSABLE_OBSTACLE.value[0]:
                 self.remove_hero_photo(data)
@@ -370,11 +428,12 @@ class TIANDIJIEGUI:
             if data["hero"] and data["hero"].id == hero.id:
                 data["hero"] = None
                 data["button"].config(image='', width=10, height=5, bg="#D9D9D9", state="disabled")
+                data["tooltip"].config_tooltip_hide()
                 break
 
     def expected_move_hero(self, hero, position):
         self.data_dict[self.tentative_position['position']]["button"].config(image='', width=10, height=5, bg="green")
-        self.update_hero_photo(hero, self.data_dict[position]['button'])
+        self.update_hero_photo(hero, position)
         self.tentative_position['position'] = position
         self.show_normal_attack_action()
 
@@ -387,7 +446,7 @@ class TIANDIJIEGUI:
     def show_action(self, hero):
         if self.tentative_position['hero']:
             self.remove_hero_photo(self.data_dict[self.tentative_position['position']])
-            self.update_hero_position(self.tentative_position['hero'], self.data_dict[self.tentative_position['hero'].position]['button'])
+            self.update_hero_position(self.tentative_position['hero'], self.data_dict[self.tentative_position['hero'].position])
         self.tentative_position = {'hero': hero, 'position': hero.position}
         action_test = []
         skill_list = []
@@ -430,6 +489,7 @@ class TIANDIJIEGUI:
             )
             self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
             self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100, state="normal" if skill in skill_list else "disabled")
+            Tooltip(self.skill_dic[skill.temp.chinese_name], f"{skill.temp.chinese_name}, CD:{skill.cool_down}")
 
         for i, skill in enumerate(hero.enabled_passives):
             temp += 1
@@ -438,6 +498,7 @@ class TIANDIJIEGUI:
             self.skill_dic[skill.chinese_name] = tk.Button(self.map_container, width=4, height=2)
             self.skill_dic[skill.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
             self.skill_dic[skill.chinese_name].config(image=image, width=100, height=100, state="disabled")
+            Tooltip(self.skill_dic[skill.temp.chinese_name], f"{skill.temp.chinese_name}")
         for i, skill in enumerate(skill_list):
             if skill in hero.enabled_skills:
                 continue
@@ -452,6 +513,7 @@ class TIANDIJIEGUI:
             )
             self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
             self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100)
+            Tooltip(self.skill_dic[skill.temp.chinese_name], f"{skill.temp.chinese_name}")
 
         self.confirm_action_button = tk.Button(self.map_container, text="confirm_AC", command=lambda h=hero: self.confirm_action(h))
         self.confirm_action_button.grid(row=len(self.map) + 1, column=5 + temp, padx=10, pady=10)
@@ -468,7 +530,6 @@ class TIANDIJIEGUI:
 
     def show_skill_action(self, skill_name):
         for action in self.now_state.legal_actions_dic[1]:
-            # print("show_skill_action", action.actor.position, action.actor.position == action.action_point)
             if action.actor == self.tentative_position['hero'] and action.move_point == self.tentative_position['position']:
                 if action.skill and action.skill.temp.chinese_name == skill_name:
                     self.data_dict[action.action_point]["button"].config(bg="orange", state="normal", command=lambda p=action.action_point: self.confirm_target(p))
@@ -518,22 +579,31 @@ class TIANDIJIEGUI:
                     self.input = legal_actions.index(action)
                     break
 
-    def update_hero_position(self, hero, button):
+    def update_hero_position(self, hero, data):
         hero_id = hero.id
         image_path = f"open_spiel/python/games/Tiandijie/res/{hero_id[:-1]}.png"
         image = self.load_image(image_path, (100, 100))
-        button.config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
+        data["button"].config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
                       state="normal" if hero.actionable else "disabled", command=lambda p=hero: self.show_action(p))
+        data["tooltip"].config_tooltip_text(f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage/100)} / {math.ceil(get_max_life(hero, None, self.now_state.context))}"
+                                                                f"physical_attack:{math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack:{math.ceil(get_attack(hero, None, self.now_state.context, True))} "
+                                                                f"physical_defense:{math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense:{math.ceil(get_defense(hero, None, True, self.now_state.context))} "
+                                                                f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}")
 
-    def update_hero_photo(self, hero, button):
+    def update_hero_photo(self, hero, position):
         hero_id = hero.id
         image_path = f"open_spiel/python/games/Tiandijie/res/{hero_id[:-1]}.png"
         image = self.load_image(image_path, (100, 100))
-        button.config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
+        self.data_dict[position]["button"].config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
                       state="normal" if hero.actionable else "disabled")
+        self.data_dict[position]["tooltip"].config_tooltip_text(f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage/100)} / {math.ceil(get_max_life(hero, None, self.now_state.context))}"
+                                                                f"physical_attack:{math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack:{math.ceil(get_attack(hero, None, self.now_state.context, True))} "
+                                                                f"physical_defense:{math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense:{math.ceil(get_defense(hero, None, True, self.now_state.context))} "
+                                                                f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}")
 
     def remove_hero_photo(self, data):
         data["button"].config(image='', width=10, height=5, bg="#D9D9D9")
+        data["tooltip"].config_tooltip_hide()
 
     def set_grid_to_impassable(self, button):
         image_path = f"open_spiel/python/games/Tiandijie/res/IMPASSABLE_OBSTACLE.png"
@@ -568,9 +638,9 @@ class TIANDIJIEGUI:
             for agent in self.agents:
                 agent.step(time_step)
 
-        with open(f"qlearner_model_test0x{EpisodeTime}.pkl", "wb") as f:
+        with open(f"2xqlearner_model_0x{EpisodeTime}.pkl", "wb") as f:
             pickle.dump(self.agents[0], f)
-        with open(f"qlearner_model_test1x{EpisodeTime}.pkl", "wb") as f:
+        with open(f"2xqlearner_model_1x{EpisodeTime}.pkl", "wb") as f:
             pickle.dump(self.agents[1], f)
         print("Done")
 
@@ -583,3 +653,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = TIANDIJIEGUI(root)
     root.mainloop()
+
