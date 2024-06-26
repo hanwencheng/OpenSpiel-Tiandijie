@@ -753,9 +753,8 @@ class RequirementCheck:
     def skill_is_used_by_certain_hero(
         hero_temp_id: str, actor_hero: Hero, target_hero: Hero, context: Context, skill
     ) -> int:
-        action = context.get_last_action()
         if _is_attacker(actor_hero, context):
-            if action.skill.temp.id == hero_temp_id:
+            if actor_hero.temp.temp_id == hero_temp_id:
                 return 1
         return 0
 
