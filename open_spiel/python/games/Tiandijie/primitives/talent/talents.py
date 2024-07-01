@@ -628,7 +628,7 @@ class Talents(Enum):
                 partial(Rs.BuffChecks.self_benefit_buff_count, 3),
                 {
                     Ma.battle_damage_percentage: 15,
-                    Ma.suffer_critical_damage_percentage: 15,
+                    Ma.suffer_critical_damage_reduction_percentage: 15,
                 },
             ),
         ],
@@ -1132,7 +1132,8 @@ class Talents(Enum):
             ModifierEffect(
                 partial(Rs.LifeChecks.self_life_is_higher, 70),
                 {
-                    Ma.battle_damage_percentage: 20,
+                    Ma.physical_damage_percentage: 20,
+                    Ma.magic_damage_percentage: 20,
                     Ma.physical_damage_reduction_percentage: 20,
                     Ma.magic_damage_reduction_percentage: 20,
                 },
@@ -1209,7 +1210,7 @@ class Talents(Enum):
         ],
         [
             EventListener(
-                EventTypes.action_start,
+                EventTypes.turn_start,
                 1,
                 partial(TRs.youfenghuashen_requires_check),
                 partial(Effects.add_self_buffs, ["hanlan", "fanyu", "xuanyou"], 15),

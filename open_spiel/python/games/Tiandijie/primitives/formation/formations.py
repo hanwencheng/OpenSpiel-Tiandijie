@@ -272,9 +272,10 @@ class Formations:
                 },
             ),
             ModifierEffect(
-                Check.always_true,
+                partial(Check.under_attack_by_advantage_elements),
                 {
-                    ma.element_defender_multiplier: 0.08,
+                    ma.physical_damage_reduction_percentage: 8,
+                    ma.magic_damage_reduction_percentage: 8,
                 },
             ),
         ],
@@ -583,7 +584,7 @@ class Formations:
                     Check.PositionChecks.element_hero_in_range, [Elements.LIGHT], 2
                 ),
                 {
-                    ma.critical_damage_reduction_percentage: 8,
+                    ma.suffer_critical_damage_reduction_percentage: 8,
                     ma.physical_damage_percentage: 8,
                     ma.magic_damage_percentage: 8,
                 },

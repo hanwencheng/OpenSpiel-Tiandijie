@@ -204,6 +204,15 @@ class RequirementCheck:
         return _is_attacker(target_hero, context) and action.is_in_battle
 
     @staticmethod
+    def self_is_battle_attacker(
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ) -> int:
+        if target_hero is None:
+            return 0
+        action = context.get_last_action()
+        return _is_attacker(actor_hero, context) and action.is_in_battle
+
+    @staticmethod
     def is_battle_with_remote(
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
@@ -225,6 +234,8 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
+        if not action:
+            return 0
         if (
             target_hero.temp.profession
             in [
@@ -232,6 +243,26 @@ class RequirementCheck:
                 Professions.SWORDSMAN,
                 Professions.RIDER,
                 Professions.WARRIOR,
+            ]
+            and action.is_in_battle
+            and _is_attacker(target_hero, context)
+        ):
+            return 1
+        return 0
+
+    @staticmethod
+    def attacked_by_no_melee_attack(
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ) -> int:
+        action = context.get_last_action()
+        if not action:
+            return 0
+        if (
+            target_hero.temp.profession
+            in [
+                Professions.SORCERER,
+                Professions.PRIEST,
+                Professions.ARCHER,
             ]
             and action.is_in_battle
             and _is_attacker(target_hero, context)
@@ -354,7 +385,7 @@ class RequirementCheck:
     ) -> int:
         action = context.get_last_action()
         if _is_attacker(actor_hero, context):
-            if action.skill.temp in actor_hero.enabled_skills:
+            if action.skill:
                 return 1
         return 0
 
@@ -438,6 +469,8 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
+        if not action:
+            return 0
         if action.skill and action.skill.temp.range_instance.range_value == 0:
             return 1
         return 0
@@ -447,7 +480,9 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
-        if action.skill and action.skill.temp.range_instance.range_value > 0:
+        if not action:
+            return 0
+        if action and action.skill and action.skill.temp.range_instance.range_value > 0:
             return 1
         return 0
 

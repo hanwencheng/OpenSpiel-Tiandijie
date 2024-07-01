@@ -23,6 +23,7 @@ from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
 from open_spiel.python.games.Tiandijie.calculation.Range import (
     calculate_diamond_area,
 )
+from math import ceil
 
 
 class Hero:
@@ -68,13 +69,15 @@ class Hero:
     def take_harm(self, attacker, harm_value: float, context):
         if harm_value > 0:
             self.current_life = get_max_life(self, attacker, context) * self.current_life_percentage/100
+            # print("-")
+            # print("承伤前：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life, "伤害", harm_value)
             damage = max(harm_value - self.shield, 0)
             self.shield = max(self.shield - harm_value, 0)
             self.receive_damage += damage
-            self.current_life = max(self.current_life - damage, 0)
-            # print("take_harm_before", self.id, self.current_life_percentage, get_max_life(self, attacker, context), self.current_life, harm_value)
-            self.current_life_percentage = int(self.current_life / get_max_life(self, attacker, context) * 100)
-            # print("take_harm_after", self.id, self.current_life_percentage, self.current_life)
+            self.current_life = ceil(max(self.current_life - damage, 0))
+            self.current_life_percentage = ceil(self.current_life / get_max_life(self, attacker, context) * 100)
+            # print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life)
+            # print("-")
 
     def take_healing(self, healing_value: float):
         if healing_value > 0:
@@ -133,7 +136,7 @@ class Hero:
 
         # 默认移动范围
         if move_range is None:
-            move_range = self.temp.hide_professions.value[2] + get_level2_modifier(self, None, "move_range", context)
+            move_range = self.temp.profession.value[2] + get_level2_modifier(self, None, "move_range", context)
 
         self.initialize_movable_range(context.battlemap, hero_list, move_range)
 
@@ -145,7 +148,7 @@ class Hero:
             self.actionable_list.append(new_action)
 
         # 处理普通攻击的Action
-        attack_range = self.temp.hide_professions.value[1] + get_level2_modifier(self, None, "attack_range", context)
+        attack_range = self.temp.profession.value[1] + get_level2_modifier(self, None, "attack_range", context)
         for hero in filter(lambda h: h.player_id != self.player_id, hero_list):
             for position in self.movable_range:
                 if calculate_if_targe_in_diamond_range(position, hero.position, attack_range):

@@ -62,10 +62,10 @@ def accumulate_talents_modifier(
                 actor_instance, target_instance, context, actor_instance.temp.talent
             )
             if is_requirement_meet > 0:
-                bascic_modifier_value = get_modifier_attribute_value(
+                basic_modifier_value = get_modifier_attribute_value(
                     actor_instance, modifier_effect.modifier, attr_name
                 )
-                modifier_value += is_requirement_meet * bascic_modifier_value
+                modifier_value += is_requirement_meet * basic_modifier_value
     return modifier_value
     # partner_talents = reduce(
     #     lambda total, hero: total + getattr(hero.temp.talent, attr_name, 0),
@@ -188,12 +188,12 @@ def get_level1_modified_result(
         hero_instance.stones, value_attr_name + "_percentage"
     )
     return (
-        basic * (1 + accumulated_stones_percentage_modifier)
+        basic * (1 + accumulated_stones_percentage_modifier/100)
         + accumulated_stones_value_modifier
     )
 
 
-def get_level2_modifier(
+def get_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+buff
     actor_instance: Hero,
     counter_instance: Hero or None,
     attr_name: str,
@@ -267,6 +267,8 @@ def get_skill_modifier(
     context: Context,
 ) -> float:
     basic_modifier_value = 0
+    if not skill:
+        return basic_modifier_value
     for effect in skill.temp.modifier_effects:
         if hasattr(effect.modifier, attr_name):
             multiplier = effect.requirement(actor_instance, counter_instance, context)
@@ -329,8 +331,110 @@ def accumulate_equipments_modifier(
                     actor_instance, target_instance, context, equipment
                 )
                 if is_requirement_meet > 0:
-                    bascic_modifier_value = get_modifier_attribute_value(
+                    basic_modifier_value = get_modifier_attribute_value(
                         actor_instance, modifier_effect.modifier, attr_name
                     )
-                    modifier_value += is_requirement_meet * bascic_modifier_value
+                    modifier_value += is_requirement_meet * basic_modifier_value
     return modifier_value
+
+
+def get_damage_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+buff
+    actor_instance: Hero,
+    counter_instance: Hero or None,
+    attr_name: str,
+    context: Context,
+) -> float:
+    accumulated_stones_effect_modifier = accumulate_suit_stone_attribute(
+        actor_instance, counter_instance, attr_name, context
+    )
+    accumulated_talents_modifier = accumulate_talents_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_equipments_modifier = accumulate_equipments_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    formation_modifier = get_formation_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_buff_modifier = get_buff_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_weapon_modifier = get_weapon_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+
+    return (
+        accumulated_talents_modifier
+        + accumulated_buff_modifier
+        + accumulated_weapon_modifier
+        + accumulated_stones_effect_modifier
+        + accumulated_equipments_modifier
+        + formation_modifier
+    )
+
+
+def get_reduction_damage_level2_modifier(
+    actor_instance: Hero,
+    counter_instance: Hero or None,
+    attr_name: str,
+    context: Context,
+) -> float:
+    accumulated_stones_effect_modifier = accumulate_suit_stone_attribute(
+        actor_instance, counter_instance, attr_name, context
+    )
+    accumulated_talents_modifier = accumulate_talents_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_equipments_modifier = accumulate_equipments_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    formation_modifier = get_formation_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_buff_modifier = get_buff_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_weapon_modifier = get_weapon_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+
+    return (
+        accumulated_talents_modifier
+        + accumulated_stones_effect_modifier
+        + accumulated_weapon_modifier
+        + accumulated_buff_modifier
+        + accumulated_equipments_modifier
+        + formation_modifier
+    )
+
+
+def get_weapon_modifier(
+    attr_name: str, actor_instance: Hero, counter_instance: Hero, context: Context
+) -> float:
+    basic_modifier_value = 0
+    weapon_instance = actor_instance.temp.weapons
+
+    for modifier_effect in weapon_instance.modifier_effects:
+        if attr_name in modifier_effect.modifier:
+            is_requirement_meet = modifier_effect.requirement(
+                actor_instance, counter_instance, context, actor_instance.temp.talent
+            )
+            if is_requirement_meet > 0:
+                basic_modifier_value = get_modifier_attribute_value(
+                    actor_instance, modifier_effect.modifier, attr_name
+                )
+                basic_modifier_value += is_requirement_meet * basic_modifier_value
+
+    for feature in weapon_instance.weapon_features:
+        for modifier_effect in feature.modifier_effects:
+            if attr_name in modifier_effect.modifier:
+                is_requirement_meet = modifier_effect.requirement(
+                    actor_instance, counter_instance, context, weapon_instance
+                )
+                if is_requirement_meet > 0:
+                    basic_modifier_value = get_modifier_attribute_value(
+                        actor_instance, modifier_effect.modifier, attr_name
+                    )
+                    basic_modifier_value += is_requirement_meet * basic_modifier_value
+
+    return basic_modifier_value

@@ -6,10 +6,10 @@ class ModifierAttributes:
     heal = "heal"
     life = "life"
     luck = "luck"
-    critical_percentage = "critical"  # critical_damage
+    critical_percentage = "critical_percentage"  # critical_damage
     critical_percentage_reduction = "critical_reduction"
     suffer_critical_percentage = "suffer_critical"  # 受到暴击绿
-    suffer_critical_damage_percentage = "suffer_critical_damage"  # 受到暴击伤害减免
+    suffer_critical_damage_reduction_percentage = "suffer_critical_damage"  # 受到暴击伤害减免
     attack_percentage = "attack_percentage"
     skill_damage_percentage = "skill_damage_percentage"
     single_target_skill_damage_percentage = "single_target_skill_damage_percentage"
@@ -75,7 +75,6 @@ class ModifierAttributes:
     dark_damage_reduction_percentage = "dark_damage_reduction_percentage"
 
     element_attacker_multiplier = "element_attacker_multiplier"
-    element_defender_multiplier = "element_defender_multiplier"
     ignore_element_advantage = "ignore_element_advantage"
 
     is_passives_skill_disabled = "passives_disabled"  # 禁用被动绝学

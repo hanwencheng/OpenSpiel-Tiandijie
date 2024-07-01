@@ -7,6 +7,7 @@ from open_spiel.python.games.Tiandijie.state.state_calculator import (
     check_if_in_battle,
     check_protector,
     check_if_double_attack,
+    check_if_chase_attack,
 )
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
 
 from typing import Callable
 
-from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator, death_event_listener
+from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator, death_event_listener, before_death_event_listener
 from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 
 from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
@@ -129,27 +130,33 @@ def calculation_events(
     apply_func(actor, target, action, context)
     event_listener_calculator(actor, None, actions_end_event_type, context)
 
-
+#  若先攻： 先攻 -> 攻击 -> 连击（不触发追击）
+#  非先攻： 攻击 -> 连击 -> 反击 —> 追击
 def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
     event_listener_calculator(actor, target, EventTypes.battle_start, context)
-    if check_if_counterattack_first(action, context):
+    event_listener_calculator(target, actor, EventTypes.battle_start, context)
+    if check_if_counterattack_first(action, context):       # 先攻
         counterattack_actions(context)  # take damage
         if is_hero_live(actor, target, context):
             attack_or_skill_events(actor, target, action, context, apply_damage)
-            if check_if_double_attack(action, context):
-                double_attack_event(context)
+            if is_hero_live(actor, target, context):
+                if check_if_double_attack(action, context):
+                    double_attack_event(context)
         event_listener_calculator(actor, target, EventTypes.battle_end, context)
-        is_hero_live(target, actor, context)
     else:
+        attack_or_skill_events(actor, target, action, context, apply_damage)
         if is_hero_live(actor, target, context):
-            attack_or_skill_events(actor, target, action, context, apply_damage)
-        if check_if_double_attack(action, context):
-            double_attack_event(context)
-        if is_hero_live(target, actor, context):
-            counterattack_actions(context)
+            if check_if_double_attack(action, context):     # 连击
+                double_attack_event(context)
+                if is_hero_live(target, actor, context):
+                    counterattack_actions(context)
+                    if is_hero_live(target, actor, context):
+                        if check_if_chase_attack(action, context):  # 追击
+                            pass
+                            # chase_attack_event(context) todo
         event_listener_calculator(actor, target, EventTypes.battle_end, context)
         event_listener_calculator(target, actor, EventTypes.battle_end, context)
-        is_hero_live(actor, target, context)
+    is_hero_live(actor, target, context)
 
 
 def attack_or_skill_events(
@@ -189,7 +196,7 @@ def attack_or_skill_events(
 
 def is_hero_live(hero_instance: Hero, counter_instance: Hero or None, context: Context):
     if hero_instance.current_life <= 0:
-        death_event_listener(
+        before_death_event_listener(
             hero_instance, counter_instance, EventTypes.before_hero_death, context
         )
         if hero_instance.current_life <= 0:

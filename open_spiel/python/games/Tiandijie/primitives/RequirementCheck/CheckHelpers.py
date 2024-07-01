@@ -9,6 +9,8 @@ from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 
 def _is_attacker(actor_hero: Hero, context: Context) -> int:
+    if not context.get_last_action():
+        return 0
     if actor_hero.id == context.get_last_action().actor.id:
         return 1
     else:

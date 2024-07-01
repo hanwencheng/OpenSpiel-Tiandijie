@@ -9,6 +9,7 @@ from open_spiel.python.games.Tiandijie.primitives.hero.BasicAttributes import (
     HuazhenAmplifier,
     XingpanAmplifier,
     AttributesTuple,
+    NeigongAmplifier,
 )
 from open_spiel.python.games.Tiandijie.wunei import WuneiProfessions
 
@@ -17,6 +18,10 @@ WUNEI_AMPLIFIERS = (25, 25, 25, 25, 25, 0)
 JISHEN_AMPLIFIERS = (10, 0, 10, 0, 10, 0)
 XINGYAO_AMPLIFIERS = (4, 4, 4, 4, 4, 0)
 ATTRIBUTE_NAMES = ["life", "attack", "defense", "magic_attack", "magic_defense", "luck"]
+
+
+def get_neigong_enum_value(identifier):
+    return NeigongAmplifier[identifier].value
 
 
 def get_enum_value(enum_class, identifier: Union[int, str]):

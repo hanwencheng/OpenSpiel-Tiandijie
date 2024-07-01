@@ -238,13 +238,18 @@ class TalentEffects:
         if state == 1:
             Effects.add_extra_skill(["buqi"], actor_instance, target_instance, context, talent)
         elif state == 2:
-            Effects.remove_jinwuqi(context)
+            position = context.battlemap.get_terrain_position_by_type(TerrainType.JINWUQI)
+            if position is not None:
+                terrain = context.battlemap.get_terrain(position)
+                caster_id = terrain.caster_id
+                if caster_id == actor_instance.id:
+                    Effects.remove_jinwuqi(context)
         else:
             position = context.battlemap.get_terrain_position_by_type(TerrainType.JINWUQI)
             if position is not None:
                 terrain = context.battlemap.get_terrain(position)
                 caster_id = terrain.caster_id
-                if caster_id == talent.caster_id:
+                if caster_id == actor_instance.id:
                     context.battlemap.init_terrain(position)
                     Effects.clear_terrain_by_buff_name("jinwuqi", context)
 
@@ -328,11 +333,11 @@ class TalentEffects:
         move_range = actor_instance.move_range - move_count
         if move_range >= 1:
             Effects.add_certain_buff_with_level(
-                actor_instance,
-                actor_instance,
                 "shenxing",
                 1,
                 min(move_range, 3),
+                actor_instance,
+                actor_instance,
                 context,
                 talent,
             )

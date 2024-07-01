@@ -3,7 +3,7 @@ from typing import List
 from open_spiel.python.games.Tiandijie.helpers import is_normal_attack_magic
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender, Professions, HideProfessions
-from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import Attributes, generate_max_level_attributes
+from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import Attributes, generate_max_level_attributes, get_neigong_enum_value
 from open_spiel.python.games.Tiandijie.primitives.hero.BasicAttributes import AttributesTuple
 from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import create_normal_attack_skill
 from typing import TYPE_CHECKING
@@ -29,7 +29,7 @@ class HeroTemp:
         growth_coefficients,
         talent,
         weapons,
-        skills,
+        xingzhijing,
     ):
         self.current_life: float = 1
         self.name = name or "玄羽"
@@ -59,12 +59,15 @@ class HeroTemp:
             "特级": ["晦弓在弦"],
             "极级": ["魂", "贯甲咒"],
         }
-        self.weapons = weapons or []
+        self.weapons = weapons
         self.weapon_features = self.weapons.weapon_features
         # Attributes initialization
         self.current_attributes: Attributes = self.level0_attributes
+        self.strength_attributes: Attributes = Attributes(*get_neigong_enum_value(self.hide_professions.name))
+        self.xingzhijing: Attributes = xingzhijing
         self.initialize_attributes()
         self.content: int = 0
+        self.has_shield: int = True if self.profession == Professions.WARRIOR else False
 
     def initialize_attributes(self):
         generate_max_level_attributes(

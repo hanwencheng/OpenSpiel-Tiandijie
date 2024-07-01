@@ -62,7 +62,7 @@ class Equipments(Enum):
                 partial(Rs.yurenjinpei_requires_check),
                 {
                     Ma.physical_damage_reduction_percentage: 15,
-                    Ma.critical_damage_reduction_percentage: 15,
+                    Ma.suffer_critical_damage_reduction_percentage: 15,
                 },
             ),
         ],
@@ -82,7 +82,7 @@ class Equipments(Enum):
             EventListener(
                 EventTypes.action_end,
                 1,
-                partial(Rs.LifeChecks.self_life_is_below, 0.5),
+                partial(Rs.LifeChecks.self_life_is_below, 50),
                 partial(Effects.take_effect_of_xuanqueyaodai),
             )
         ],
@@ -158,7 +158,7 @@ class Equipments(Enum):
         [
             ModifierEffect(Rs.always_true, {Ma.defense_percentage: 5}),
             ModifierEffect(
-                partial(Rs.LifeChecks.self_life_is_below, 0.5),
+                partial(Rs.LifeChecks.self_life_is_below, 50),
                 {Ma.defense_percentage: 20},
             ),
         ],
@@ -417,9 +417,9 @@ class Equipments(Enum):
         [],
     )
 
-    # 全属性+5%，使用单体绝学时，伤害提高12%，使用群体绝学时，暴击率提高12%
-    sheshoulingjie = Equipment(
-        "sheshoulingjie",
+    # 	气血+8%，主动攻击「对战中」，自身物攻提升15%
+    sheshoulingjie_yan = Equipment(
+        "sheshoulingjie_yan",
         [
             ModifierEffect(
                 Rs.always_true,
@@ -428,7 +428,7 @@ class Equipments(Enum):
                 },
             ),
             ModifierEffect(
-                partial(Rs.is_in_battle),
+                partial(Rs.self_is_battle_attacker),
                 {Ma.attack_percentage: 15},
             ),
         ],
@@ -449,6 +449,216 @@ class Equipments(Enum):
             ModifierEffect(
                 partial(Rs.is_in_battle),
                 {Ma.attack_percentage: 15},
+            ),
+        ],
+        [],
+    )
+
+    # 摩尼宝珠: 气血 + 5 %，自身周围3格范围内每有1个敌人，免伤、暴击抗性提高3 %（最多提高9 %）。自身气血低于70 % 时，免伤、暴击抗性额外提高6 %。
+    monibaozhu = Equipment(
+        "monibaozhu",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 5,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.PositionChecks.in_range_enemy_count_with_limit, 3, 3),
+                {
+                    Ma.physical_damage_reduction_percentage: 3,
+                    Ma.magic_damage_reduction_percentage: 3,
+                    Ma.suffer_critical_damage_reduction_percentage: 3,
+                 },
+            ),
+            ModifierEffect(
+                partial(Rs.LifeChecks.self_life_is_below, 70),
+                {
+                    Ma.physical_damage_reduction_percentage: 6,
+                    Ma.magic_damage_reduction_percentage: 6,
+                    Ma.suffer_critical_damage_reduction_percentage: 6,
+                },
+            ),
+        ],
+        [],
+    )
+
+    # 物攻、气血 + 7 %。主动攻击「对战前」50 % 概率对目标施加「乱神II」状态，持续1回合
+    dingbizan = Equipment(
+        "dingbizan",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.attack_percentage: 7,
+                    Ma.life_percentage: 7,
+                },
+            ),
+        ],
+        [
+            EventListener(
+                EventTypes.battle_start,
+                1,
+                partial(Rs.self_is_battle_attacker),
+                partial(Effects.take_effect_of_dingbizan),
+            )
+        ],
+    )
+
+    # 封豨牙悬: 法攻+10%，使用群体绝学时，伤害额外提升15%
+    fengxiyaxuan = Equipment(
+        "fengxiyaxuan",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.magic_attack_percentage: 10,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.skill_is_range_target_damage),
+                {Ma.battle_damage_percentage: 15},
+            ),
+        ],
+        [],
+    )
+
+    # 沧海月明: 气血+5%，遭受近战攻击「对战中」自身物防、法防提升15%。
+    canghaiyueming = Equipment(
+        "canghaiyueming",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 5,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.attacked_by_melee_attack),
+                {Ma.defense_percentage: 15, Ma.magic_defense_percentage: 15},
+            ),
+        ],
+        [],
+    )
+
+    # 玉玑灵镯·尘: 气血+8%，使用群体绝学时，法攻提升15%
+    yujilingzhuo_chen = Equipment(
+        "yujilingzhuo_chen",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 8,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.skill_is_range_target_damage),
+                {Ma.magic_attack_percentage: 15},
+            ),
+        ],
+        [],
+    )
+
+    # 玉玑灵镯·烟: 气血+8%，使用单体绝学时，法攻提升15%
+    yujilingzhuo_yan = Equipment(
+        "yujilingzhuo_yan",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 8,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.skill_is_single_target_damage),
+                {Ma.magic_attack_percentage: 15},
+            ),
+        ],
+        [],
+    )
+
+    # 冰凛银环·烟： 治疗效果+10%，如果本回合使用过治疗绝学，行动结束时为气血最低的1个友方恢复气血（恢复量为施术者法攻的0.5倍）。
+    binglinyinhuan_yan = Equipment(
+        "binglinyinhuan_yan",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.heal_percentage: 10,
+                },
+            ),
+        ],
+        [
+            # EventListener(
+            #     EventTypes.action_end,
+            #     1,
+            #     partial(Rs.has_used_heal_skill),
+            #     partial(Effects.heal_lowest_life_partner, 0.5),
+            # )
+        ],
+    )
+
+    # 遭受暴击概率降低40 %，遭受攻击「对战前」30 % 概率对敌人施加「疲弱」状态，持续2回合
+    yuanyujinling = Equipment(
+        "yuanyujinling",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.suffer_critical_percentage: -40,
+                },
+            ),
+        ],
+        [
+            EventListener(
+                EventTypes.battle_start,
+                1,
+                partial(Rs.is_attack_target),
+                partial(Effects.take_effect_of_yuanyujinling),
+            )
+        ],
+    )
+
+    # 气血 + 5 %，行动结束时，若自身1格范围内存在其他友方，则对自身和随机1个其他友方施加「神护I」和「辟险」状态，持续1回合。
+    xuanwuyu = Equipment(
+        "xuanwuyu",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 5,
+                },
+            ),
+        ],
+        [
+            EventListener(
+                EventTypes.action_end,
+                1,
+                partial(Rs.PositionChecks.partner_in_range_count_bigger_than, 1, 1),
+                partial(Effects.take_effect_of_xuanwuyu),
+            )
+        ],
+    )
+
+    # 玄朱天护: 法防、气血+5%，遭受远程攻击「对战中」免伤、暴击抗性提升10%
+    xuanzhutianhu = Equipment(
+        "xuanzhutianhu",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.magic_defense_percentage: 5,
+                    Ma.life_percentage: 5,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.attacked_by_no_melee_attack),
+                {
+                    Ma.physical_damage_reduction_percentage: 10,
+                    Ma.magic_damage_reduction_percentage: 10,
+                    Ma.suffer_critical_damage_reduction_percentage: 10,
+                },
             ),
         ],
         [],

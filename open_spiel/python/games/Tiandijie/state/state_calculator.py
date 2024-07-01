@@ -109,8 +109,20 @@ def check_protector(context: Context):
 def check_if_double_attack(action: Action, context: Context):
     target = action.get_defender_hero_in_battle()
     actor = action.actor
+    is_double_attack_disabled = get_modifier(ma.is_double_attack_disabled, actor, target, context)
+    if is_double_attack_disabled:
+        return False
     if_double_attack = get_modifier(ma.is_double_attack, actor, target, context)
     return if_double_attack
+
+
+def check_if_chase_attack(action: Action, context: Context):
+    target = action.get_defender_hero_in_battle()
+    actor = action.actor
+    is_chase_attack_disabled = get_modifier(ma.is_chase_attack_disabled, actor, target, context)
+    if is_chase_attack_disabled:
+        return False
+    return True
 
 
 def get_attack_range(actor: Hero, context: Context):

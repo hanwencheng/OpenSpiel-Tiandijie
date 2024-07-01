@@ -219,3 +219,9 @@ class BuffRequirementChecks:
             if primitive.stack >= reach_number:
                 return 1
         return 0
+
+    @staticmethod
+    def wanghuan_stack_count(
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ) -> float:
+        return primitive.stack

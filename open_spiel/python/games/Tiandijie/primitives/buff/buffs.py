@@ -549,12 +549,12 @@ class BuffTemps(Enum):
         [
             [
                 ModifierEffect(
-                    RS.always_true, {ma.physical_damage_reduction_percentage: 20}
+                    RS.always_true, {ma.defense_percentage: 20}
                 )
             ],
             [
                 ModifierEffect(
-                    RS.always_true, {ma.physical_damage_reduction_percentage: 25}
+                    RS.always_true, {ma.defense_percentage: 25}
                 )
             ],
         ],
@@ -1232,7 +1232,7 @@ class BuffTemps(Enum):
                 partial(RS.skill_is_single_target_damage_and_life_is_higher_percentage),
                 {
                     ma.battle_damage_reduction_percentage: 20,
-                    ma.suffer_critical_damage_percentage: 20,
+                    ma.suffer_critical_damage_reduction_percentage: 20,
                 },
             ),
         ],
@@ -1877,7 +1877,7 @@ class BuffTemps(Enum):
                 partial(RS.is_attacked_by_non_flyer),
                 {
                     ma.battle_damage_reduction_percentage: 15,
-                    ma.critical_damage_reduction_percentage: 15,
+                    ma.suffer_critical_damage_reduction_percentage: 15,
                 },
             ),
         ],
@@ -3069,6 +3069,11 @@ class BuffTemps(Enum):
                 {
                     ma.magic_damage_reduction_percentage: 20,
                     ma.physical_damage_reduction_percentage: 20,
+                },
+            ),
+            ModifierEffect(
+                partial(RS.is_attack_target),
+                {
                     ma.ignore_element_advantage: True,
                 },
             ),
@@ -4797,7 +4802,7 @@ class BuffTemps(Enum):
         [
             ModifierEffect(
                 RS.always_true,
-                {ma.suffer_critical_damage_percentage: -20},
+                {ma.suffer_critical_damage_reduction_percentage: 20},
             ),
         ],
         [
@@ -5293,7 +5298,7 @@ class BuffTemps(Enum):
                 RS.always_true,
                 {
                     ma.critical_percentage: -20,
-                    ma.suffer_critical_damage_percentage: -20,
+                    ma.suffer_critical_damage_reduction_percentage: -20,
                     ma.is_only_attack_to_caster: True,
                 },
             ),

@@ -46,7 +46,7 @@ def event_listener_calculator(
         return
     event_listener_containers: List[EventListenerContainer] = []
     current_action = context.get_last_action()
-    if current_action is None and event_type != EventTypes.game_start:
+    if current_action is None and event_type != EventTypes.game_start and event_type != EventTypes.turn_start:
         return
     # 有额外技能的话不结算action_end，在额外技能处结算action_end, 且在释放技能的action无需计算before_action_end
     ignore_event_types = {EventTypes.action_end, EventTypes.before_action_end}
@@ -193,7 +193,7 @@ def event_listener_calculator(
         new_turn_event(actor_instance, context)
 
 
-def death_event_listener(
+def before_death_event_listener(
     actor_instance: 'Hero',
     counter_instance: 'Hero' or None,
     event_type: EventTypes,
@@ -201,6 +201,15 @@ def death_event_listener(
 ):
     # TODO 统计自身是否带禁止复生buff，以及target.died_once是否为False，再统计自己是否有复生modifier：int 根据modifier的值来判断复活后的血量， died_once = True
     pass
+
+
+def death_event_listener(
+    actor_instance: 'Hero',
+    counter_instance: 'Hero' or None,
+    event_type: EventTypes,
+    context,
+):
+    event_listener_calculator(actor_instance, counter_instance, EventTypes.hero_death, context)
 
 
 def action_end_event(actor_instance: 'Hero', context):

@@ -101,3 +101,16 @@ class XingpanAmplifier(enum.Enum):
     SORCERER_DAMAGE = (8, 12, 10, 20, 12, 20, 0)
     SORCERER_ASSIST = (9, 12, 10, 20, 12, 20, 0)
     WARRIOR = (10, 12, 10, 20, 12, 20, 0)
+
+
+class NeigongAmplifier(enum.Enum):
+    SWORDSMAN = (870, 390, 240, 0, 150, 0)
+    PRIEST = (750, 0, 210, 330, 270, 0)
+    ARCHER = (750, 360, 210, 0, 150, 0)
+    RIDER_HIGH_DAMAGE = (780, 360, 210, 0, 180, 0)
+    RIDER_BALANCE = (810, 390, 180, 0, 210, 0)
+    GUARD_PROTECT = (1020, 330, 270, 0, 150, 0)
+    GUARD_STRIKE = (930, 360, 253, 0, 120, 0)
+    SORCERER_ASSIST = (690, 0, 180, 390, 240, 0)
+    SORCERER_DAMAGE = (690, 0, 180, 390, 240, 0)
+    WARRIOR = (750, 0, 210, 360, 210, 0)

@@ -23,19 +23,10 @@ flags.DEFINE_string("game_string", "tiandijie", "Game string")
 EpisodeTime = 9000
 
 
-class Tooltip_Pmw:
-    def __init__(self, widget, text=None):
-        self.widget = widget
-        self.text = text
-        self.tooltip_1 = Pmw.Balloon(root)
-        self.tooltip_1.bind(widget, text)
-        self.test = 0
-
-
 class TIANDIJIEGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Example GUI")
+        self.root.title("TianDiJieAISimulation")
         self.root.resizable(False, False)
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self._terminal = False
@@ -388,6 +379,7 @@ class TIANDIJIEGUI:
 
     def expected_move_hero(self, hero, position):
         self.data_dict[self.tentative_position['position']]["button"].config(image='', width=10, height=5, bg="green")
+        self.config_tooltip_hide(self.data_dict[self.tentative_position['position']]["button"])
         self.update_hero_photo(hero, position)
         self.tentative_position['position'] = position
         self.show_normal_attack_action()
@@ -424,6 +416,23 @@ class TIANDIJIEGUI:
                         data['button'].config(bg="#D9D9D9", state="disabled", command=None)
 
         self.draw_skill_button(hero, skill_list)
+        self.update_hero_attribute(hero, hero.position)
+
+    def update_hero_attribute(self, hero, position):
+        hero_id = hero.id
+        shield_text = f"shield: {hero.shield} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n" if hero.temp.has_shield else ""
+
+        text = (
+            f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage / 100)} / "
+            f"{math.ceil(get_max_life(hero, None, self.now_state.context))}\n"
+            f"{shield_text}"
+            f"physical_attack: {math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack: {math.ceil(get_attack(hero, None, self.now_state.context, True))}\n"
+            f"physical_defense: {math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense: {math.ceil(get_defense(hero, None, True, self.now_state.context))}\n"
+            f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}"
+        )
+
+        self.config_tooltip_text(self.data_dict[position]["button"], text)
+
 
     def draw_skill_button(self, hero, skill_list):
         if self.confirm_action_button is not None:
@@ -541,10 +550,18 @@ class TIANDIJIEGUI:
         image = self.load_image(image_path, (100, 100))
         data["button"].config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
                       state="normal" if hero.actionable else "disabled", command=lambda p=hero: self.show_action(p))
-        self.config_tooltip_text(data["button"], f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage/100)} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n"
-                                                                f"physical_attack:{math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack:{math.ceil(get_attack(hero, None, self.now_state.context, True))}\n"
-                                                                f"physical_defense:{math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense:{math.ceil(get_defense(hero, None, True, self.now_state.context))}\n"
-                                                                f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}")
+        shield_text = f"shield: {hero.shield} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n" if hero.temp.has_shield else ""
+
+        text = (
+            f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage / 100)} / "
+            f"{math.ceil(get_max_life(hero, None, self.now_state.context))}\n"
+            f"{shield_text}"
+            f"physical_attack: {math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack: {math.ceil(get_attack(hero, None, self.now_state.context, True))}\n"
+            f"physical_defense: {math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense: {math.ceil(get_defense(hero, None, True, self.now_state.context))}\n"
+            f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}"
+        )
+
+        self.config_tooltip_text(data["button"], text)
 
     def update_hero_photo(self, hero, position):
         hero_id = hero.id
@@ -552,10 +569,7 @@ class TIANDIJIEGUI:
         image = self.load_image(image_path, (100, 100))
         self.data_dict[position]["button"].config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
                       state="normal" if hero.actionable else "disabled")
-        self.config_tooltip_text(self.data_dict[position]["button"], f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage/100)} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n"
-                                                                f"physical_attack:{math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack:{math.ceil(get_attack(hero, None, self.now_state.context, True))}\n"
-                                                                f"physical_defense:{math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense:{math.ceil(get_defense(hero, None, True, self.now_state.context))}\n"
-                                                                f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}")
+        self.update_hero_attribute(hero, position)
 
     def remove_hero_photo(self, data):
         data["button"].config(image='', width=10, height=5, bg="#D9D9D9")

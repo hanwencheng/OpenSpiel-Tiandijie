@@ -26,7 +26,7 @@ class HeroeTemps(Enum):
         growth_coefficients=(28.18, 13.96, 4.7, 3.49, 4.43, 0.56),
         talent=Talents.anxingnixing.value,
         weapons=Weapons.zhiwangbupo.value,
-        skills=None,
+        xingzhijing=Attributes(194, 56, 61, 0, 59, 22),
     )
 
     fuyayu = HeroTemp(
@@ -44,7 +44,7 @@ class HeroeTemps(Enum):
         growth_coefficients=(22.28, 2.89, 4.16, 11.54, 5.64, 0.25),
         talent=Talents.shenwuqimou.value,
         weapons=Weapons.shenwuhanwei.value,
-        skills=None,
+        xingzhijing=Attributes(188, 0, 25, 92, 36, 14),
     )
 
     huoyong = HeroTemp(
@@ -62,7 +62,7 @@ class HeroeTemps(Enum):
         growth_coefficients=(24.43, 3.29, 4.38, 13.15, 4.75, 0.44),
         talent=Talents.youfenhuashen.value,
         weapons=Weapons.yourifusu.value,
-        skills=None,
+        xingzhijing=Attributes(195, 0, 15, 112, 50, 0),
     )
 
     zhujin = HeroTemp(
@@ -80,7 +80,7 @@ class HeroeTemps(Enum):
         growth_coefficients=(23.35, 3.22, 5.1, 12.88, 3.49, 0.5),
         talent=Talents.qilinqiongyu.value,
         weapons=Weapons.qixiangdimi.value,
-        skills=None,
+        xingzhijing=Attributes(150, 0, 54, 153, 0, 8),
     )
 
     zhenyin = HeroTemp(
@@ -91,14 +91,14 @@ class HeroeTemps(Enum):
         has_formation=True,
         formation_temp=Formations.sanshentongzhi,
         gender=Gender.MALE,
-        element=Elements.ETHEREAL,
+        element=Elements.THUNDER,
         profession=Professions.GUARD,
         hide_professions=HideProfessions.GUARD_PROTECT,
         level0_attributes=Attributes(200, 81, 41, 20, 19, 45),
         growth_coefficients=(30.06, 12.21, 6.17, 3.05, 2.82, 0.45),
         talent=Talents.jinlunfatian.value,
         weapons=Weapons.budaoshensen.value,
-        skills=None,
+        xingzhijing=Attributes(166, 42, 46, 0, 35, 35),
     )
 
     zhenyin1 = HeroTemp(
@@ -109,12 +109,12 @@ class HeroeTemps(Enum):
         has_formation=True,
         formation_temp=Formations.sanshentongzhi,
         gender=Gender.MALE,
-        element=Elements.ETHEREAL,
+        element=Elements.THUNDER,
         profession=Professions.GUARD,
         hide_professions=HideProfessions.GUARD_PROTECT,
         level0_attributes=Attributes(200, 81, 41, 20, 19, 45),
         growth_coefficients=(30.06, 12.21, 6.17, 3.05, 2.82, 0.45),
         talent=Talents.jinlunfatian.value,
         weapons=Weapons.budaoshensen.value,
-        skills=None,
+        xingzhijing=Attributes(166, 42, 46, 0, 35, 35),
     )

@@ -417,11 +417,11 @@ class Effects:
 
     @staticmethod
     def add_certain_buff_with_level(
-        actor: Hero,
-        target: Hero,
         buff_name: str,
         duration: int,
         level: int,
+        actor: Hero,
+        target: Hero,
         context: Context,
         primary,
     ):
@@ -1770,7 +1770,7 @@ class Effects:
         else:
             actor_instance.buffs = [buff for buff in actor_instance.buffs if buff.temp.id != "wuhui"]
 
-    # Weapons Effects
+    # Equipment Effects
 
     @staticmethod
     def take_effect_of_xuanqueyaodai(
@@ -1782,23 +1782,6 @@ class Effects:
         equipment.cooldown = 2
         Effects.heal_self(0.35, actor_instance, actor_instance, context, equipment)
         Effects.remove_actor_harm_buffs(1, actor_instance, actor_instance, context, equipment)
-
-    # Equipment Effects
-
-    @staticmethod
-    def take_effect_of_shenwuhanwei(
-        actor_instance: Hero,
-        target_instance: Hero,
-        context: Context,
-        weapon
-    ):
-        partners = context.get_partners_in_diamond_range(actor_instance, 3)
-        for partner in partners:
-            if (
-                partner.current_life / get_max_life(partner, actor_instance, context)
-                > 0.8
-            ):
-                Effects.add_buffs(["shuangkai"], 15, actor_instance, partner, context, weapon)
 
     @staticmethod
     def take_effect_of_jiaorenbeige(
@@ -1867,6 +1850,48 @@ class Effects:
         else:
             buff_name = "shimo"
         Effects.add_buffs([buff_name], 1, actor_instance, target_enemy, context, equipment)
+
+    @staticmethod
+    def take_effect_of_dingbizan(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        equipment: Equipment
+    ):
+        if random() < 0.5:
+            Effects.add_certain_buff_with_level(
+                "luanshen",
+                2,
+                1,
+                actor_instance,
+                target_instance,
+                context,
+                equipment
+            )
+
+    @staticmethod
+    def take_effect_of_yuanyujinling(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        equipment: Equipment
+    ):
+        if random() < 0.3:
+            Effects.add_buffs(["piruo"], 2, actor_instance, target_instance, context, equipment)
+
+    @staticmethod
+    def take_effect_of_xuanwuyu(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        equipment: Equipment
+    ):
+        partners = context.get_partners_in_diamond_range(actor_instance, 1)
+        partner = random_select(partners, 1)
+        for hero in [actor_instance, partner]:
+            Effects.add_buffs(["shenhu"], 1, actor_instance, hero, context, equipment)
+            Effects.add_buffs(["pixian"], 1, actor_instance, hero, context, equipment)
+
 
     # skill effects
 
@@ -2052,7 +2077,12 @@ class Effects:
             action = context.get_last_action()
             action.update_additional_move(actor_instance, 3, context)
         elif state == 2:
-            actor_instance.special_mark = True
+            position = context.battlemap.get_terrain_position_by_type(TerrainType.JINWUQI)
+            if position is not None:
+                terrain = context.battlemap.get_terrain(position)
+                caster_id = terrain.caster_id
+                if caster_id == actor_instance.id:
+                    actor_instance.special_mark = True
 
     @staticmethod
     def take_effect_of_diyuzhizhen(
@@ -2083,7 +2113,7 @@ class Effects:
     ):
         action = context.get_last_action()
         for target in action.targets:
-            Effects.add_certain_buff_with_level(actor_instance, target, "luanshen", 2, 2, context, skill)
+            Effects.add_certain_buff_with_level("luanshen", 2, 2, actor_instance, target,  context, skill)
             if target.temp.element in {Elements.DARK, Elements.WATER}:
                 Effects.add_buffs(["yazhi"], 1, actor_instance, target, context, skill)
 
@@ -2097,3 +2127,33 @@ class Effects:
         for other_skill in actor_instance.enabled_skills:
             if other_skill.temp.id in {"tianshuangxuewu", "wutianheiyan", "lihuoshenjue"}:
                 other_skill.cool_down = skill.cool_down
+
+
+    # weapon Effects
+
+    @staticmethod
+    def take_effect_of_shenwuhanwei(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        weapon
+    ):
+        partners = context.get_partners_in_diamond_range(actor_instance, 3)
+        for partner in partners:
+            if (
+                partner.current_life / get_max_life(partner, actor_instance, context)
+                > 0.8
+            ):
+                Effects.add_buffs(["shuangkai"], 15, actor_instance, partner, context, weapon)
+
+
+    @staticmethod
+    def take_effect_of_minkui(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        stone,
+    ):
+        if random() < 0.4:
+            benfit_buff = random_select(context.benefit_buffs, 1)
+            Effects.add_buffs([benfit_buff], 2, actor_instance, target_instance, context, stone)
