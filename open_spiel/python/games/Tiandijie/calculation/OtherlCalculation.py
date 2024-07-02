@@ -9,13 +9,30 @@ if TYPE_CHECKING:
 from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import *
 
 
+# 治疗量=法攻×倍率×(1+角色天赋+角色技能+魂石套装效果(尸魔)+治疗职业的武器强化+饰品)×(1+列星)
+
+
+def calculate_skill_heal(
+    actor_instance: Hero, target_instance: Hero, action: Action, context: Context
+):
+    from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
+    is_heal_disabled = get_buff_modifier("is_heal_disabled", target_instance, actor_instance, context)
+    if not is_heal_disabled:
+        skill = action.skill
+        skill_multiplier = skill.temp.multiplier
+        magic_attack = get_attack(actor_instance, target_instance, context, True)
+
+        actual_healing = magic_attack * skill_multiplier * (get_fixed_heal_modifier(actor_instance, target_instance, context) + 10) * (1 + LIEXING_HEAL_INCREASE / 100)
+        target_instance.take_healing(actual_healing, context)
+
+
 def calculate_fix_heal(
     heal, actor_instance: Hero, target_instance: Hero, context: Context
-):
-    defender_fix_heal_reduction = get_fixed_heal_reduction_modifier(
-        target_instance, actor_instance, context
-    )
-    target_instance.take_healing(heal * defender_fix_heal_reduction)
+):    # 固定治疗不受词条影响
+    from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
+    is_heal_disabled = get_buff_modifier("is_heal_disabled", target_instance, actor_instance, context)
+    if not is_heal_disabled:
+        target_instance.take_healing(heal, context)
 
 
 def calculate_reset_hero_actionable(

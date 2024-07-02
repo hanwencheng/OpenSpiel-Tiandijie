@@ -421,14 +421,16 @@ class TIANDIJIEGUI:
     def update_hero_attribute(self, hero, position):
         hero_id = hero.id
         shield_text = f"shield: {hero.shield} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n" if hero.temp.has_shield else ""
-
+        buff_list = [buff.temp.id for buff in hero.buffs]
+        buff_text = f"buff: {buff_list}\n" if buff_list else ""
         text = (
             f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage / 100)} / "
             f"{math.ceil(get_max_life(hero, None, self.now_state.context))}\n"
             f"{shield_text}"
             f"physical_attack: {math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack: {math.ceil(get_attack(hero, None, self.now_state.context, True))}\n"
             f"physical_defense: {math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense: {math.ceil(get_defense(hero, None, True, self.now_state.context))}\n"
-            f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}"
+            f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}\n"
+            f"{buff_text}"
         )
 
         self.config_tooltip_text(self.data_dict[position]["button"], text)
@@ -550,18 +552,7 @@ class TIANDIJIEGUI:
         image = self.load_image(image_path, (100, 100))
         data["button"].config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
                       state="normal" if hero.actionable else "disabled", command=lambda p=hero: self.show_action(p))
-        shield_text = f"shield: {hero.shield} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n" if hero.temp.has_shield else ""
-
-        text = (
-            f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage / 100)} / "
-            f"{math.ceil(get_max_life(hero, None, self.now_state.context))}\n"
-            f"{shield_text}"
-            f"physical_attack: {math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack: {math.ceil(get_attack(hero, None, self.now_state.context, True))}\n"
-            f"physical_defense: {math.ceil(get_defense(hero, None, False, self.now_state.context))}  magic_defense: {math.ceil(get_defense(hero, None, True, self.now_state.context))}\n"
-            f"luck: {math.ceil(get_luck(hero, None, self.now_state.context))}"
-        )
-
-        self.config_tooltip_text(data["button"], text)
+        self.update_hero_attribute(hero, hero.position)
 
     def update_hero_photo(self, hero, position):
         hero_id = hero.id

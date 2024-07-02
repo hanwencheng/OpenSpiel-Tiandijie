@@ -36,6 +36,7 @@ class ModifierAttributes:
     magic_damage_percentage = "magic_damage_percentage"
     magic_damage_reduction_percentage = "magic_damage_reduction_percentage"
     heal_percentage = "heal_percentage"
+    be_healed_percentage = "be_healed_percentage"
     life_percentage = "life_percentage"
     luck_percentage = "luck_percentage"
     critical_damage_percentage = "critical_damage_percentage"

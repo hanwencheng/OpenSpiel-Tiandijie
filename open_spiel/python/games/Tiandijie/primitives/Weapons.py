@@ -128,7 +128,25 @@ class WeaponFeatures(Enum):
         ],
         [],
     )
-
+    # [破空]反击伤害提升5%
+    # [通脉]受治疗效果提升5%
+    # [锁心]气血高于50%时，进入对战后伤害提升10%
+    pokong = WeaponFeature(
+        "pokong",
+        "破空",
+        [
+            ModifierEffect(Rs.always_true, {Ma.counterattack_damage_percentage: 5}),
+        ],
+        [],
+    )
+    tongmai = WeaponFeature(
+        "tongmai",
+        "通脉",
+        [
+            ModifierEffect(Rs.always_true, {Ma.be_healed_percentage: 5}),
+        ],
+        [],
+    )
 
 class Weapons(Enum):
     # 执妄不破
@@ -217,8 +235,8 @@ class Weapons(Enum):
             ),],
         [],
         [
-            WeaponFeatures.heli.value,
-            WeaponFeatures.lingya.value,
+            WeaponFeatures.jueming.value,
+            WeaponFeatures.zhenchuan.value,
             WeaponFeatures.suoxin.value,
         ],
     )
@@ -230,8 +248,8 @@ class Weapons(Enum):
         [],
         [],
         [
-            WeaponFeatures.danyang.value,
-            WeaponFeatures.zhenchuan.value,
-            WeaponFeatures.guanqing.value,
+            WeaponFeatures.pokong.value,
+            WeaponFeatures.tongmai.value,
+            WeaponFeatures.suoxin.value,
         ],
     )

@@ -21,6 +21,7 @@ from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     accumulate_attribute,
     get_level1_modified_result,
     get_level2_modifier,
+    get_heal_level2_modifier,
     get_skill_modifier,
     accumulate_stone_attribute,
     get_damage_level2_modifier,
@@ -31,6 +32,7 @@ from math import ceil
 
 LIEXING_DAMAGE_REDUCTION = 4
 LIEXING_DAMAGE_INCREASE = 4
+LIEXING_HEAL_INCREASE = 10
 JIANREN = 40
 
 
@@ -503,22 +505,24 @@ def get_fixed_damage_reduction_modifier(
     )
 
 
-def get_fixed_heal_reduction_modifier(
-    hero_instance: Hero, counter_instance: Hero, context: Context
+def get_fixed_heal_modifier(
+    hero_instance: Hero, target_instance: Hero, context: Context
 ) -> float:
-    accumulated_passives_heal_reduction_modifier = accumulate_attribute(
-        hero_instance.temp.passives, ma.heal_percentage
-    )
     return (
         1
         + (
-            get_level2_modifier(
+            get_heal_level2_modifier(
                 hero_instance,
-                counter_instance,
+                target_instance,
                 ma.heal_percentage,
                 context,
             )
-            + accumulated_passives_heal_reduction_modifier
+            + get_heal_level2_modifier(
+                target_instance,
+                hero_instance,
+                ma.be_healed_percentage,
+                context,
+            )
         )
         / 100
     )

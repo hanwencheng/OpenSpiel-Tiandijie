@@ -27,8 +27,10 @@ def apply_additional_skill(
 
 
 def apply_heal(actor: Hero, target: Hero or None, action: Action, context: Context):
-    target.take_healing(action.total_damage)
-    pass
+    from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import calculate_skill_heal
+    event_listener_calculator(actor, target, EventTypes.heal_start, context)
+    calculate_skill_heal(actor, target, action, context)
+    event_listener_calculator(actor, target, EventTypes.heal_end, context)
 
 
 def apply_summon(actor: Hero, target: Hero or None, action: Action, context: Context):

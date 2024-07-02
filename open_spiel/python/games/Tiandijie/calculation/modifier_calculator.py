@@ -420,11 +420,10 @@ def get_weapon_modifier(
                 actor_instance, counter_instance, context, actor_instance.temp.talent
             )
             if is_requirement_meet > 0:
-                basic_modifier_value = get_modifier_attribute_value(
+                temp_value = get_modifier_attribute_value(
                     actor_instance, modifier_effect.modifier, attr_name
                 )
-                basic_modifier_value += is_requirement_meet * basic_modifier_value
-
+                basic_modifier_value += is_requirement_meet * temp_value
     for feature in weapon_instance.weapon_features:
         for modifier_effect in feature.modifier_effects:
             if attr_name in modifier_effect.modifier:
@@ -432,9 +431,44 @@ def get_weapon_modifier(
                     actor_instance, counter_instance, context, weapon_instance
                 )
                 if is_requirement_meet > 0:
-                    basic_modifier_value = get_modifier_attribute_value(
+                    temp_value = get_modifier_attribute_value(
                         actor_instance, modifier_effect.modifier, attr_name
                     )
-                    basic_modifier_value += is_requirement_meet * basic_modifier_value
-
+                    basic_modifier_value += is_requirement_meet * temp_value
     return basic_modifier_value
+
+
+
+def get_heal_level2_modifier(    # (1+角色天赋+角色技能+魂石套装效果(尸魔)+治疗职业的武器强化+饰品)
+    actor_instance: Hero,
+    counter_instance: Hero or None,
+    attr_name: str,
+    context: Context,
+) -> float:
+    accumulated_talents_modifier = accumulate_talents_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_passives_heal_reduction_modifier = accumulate_attribute(
+        actor_instance.temp.passives, attr_name
+    )
+    accumulated_stones_effect_modifier = accumulate_suit_stone_attribute(
+        actor_instance, counter_instance, attr_name, context
+    )
+    accumulated_equipments_modifier = accumulate_equipments_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_buff_modifier = get_buff_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_weapon_modifier = get_weapon_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+
+    return (
+        accumulated_talents_modifier
+        + accumulated_buff_modifier
+        + accumulated_weapon_modifier
+        + accumulated_stones_effect_modifier
+        + accumulated_equipments_modifier
+        + accumulated_passives_heal_reduction_modifier
+    )

@@ -27,12 +27,13 @@ from math import ceil
 
 
 class Hero:
-    def __init__(self, player_id: int, hero_temp: HeroTemp, init_position):
+    def __init__(self, player_id: int, hero_temp: HeroTemp, init_position, equipments):
         self.id = hero_temp.temp_id + str(player_id)
         self.name = hero_temp.name + str(player_id)
         self.player_id = player_id
         self.temp: HeroTemp = hero_temp
-        self.equipments = []
+        self.equipments = equipments
+        self.init_equipments_caster_id()
         self.enabled_passives: List[Passive] = []
         self.enabled_skills: List[Skill] = []
         self.position = init_position
@@ -55,6 +56,7 @@ class Hero:
         self.shield: int = 0
         self.receive_damage: int = 0
         self.special_mark = False
+        self.temp.talent.caster_id = self.id
 
     def initialize_attributes(self):
         initial_attributes = generate_max_level_attributes(
@@ -79,9 +81,19 @@ class Hero:
             # print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life)
             # print("-")
 
-    def take_healing(self, healing_value: float):
+    def take_healing(self, healing_value: float, context):
         if healing_value > 0:
-            self.current_life = min(self.current_life + healing_value, self.max_life)
+            max_life = get_max_life(self, None, context)
+            self.current_life = max_life * self.current_life_percentage/100
+            # print("-")
+            # print("治疗前：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life, "治疗量"
+            #                                                                                                                                                              ""
+            #                                                                                                                                                              "", healing_value)
+            self.current_life = min(self.current_life + healing_value, max_life)
+            self.current_life_percentage = self.current_life / max_life * 100
+            # print("治疗后：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life)
+            # print("-")
+
 
     def add_shield(self, shield_value: float):
         if shield_value > 0:
@@ -262,6 +274,9 @@ class Hero:
                 )
                 break
 
+    def init_equipments_caster_id(self):
+        for equipment in self.equipments:
+            equipment.caster_id = self.id
 
 def get_skill_action(actor, skill_list, moveable_positions=None, context=None, hero_list=None):
     actions = []

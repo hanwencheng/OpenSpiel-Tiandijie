@@ -2209,7 +2209,7 @@ class BuffTemps(Enum):
             ModifierEffect(
                 RS.always_true,
                 {
-                    ma.heal_percentage: -30,
+                    ma.be_healed_percentage: -30,
                     ma.is_extra_move_disabled: True,
                     ma.is_extra_action_disabled: True,
                 },
@@ -2736,7 +2736,7 @@ class BuffTemps(Enum):
         [
             ModifierEffect(
                 RS.always_true,
-                {ma.heal_percentage: -50},
+                {ma.be_healed_percentage: -50},
             ),
         ],
         [
@@ -2979,7 +2979,7 @@ class BuffTemps(Enum):
         False,
         False,
         [
-            ModifierEffect(RS.always_true, {ma.heal_percentage: 15})
+            ModifierEffect(RS.always_true, {ma.be_healed_percentage: 15})
         ],
         [
             EventListener(
@@ -3726,7 +3726,7 @@ class BuffTemps(Enum):
         [
             ModifierEffect(
                 RS.always_true,
-                {ma.heal_percentage: -20},
+                {ma.be_healed_percentage: -20},
             ),
         ],
         [],
@@ -4051,7 +4051,7 @@ class BuffTemps(Enum):
                 RS.always_true,
                 {
                     ma.is_active_skill_disabled: True,
-                    ma.heal_percentage: -50,
+                    ma.be_healed_percentage: -50,
                     ma.is_block_fatal_damage_disabled: True,
                 },
             ),
@@ -4069,7 +4069,7 @@ class BuffTemps(Enum):
         [
             ModifierEffect(
                 RS.always_true,
-                {ma.heal_percentage: -10},
+                {ma.be_healed_percentage: -10},
             ),
         ],
         [
@@ -4867,7 +4867,7 @@ class BuffTemps(Enum):
         [
             ModifierEffect(
                 RS.always_true,
-                {ma.heal_percentage: 30},
+                {ma.be_healed_percentage: 30},
             ),
         ],
         [

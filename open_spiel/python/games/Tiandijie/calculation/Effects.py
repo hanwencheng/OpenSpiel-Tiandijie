@@ -598,9 +598,9 @@ class Effects:
         actor: Hero,
         target: Hero,
         context: Context,
-        buff: Buff or Talent,
+        primitive: Buff or Talent,
     ):
-        caster = context.get_hero_by_id(buff.caster_id)
+        caster = context.get_hero_by_id(primitive.caster_id)
         damage = get_attack(caster, actor, context, False) * multiplier
         calculate_fix_damage(damage, caster, target, context)
 
@@ -1925,16 +1925,16 @@ class Effects:
         def get_priority(enemy):
             dx = enemy.position[0] - action.action_point[0] + 2
             dy = enemy.position[1] - action.action_point[1] + 2
-            return map_rule[dy][dx]
+            return map_rule[dx][dy]
 
         sorted_enemies = sorted(enemies, key=get_priority)
 
         teleport_rules = [
-            (0, 1), (-1, 0), (1, 0), (0, -1),
-            (-1, 1), (1, 1), (-1, -1), (1, -1),
-            (0, 2), (-2, 0), (2, 0), (0, -2),
-            (-1, 2), (1, 2), (-2, 1), (2, 1),
-            (-2, -1), (2, -1), (-1, -2), (1, -2)
+            (1, 0), (0, -1), (0, 1), (-1, 0),
+            (1, -1), (1, 1), (1, -1), (-1, 1),
+            (2, 0), (0, -2), (0, 2), (-2, 0),
+            (2, -1), (2, 1), (1, -2), (1, 2),
+            (-1, -2), (-1, 2), (-2, -1), (-2, 1)
         ]
 
         used_positions = set()

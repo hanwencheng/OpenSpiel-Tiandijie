@@ -487,11 +487,7 @@ class TalentEffects:
             enemies = context.get_enemies_in_diamond_range(actor_instance, 2)
             target_enemy = enemies[0]
             for enemy in enemies:
-                if enemy.current_life / get_max_life(
-                    enemy, actor_instance, context
-                ) < target_enemy.current_life / get_max_life(
-                    target_enemy, actor_instance, context
-                ):
+                if enemy.current_life_percentage < target_enemy.current_life_percentage:
                     target_enemy = enemy
             Effects.add_fixed_damage_by_caster_physical_attack(
                 0.9, actor_instance, target_enemy, context, talent

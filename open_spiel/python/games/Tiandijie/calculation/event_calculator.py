@@ -155,15 +155,6 @@ def event_listener_calculator(
                 event_listener_containers.append(
                     EventListenerContainer(event_listener, passive)
                 )
-    if event_type == EventTypes.battle_start or event_type == EventTypes.battle_end:
-        passives = counter_instance.enabled_passives
-        for passive in passives:
-            passive_event_listeners: List[EventListener] = passive.on_event
-            for event_listener in passive_event_listeners:
-                if event_listener.event_type == event_type:
-                    event_listener_containers.append(
-                        EventListenerContainer(event_listener, passive)
-                    )
 
     # re-order the event listeners by priority in accumulated_event_listeners
     event_listener_containers.sort(key=lambda x: x.event_listener.priority)

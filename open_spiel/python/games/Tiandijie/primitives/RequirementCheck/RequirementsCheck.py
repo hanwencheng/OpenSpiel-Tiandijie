@@ -234,20 +234,18 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
-        if not action:
-            return 0
-        if (
-            target_hero.temp.profession
-            in [
-                Professions.GUARD,
-                Professions.SWORDSMAN,
-                Professions.RIDER,
-                Professions.WARRIOR,
-            ]
-            and action.is_in_battle
-            and _is_attacker(target_hero, context)
-        ):
-            return 1
+        if action and action.is_in_battle and target_hero:
+            if (
+                target_hero.temp.profession
+                in [
+                    Professions.GUARD,
+                    Professions.SWORDSMAN,
+                    Professions.RIDER,
+                    Professions.WARRIOR,
+                ]
+                and _is_attacker(target_hero, context)
+            ):
+                return 1
         return 0
 
     @staticmethod
@@ -255,19 +253,17 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
-        if not action:
-            return 0
-        if (
-            target_hero.temp.profession
-            in [
-                Professions.SORCERER,
-                Professions.PRIEST,
-                Professions.ARCHER,
-            ]
-            and action.is_in_battle
-            and _is_attacker(target_hero, context)
-        ):
-            return 1
+        if action and action.is_in_battle and target_hero:
+            if (
+                target_hero.temp.profession
+                in [
+                    Professions.SORCERER,
+                    Professions.PRIEST,
+                    Professions.ARCHER,
+                ]
+                and _is_attacker(target_hero, context)
+            ):
+                return 1
         return 0
 
     @staticmethod
@@ -766,7 +762,7 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, passive
     ) -> int:
         if PositionRequirementChecks.battle_member_in_range(2, actor_hero, target_hero, context, passive) and(
-            passive in actor_hero.enabled_passives or passive in target_hero.enabled_passives
+            RequirementCheck.BuffChecks.self_has_certain_buff_in_list(["zhilu"], actor_hero, target_hero, context, passive)
         ):
             return 1
         return 0
