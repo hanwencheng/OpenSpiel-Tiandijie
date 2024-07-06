@@ -435,7 +435,7 @@ class Equipments(Enum):
         [],
     )
 
-    # 全属性+5%，使用单体绝学时，伤害提高12%，使用群体绝学时，暴击率提高12%
+    # 物防、气血+5%，遭受近战攻击「对战前」，对敌方施加「虚损II」和「失智II」状态，持续1回合。
     xiangsheyinpei_chen = Equipment(
         "xiangsheyinpei_chen",
         [
@@ -445,10 +445,6 @@ class Equipments(Enum):
                     Ma.defense_percentage: 5,
                     Ma.life_percentage: 5,
                 },
-            ),
-            ModifierEffect(
-                partial(Rs.is_in_battle),
-                {Ma.attack_percentage: 15},
             ),
         ],
         [],

@@ -31,7 +31,6 @@ class ModifierAttributes:
     magic_defense_percentage = "magic_defense_percentage"
     physical_damage_percentage = "physical_damage_percentage"
     physical_damage_reduction_percentage = "physical_damage_reduction_percentage"
-    active_damage_percentage = "active_damage_percentage"
     counterattack_damage_percentage = "counterattack_damage_percentage"
     magic_damage_percentage = "magic_damage_percentage"
     magic_damage_reduction_percentage = "magic_damage_reduction_percentage"

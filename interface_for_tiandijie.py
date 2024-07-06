@@ -524,27 +524,24 @@ class TIANDIJIEGUI:
                 temp_target = position
                 break
         legal_actions = self.now_state.legal_actions_dic[1]
-
         for action in legal_actions:
-            if action.actor != hero or action.move_point != self.tentative_position['position']:
-                continue
-
-            if temp_skill:
-                if action.skill and action.skill.temp.chinese_name == temp_skill:
-                    if action.skill.temp.target_type.value == 3:
-                        self.input = legal_actions.index(action)
-                    else:
-                        if action.action_point == temp_target:
+            if action.actor != hero or action.move_point == self.tentative_position['position']:
+                if temp_skill:
+                    if action.skill and action.skill.temp.chinese_name == temp_skill:
+                        if action.skill.temp.target_type.value == 3:
+                            self.input = legal_actions.index(action)
+                        else:
+                            if action.action_point == temp_target:
+                                self.input = legal_actions.index(action)
+                                break
+                else:
+                    if temp_target:
+                        if temp_skill is None and action.type.value == ActionTypes.NORMAL_ATTACK.value and action.action_point == temp_target:
                             self.input = legal_actions.index(action)
                             break
-            else:
-                if temp_target:
-                    if temp_skill is None and action.type.value == ActionTypes.NORMAL_ATTACK.value:
+                    elif action.type.value in {ActionTypes.MOVE.value, ActionTypes.PASS.value}:
                         self.input = legal_actions.index(action)
                         break
-                elif action.type.value in {ActionTypes.MOVE.value, ActionTypes.PASS.value}:
-                    self.input = legal_actions.index(action)
-                    break
 
     def update_hero_position(self, hero, data):
         hero_id = hero.id

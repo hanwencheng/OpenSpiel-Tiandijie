@@ -793,7 +793,7 @@ class Talents(Enum):
         ],
         [
             EventListener(
-                EventTypes.skill_end,
+                EventTypes.heal_end,
                 1,
                 partial(Rs.skill_is_no_damage_and_target_is_partner),
                 partial(Effects.add_buffs, ["qingliu"], 15),

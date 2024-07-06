@@ -126,9 +126,9 @@ def calculation_events(
 ):
     actions_start_event_type = action_type_to_event_dict[action.type][0]
     actions_end_event_type = action_type_to_event_dict[action.type][1]
-    event_listener_calculator(actor, None, actions_start_event_type, context)
+    event_listener_calculator(actor, target, actions_start_event_type, context)
     apply_func(actor, target, action, context)
-    event_listener_calculator(actor, None, actions_end_event_type, context)
+    event_listener_calculator(actor, target, actions_end_event_type, context)
 
 #  若先攻： 先攻 -> 攻击 -> 连击（不触发追击）
 #  非先攻： 攻击 -> 连击 -> 反击 —> 追击
@@ -148,12 +148,12 @@ def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
         if is_hero_live(actor, target, context):
             if check_if_double_attack(action, context):     # 连击
                 double_attack_event(context)
-                if is_hero_live(target, actor, context):
-                    counterattack_actions(context)
-                    if is_hero_live(target, actor, context):
-                        if check_if_chase_attack(action, context):  # 追击
-                            pass
-                            # chase_attack_event(context) todo
+            if is_hero_live(target, actor, context):
+                counterattack_actions(context)
+            if is_hero_live(target, actor, context):
+                if check_if_chase_attack(action, context):  # 追击
+                    # chase_attack_event(context) todo
+                    pass
         event_listener_calculator(actor, target, EventTypes.battle_end, context)
         event_listener_calculator(target, actor, EventTypes.battle_end, context)
     is_hero_live(actor, target, context)
@@ -256,8 +256,7 @@ def apply_action(context: Context, action: Action):
                 is_hero_live(hero, None, context)
 
     elif action.type == ActionTypes.HEAL:
-        for target in action.targets:
-            attack_or_skill_events(actor, target, action, context, apply_heal)
+        heal_event(actor, None, action, context, apply_heal)
 
     elif action.type == ActionTypes.SUMMON:
         attack_or_skill_events(actor, None, action, context, apply_summon)
@@ -317,6 +316,19 @@ def range_skill_events(actor_instance, counter_instances, action, context, apply
 
         trigger_event(skill_end_event_type, counter_instances[0])
         trigger_event(EventTypes.skill_end, counter_instances[0])
+
+
+def heal_event(actor_instance, counter_instance, action, context, apply_func):
+    event_listener_calculator(
+        actor_instance, counter_instance, EventTypes.skill_start, context
+    )
+    for target in action.targets:
+        calculation_events(
+            actor_instance, target, action, context, apply_heal
+        )
+    event_listener_calculator(
+        actor_instance, counter_instance, EventTypes.skill_end, context
+    )
 
 
 def test(actor_instance, counter_instance, action, context, apply_func):

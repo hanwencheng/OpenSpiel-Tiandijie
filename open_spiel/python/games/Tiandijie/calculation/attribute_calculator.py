@@ -17,6 +17,7 @@ from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     accumulate_attribute,
     get_level1_modified_result,
@@ -24,14 +25,16 @@ from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     get_heal_level2_modifier,
     get_skill_modifier,
     accumulate_stone_attribute,
-    get_damage_level2_modifier,
-    get_reduction_damage_level2_modifier,
-    accumulate_suit_stone_attribute
+    get_damage_and_reduction_level2_modifier,
+    accumulate_suit_stone_attribute,
+    get_sstone_perstone_talent_equip_formation_passive_buff_weapon_modifier,
+    get_a_modifier
 )
 from math import ceil
 
-LIEXING_DAMAGE_REDUCTION = 4
-LIEXING_DAMAGE_INCREASE = 4
+XINGYAO_DAMAGE_REDUCTION = 4
+XINGYAO_DAMAGE_INCREASE = 4
+LIEXING_DAMAGE_INCREASE = 10
 LIEXING_HEAL_INCREASE = 10
 JIANREN = 40
 
@@ -99,10 +102,10 @@ def get_penetration_multiplier(
         if skill is None
         else get_skill_modifier(attr_name, hero_instance, counter_hero, skill, context)
     )
-    leve2_modifier = get_level2_modifier(
+    leve2_modifier = get_sstone_perstone_talent_equip_formation_passive_buff_weapon_modifier(
         hero_instance, counter_hero, attr_name, context
     )
-    return normalize_value(leve2_modifier + accumulated_skill_damage_modifier)
+    return normalize_value((leve2_modifier + accumulated_skill_damage_modifier)/100)
 
 
 def get_defense_with_penetration(
@@ -112,11 +115,12 @@ def get_defense_with_penetration(
     is_basic: bool = False,
 ) -> float:     # 防御穿透
     skill = context.get_last_action().skill
+    is_magic = check_is_magic_action(skill, attacker_instance)
     penetration = get_penetration_multiplier(
         attacker_instance, True, skill, context, is_basic
     )
     # calculate buffs
-    basic_defense = get_defense(defender_instance, False, skill, context, is_basic)
+    basic_defense = get_defense(defender_instance, attacker_instance, is_magic, context, is_basic)
     return basic_defense * (1 - normalize_value(penetration))
 
 
@@ -145,6 +149,23 @@ def get_max_life(
 ) -> float:
     life_attribute = hero_instance.initial_attributes.life
     basic_life = get_level1_modified_result(hero_instance, ma.life, life_attribute) + hero_instance.temp.strength_attributes.life + hero_instance.temp.xingzhijing.life
+    if hero_instance.id == "mohuahuangfushen0":     # 这里是模拟小号的面板写死的
+        basic_life = 6365 + 3247
+        return basic_life * (
+            1
+            + (
+                get_level2_modifier(
+                    hero_instance, target_instance, ma.life_percentage, context, is_basic
+                )
+                + JIANREN + 5
+            )/100
+    )
+    elif hero_instance.id == "zhujin0":
+        basic_life = 2858 + 1690
+    elif hero_instance.id == "huoyong0":
+        basic_life = 3753 + 1808
+    elif hero_instance.id == "fuyayu0":
+        basic_life = 5541 + 944
     return basic_life * (
         1
         + (
@@ -173,6 +194,15 @@ def get_defense(
             get_level1_modified_result(hero_instance, attr_name, defense_attribute)
             + (hero_instance.temp.strength_attributes.magic_defense if is_magic else hero_instance.temp.strength_attributes.defense)
             + (hero_instance.temp.xingzhijing.magic_defense if is_magic else hero_instance.temp.xingzhijing.defense))
+
+    if hero_instance.id == "mohuahuangfushen0":
+        basic_defense = 1245 + 648 if is_magic else 1197 + 530
+    elif hero_instance.id == "zhujin0":
+        basic_defense = 501 + 353 if is_magic else 566 + 242
+    elif hero_instance.id == "huoyong0":
+        basic_defense = 766 + 323 if is_magic else 625 + 299
+    elif hero_instance.id == "fuyayu0":
+        basic_defense = 1747 if is_magic else 1128 + 208
 
     return basic_defense * (1 + get_level2_modifier(
         hero_instance, counter_instance, attr_name+"_percentage", context, is_basic
@@ -205,6 +235,15 @@ def get_attack(
             + (actor_instance.temp.strength_attributes.magic_attack if is_magic else actor_instance.temp.strength_attributes.attack)
             + (actor_instance.temp.xingzhijing.magic_attack if is_magic else actor_instance.temp.xingzhijing.attack))
 
+    if actor_instance.id == "mohuahuangfushen0":
+        basic_attack = 454 if is_magic else 3193 + 1895
+    elif actor_instance.id == "zhujin0":
+        basic_attack = 1848 + 1099 if is_magic else 232
+    elif actor_instance.id == "huoyong0":
+        basic_attack = 2134 + 1194 if is_magic else 256
+    elif actor_instance.id == "fuyayu0":
+        basic_attack = 2150 + 437 if is_magic else 325
+
     return basic_attack * (1 + get_level2_modifier(
         actor_instance, target_instance, attr_name+"_percentage", context, is_basic
         )/100)
@@ -221,68 +260,136 @@ def get_damage_modifier(
     attr_name = (
         ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage
     )
-    accumulated_skill_damage_modifier = (
-        0
-        if skill is None
-        else get_skill_modifier(
-            attr_name, attacker_instance, counter_instance, skill, context
-        )
-    )
-    accumulated_passive_damage_modifier = accumulate_attribute(
-        attacker_instance.temp.passives, attr_name
-    )
     accumulated_stones_percentage_damage_modifier = accumulate_stone_attribute(
         attacker_instance.stones, attr_name
     )
 
     level2_damage_modifier = 1 + (
-        get_damage_level2_modifier(
-            attacker_instance, counter_instance, attr_name, context
+        get_damage_and_reduction_level2_modifier(
+            attacker_instance, counter_instance, attr_name, context, skill
         )
-        + accumulated_skill_damage_modifier
-        + accumulated_passive_damage_modifier
-        + get_action_type_damage_modifier(attacker_instance, counter_instance, context)
+        + get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill)
     ) / 100
 
     # B-type damage increase (Additive)
     level1_damage_modifier = (
         1
         + (
-            LIEXING_DAMAGE_INCREASE + accumulated_stones_percentage_damage_modifier + LIEXING_DAMAGE_INCREASE
+            accumulated_stones_percentage_damage_modifier + XINGYAO_DAMAGE_INCREASE
         ) / 100
     )
     return level1_damage_modifier * level2_damage_modifier
 
 
+def get_a_damage_modifier(
+    attacker_instance: Hero,
+    counter_instance: Hero,
+    skill: Skill or None,
+    is_magic: bool,
+    context: Context,
+) -> float:
+    modifier = (
+            get_a_modifier(
+                ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage,
+                attacker_instance,
+                counter_instance,
+                context
+            )
+            + get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill)
+            - get_a_modifier(
+                ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage,
+                counter_instance,
+                attacker_instance,
+                context
+            )
+            - get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context)
+    )
+    from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import accumulate_talents_modifier, accumulate_xinghun_attribute, accumulate_equipments_modifier, get_weapon_modifier, get_buff_modifier, get_formation_modifier, accumulate_jishen_attribute
+    print("--------------------------------------------------------", modifier)
+    print("A类增伤", get_a_modifier(ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage, attacker_instance, counter_instance, context) + get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill), "\n",
+          "其中"
+          "talents",  accumulate_talents_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
+          "skill",  get_skill_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, skill, context), "\n",
+          "xinghun",  accumulate_xinghun_attribute(attacker_instance.temp.xinghun, ma.magic_damage_percentage), "\n",
+          "weapon",  get_weapon_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
+          "equipments",  accumulate_equipments_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
+          "suit_stone",  accumulate_suit_stone_attribute(attacker_instance, counter_instance, ma.magic_damage_percentage, context), "\n",
+          "buff",  get_buff_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
+          "formation",  get_formation_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
+          "jishen",  accumulate_jishen_attribute(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
+          "action", get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill), "\n",
+          "----------------------------------------------------", "\n",
+          "A类减伤", get_a_modifier(ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage, counter_instance, attacker_instance, context) - get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context), "\n",
+          "其中"
+          "talents", accumulate_talents_modifier(ma.magic_damage_reduction_percentage, attacker_instance, counter_instance, context), "\n",
+          "skill", get_skill_modifier(ma.magic_damage_reduction_percentage, attacker_instance, counter_instance, skill, context), "\n",
+          "xinghun", accumulate_xinghun_attribute(attacker_instance.temp.xinghun, ma.magic_damage_reduction_percentage), "\n",
+          "weapon", get_weapon_modifier(ma.magic_damage_reduction_percentage, attacker_instance, counter_instance, context), "\n",
+          "equipments", accumulate_equipments_modifier(ma.magic_damage_reduction_percentage, attacker_instance, counter_instance, context),
+          "\n",
+          "suit_stone", accumulate_suit_stone_attribute(attacker_instance, counter_instance, ma.magic_damage_reduction_percentage, context),
+          "\n",
+          "buff", get_buff_modifier(ma.magic_damage_reduction_percentage, attacker_instance, counter_instance, context), "\n",
+          "formation", get_formation_modifier(ma.magic_damage_reduction_percentage, attacker_instance, counter_instance, context), "\n",
+          "jishen", accumulate_jishen_attribute(ma.magic_damage_reduction_percentage, attacker_instance, counter_instance, context), "\n",
+          "action", get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context), "\n",
+    )
+
+    return 1 + modifier / 100
+
+
+def get_b_damage_modifier(  # 魂石百分比词条加这里
+    attacker_instance: Hero,
+    counter_instance: Hero,
+    skill: Skill or None,
+    is_magic: bool,
+    context: Context,
+    is_basic: bool = False,
+) -> float:
+
+    accumulated_xinglie_modifier = 0
+    if attacker_instance.temp.profession != Professions.PRIEST:
+        accumulated_xinglie_modifier = 10
+
+    modifier = (
+            accumulate_stone_attribute(attacker_instance.stones, ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage)
+            + XINGYAO_DAMAGE_INCREASE
+            + accumulated_xinglie_modifier
+            - accumulate_stone_attribute(counter_instance.stones, ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage)
+            - XINGYAO_DAMAGE_REDUCTION
+    )
+    return 1 + modifier / 100
+
+
 def get_action_type_damage_modifier(
-    actor: Hero, target: Hero, context: Context
+    actor: Hero, target: Hero, context: Context, skill
 ) -> float:
     current_action = context.get_last_action()
     action_type = current_action.type
     action_type_modifier = 0
     if action_type == ActionTypes.SKILL_ATTACK:
-        action_type_modifier += get_level2_modifier(
-            actor, target, ma.skill_damage_percentage, context
+        action_type_modifier += get_a_modifier(
+            ma.skill_damage_percentage, actor, target, context, skill
         )
         skill = context.get_last_action().skill
         from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType, SkillTargetTypes
         from open_spiel.python.games.Tiandijie.calculation.Range import RangeType
         if skill.temp.target_type == SkillTargetTypes.ENEMY and skill.temp.range_instance.range_type == RangeType.POINT and (skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}):
-            action_type_modifier += get_level2_modifier(
-                actor, target, ma.single_target_skill_damage_percentage, context
+            action_type_modifier += get_a_modifier(
+                ma.single_target_skill_damage_percentage, actor, target, context, skill
             )
         else:
-            action_type_modifier += get_level2_modifier(
-                actor, target, ma.range_skill_damage_percentage, context
+            action_type_modifier += get_a_modifier(
+                ma.range_skill_damage_percentage, actor, target, context, skill
             )
     elif action_type == ActionTypes.NORMAL_ATTACK:
-        action_type_modifier += get_level2_modifier(
-            actor, target, ma.normal_attack_damage_percentage, context
+        action_type_modifier += get_a_modifier(
+            ma.normal_attack_damage_percentage, actor, target, context, skill
         )
 
     if current_action.is_in_battle:
-        action_type_modifier += get_level2_modifier(
-            actor, target, ma.battle_damage_percentage, context
+        action_type_modifier += get_a_modifier(
+            ma.battle_damage_percentage, actor, target, context, skill
         )
 
     return action_type_modifier
@@ -297,24 +404,24 @@ def get_action_type_damage_reduction_modifier(
     if action_type == ActionTypes.SKILL_ATTACK:
         skill_target_type = context.get_last_action().skill.temp.range_instance.range_value
         if skill_target_type == 0:
-            action_type_modifier += get_level2_modifier(
+            action_type_modifier += get_a_modifier(
+                ma.single_target_skill_damage_reduction_percentage,
                 defender,
                 attacker,
-                ma.single_target_skill_damage_reduction_percentage,
                 context,
             )
         elif skill_target_type > 0:
-            action_type_modifier += get_level2_modifier(
-                defender, attacker, ma.range_skill_damage_reduction_percentage, context
+            action_type_modifier += get_a_modifier(
+                ma.range_skill_damage_reduction_percentage, defender, attacker, context
             )
     elif action_type == ActionTypes.NORMAL_ATTACK:
-        action_type_modifier += get_level2_modifier(
-            defender, attacker, ma.normal_attack_damage_reduction_percentage, context
+        action_type_modifier += get_a_modifier(
+            ma.normal_attack_damage_reduction_percentage, defender, attacker, context
         )
 
     if current_action.is_in_battle:
-        action_type_modifier += get_level2_modifier(
-            defender, attacker, ma.battle_damage_reduction_percentage, context
+        action_type_modifier += get_a_modifier(
+            ma.battle_damage_reduction_percentage, defender, attacker, context
         )
 
     return action_type_modifier
@@ -332,23 +439,16 @@ def get_damage_reduction_modifier(
         if is_magic
         else ma.physical_damage_reduction_percentage
     )
-    accumulated_passives_damage_reduction_modifier = accumulate_attribute(
-        defense_instance.temp.passives, attr_name
-    )
 
     # A-type damage increase (Additive)
     a_type_damage_reduction = (
         1
         - (
-            get_reduction_damage_level2_modifier(
+            get_damage_and_reduction_level2_modifier(
                 defense_instance, counter_instance, attr_name, context
             )
-            + accumulated_passives_damage_reduction_modifier
             + get_action_type_damage_reduction_modifier(
                 defense_instance, counter_instance, context
-            )
-            + get_level2_modifier(
-                defense_instance, counter_instance, ma.normal_attack_damage_reduction_percentage, context
             )
         )
         / 100
@@ -361,7 +461,7 @@ def get_damage_reduction_modifier(
     b_type_damage_reduction = (
         1
         - (
-            LIEXING_DAMAGE_REDUCTION
+            XINGYAO_DAMAGE_REDUCTION
             + accumulated_stones_damage_reduction_percentage_modifier
         )
         / 100
@@ -370,15 +470,15 @@ def get_damage_reduction_modifier(
 
 
 def get_critical_hit_probability(
-    actor_hero: Hero, counter_instance: Hero, context: Context, is_basic: bool = False
+    actor_hero: Hero, counter_instance: Hero, context: Context, is_basic: bool = False, skill=None
 ) -> float:
     critical_stones_percentage_modifier = accumulate_stone_attribute(
         actor_hero.stones, ma.critical_percentage
     )
 
     total_luck = get_luck(actor_hero, counter_instance, context, is_basic)
-    level2_critical_modifier = get_level2_modifier(
-        actor_hero, counter_instance, ma.critical_percentage, context
+    level2_critical_modifier = get_damage_and_reduction_level2_modifier(
+        actor_hero, counter_instance, ma.critical_percentage, context, skill
     )
     total_critical = (
         total_luck / 10 + level2_critical_modifier + critical_stones_percentage_modifier
@@ -392,6 +492,16 @@ def get_luck(actor_hero: Hero, counter_instance: Hero, context: Context, is_basi
         1
         + get_level2_modifier(actor_hero, counter_instance, ma.luck_percentage, context, False)/100
     )
+
+    if actor_hero.id == "mohuahuangfushen0":
+        total_luck = 350 + 10
+    elif actor_hero.id == "zhujin0":
+        total_luck = 69
+    elif actor_hero.id == "huoyong0":
+        total_luck = 130
+    elif actor_hero.id == "fuyayu0":
+        total_luck = 132
+
     return total_luck
 
 
@@ -545,7 +655,7 @@ def get_counterattack_damage_modifier(
     )
 
     level2_damage_modifier = 1 + (
-        get_damage_level2_modifier(
+        get_damage_and_reduction_level2_modifier(
             attacker_instance, counter_instance, attr_name, context
         )
         + accumulated_passive_damage_modifier
@@ -558,7 +668,7 @@ def get_counterattack_damage_modifier(
     level1_damage_modifier = (
         1
         + (
-            LIEXING_DAMAGE_INCREASE + accumulated_stones_percentage_damage_modifier + LIEXING_DAMAGE_INCREASE
+            XINGYAO_DAMAGE_INCREASE + accumulated_stones_percentage_damage_modifier + XINGYAO_DAMAGE_INCREASE
         ) / 100
     )
     return level1_damage_modifier * level2_damage_modifier
@@ -583,7 +693,7 @@ def get_counterattack_damage_reduction_modifier(
     a_type_damage_reduction = (
         1
         - (
-            get_reduction_damage_level2_modifier(
+            get_damage_and_reduction_level2_modifier(
                 defense_instance, counter_instance, attr_name, context
             )
             + accumulated_passives_damage_reduction_modifier
@@ -598,7 +708,7 @@ def get_counterattack_damage_reduction_modifier(
     b_type_damage_reduction = (
         1
         - (
-            LIEXING_DAMAGE_REDUCTION
+            XINGYAO_DAMAGE_REDUCTION
             + accumulated_stones_damage_reduction_percentage_modifier
         )
         / 100

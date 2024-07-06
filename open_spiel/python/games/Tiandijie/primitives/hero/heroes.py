@@ -8,6 +8,7 @@ from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import Attributes
 from open_spiel.python.games.Tiandijie.primitives.talent.talents import Talents
 from open_spiel.python.games.Tiandijie.primitives.Weapons import Weapons
+from open_spiel.python.games.Tiandijie.primitives.fabao import Fabaos
 
 
 class HeroeTemps(Enum):
@@ -27,6 +28,7 @@ class HeroeTemps(Enum):
         talent=Talents.anxingnixing.value,
         weapons=Weapons.zhiwangbupo.value,
         xingzhijing=Attributes(194, 56, 61, 0, 59, 22),
+        xinghun={"critical_damage_percentage": 5}
     )
 
     fuyayu = HeroTemp(
@@ -45,6 +47,9 @@ class HeroeTemps(Enum):
         talent=Talents.shenwuqimou.value,
         weapons=Weapons.shenwuhanwei.value,
         xingzhijing=Attributes(188, 0, 25, 92, 36, 14),
+        xinghun={"heal_percentage": 10},
+        fabao=Fabaos.shierpinliantai.value
+
     )
 
     huoyong = HeroTemp(
@@ -63,6 +68,7 @@ class HeroeTemps(Enum):
         talent=Talents.youfenhuashen.value,
         weapons=Weapons.yourifusu.value,
         xingzhijing=Attributes(195, 0, 15, 112, 50, 0),
+        xinghun={"range_skill_damage_percentage": 5}
     )
 
     zhujin = HeroTemp(
@@ -81,6 +87,7 @@ class HeroeTemps(Enum):
         talent=Talents.qilinqiongyu.value,
         weapons=Weapons.qixiangdimi.value,
         xingzhijing=Attributes(150, 0, 54, 153, 0, 8),
+        xinghun={"battle_damage_reduction_percentage": 5}
     )
 
     zhenyin = HeroTemp(
@@ -99,6 +106,7 @@ class HeroeTemps(Enum):
         talent=Talents.jinlunfatian.value,
         weapons=Weapons.budaoshensen.value,
         xingzhijing=Attributes(166, 42, 46, 0, 35, 35),
+        xinghun={"battle_damage_reduction_percentage": 5}
     )
 
     zhenyin1 = HeroTemp(
@@ -117,4 +125,5 @@ class HeroeTemps(Enum):
         talent=Talents.jinlunfatian.value,
         weapons=Weapons.budaoshensen.value,
         xingzhijing=Attributes(166, 42, 46, 0, 35, 35),
+        xinghun={"battle_damage_reduction_percentage": 5}
     )

@@ -22,7 +22,7 @@ def calculate_skill_heal(
         skill_multiplier = skill.temp.multiplier
         magic_attack = get_attack(actor_instance, target_instance, context, True)
 
-        actual_healing = magic_attack * skill_multiplier * (get_fixed_heal_modifier(actor_instance, target_instance, context) + 10) * (1 + LIEXING_HEAL_INCREASE / 100)
+        actual_healing = magic_attack * skill_multiplier * get_fixed_heal_modifier(actor_instance, target_instance, context) * (1 + LIEXING_HEAL_INCREASE / 100)
         target_instance.take_healing(actual_healing, context)
 
 

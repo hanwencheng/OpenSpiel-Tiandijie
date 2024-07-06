@@ -203,12 +203,11 @@ class PositionRequirementChecks:
         for hero in context.heroes:
             if hero.id == actor_hero.id:
                 continue
-            if hero.player_id == actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
-                    actor_position, hero.position, range_value
-                ):
-                    if hero.temp.gender == Gender.MALE:
-                        return 1
+            if calculate_if_targe_in_diamond_range(
+                actor_position, hero.position, range_value
+            ):
+                if hero.temp.gender == Gender.MALE:
+                    return 1
         return 0
 
     @staticmethod
@@ -219,12 +218,11 @@ class PositionRequirementChecks:
         for hero in context.heroes:
             if hero.id == actor_hero.id:
                 continue
-            if hero.player_id == actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
-                    actor_position, hero.position, range_value
-                ):
-                    if hero.temp.gender == Gender.FEMALE:
-                        return 1
+            if calculate_if_targe_in_diamond_range(
+                actor_position, hero.position, range_value
+            ):
+                if hero.temp.gender == Gender.FEMALE:
+                    return 1
         return 0
 
     @staticmethod

@@ -23,6 +23,9 @@ from open_spiel.python.games.Tiandijie.calculation.BuffStack import (
 )
 from collections import Counter
 
+XINGYAO_DAMAGE_INCREASE = 4
+XINGYAO_DAMAGE_REDUCTION = 4
+
 
 def get_modifier_attribute_value(
     actor_instance, modifier_effect: dict, attr_name: str
@@ -211,6 +214,8 @@ def get_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+buff
     accumulated_talents_modifier = accumulate_talents_modifier(
         attr_name, actor_instance, counter_instance, context
     )
+    if attr_name in ["magic_attack_percentage", "magic_defense_percentage"] and actor_instance.id == "huoyong0" and accumulated_talents_modifier > 0:
+        accumulated_talents_modifier = accumulated_talents_modifier/2
     accumulated_equipments_modifier = accumulate_equipments_modifier(
         attr_name, actor_instance, counter_instance, context
     )
@@ -220,9 +225,9 @@ def get_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+buff
     accumulated_passives_modifier = get_passives_modifier(
         actor_instance.enabled_passives, attr_name
     )
-    accumulated_buff_modifier = get_buff_modifier(
-        attr_name, actor_instance, counter_instance, context
-    )
+    # accumulated_buff_modifier = get_buff_modifier(
+    #     attr_name, actor_instance, counter_instance, context
+    # )
 
     return (
         accumulated_talents_modifier
@@ -231,7 +236,7 @@ def get_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+buff
         + accumulated_equipments_modifier
         + formation_modifier
         + accumulated_passives_modifier
-        + accumulated_buff_modifier
+        # + accumulated_buff_modifier
     )
 
 
@@ -338,11 +343,12 @@ def accumulate_equipments_modifier(
     return modifier_value
 
 
-def get_damage_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+buff
+def get_damage_and_reduction_level2_modifier(    # 天赋/技能/神兵/星辉/兵刃/星魂/饰品/魂石套装百分比/buff/战阵
     actor_instance: Hero,
     counter_instance: Hero or None,
     attr_name: str,
     context: Context,
+    skill=None
 ) -> float:
     accumulated_stones_effect_modifier = accumulate_suit_stone_attribute(
         actor_instance, counter_instance, attr_name, context
@@ -362,7 +368,16 @@ def get_damage_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+bu
     accumulated_weapon_modifier = get_weapon_modifier(
         attr_name, actor_instance, counter_instance, context
     )
-
+    accumulated_passive_damage_modifier = accumulate_attribute(
+        actor_instance.temp.passives, attr_name
+    )
+    accumulated_skill_damage_modifier = (
+        0
+        if skill is None
+        else get_skill_modifier(
+            attr_name, actor_instance, counter_instance, skill, context
+        )
+    )
     return (
         accumulated_talents_modifier
         + accumulated_buff_modifier
@@ -370,42 +385,10 @@ def get_damage_level2_modifier(    # 魂石套装+天赋+饰品+阵法+被动+bu
         + accumulated_stones_effect_modifier
         + accumulated_equipments_modifier
         + formation_modifier
+        + accumulated_passive_damage_modifier
+        + accumulated_skill_damage_modifier
     )
 
-
-def get_reduction_damage_level2_modifier(
-    actor_instance: Hero,
-    counter_instance: Hero or None,
-    attr_name: str,
-    context: Context,
-) -> float:
-    accumulated_stones_effect_modifier = accumulate_suit_stone_attribute(
-        actor_instance, counter_instance, attr_name, context
-    )
-    accumulated_talents_modifier = accumulate_talents_modifier(
-        attr_name, actor_instance, counter_instance, context
-    )
-    accumulated_equipments_modifier = accumulate_equipments_modifier(
-        attr_name, actor_instance, counter_instance, context
-    )
-    formation_modifier = get_formation_modifier(
-        attr_name, actor_instance, counter_instance, context
-    )
-    accumulated_buff_modifier = get_buff_modifier(
-        attr_name, actor_instance, counter_instance, context
-    )
-    accumulated_weapon_modifier = get_weapon_modifier(
-        attr_name, actor_instance, counter_instance, context
-    )
-
-    return (
-        accumulated_talents_modifier
-        + accumulated_stones_effect_modifier
-        + accumulated_weapon_modifier
-        + accumulated_buff_modifier
-        + accumulated_equipments_modifier
-        + formation_modifier
-    )
 
 
 def get_weapon_modifier(
@@ -424,8 +407,8 @@ def get_weapon_modifier(
                     actor_instance, modifier_effect.modifier, attr_name
                 )
                 basic_modifier_value += is_requirement_meet * temp_value
-    for feature in weapon_instance.weapon_features:
-        for modifier_effect in feature.modifier_effects:
+    if actor_instance.temp.fabao:
+        for modifier_effect in actor_instance.temp.fabao.modifier_effects:
             if attr_name in modifier_effect.modifier:
                 is_requirement_meet = modifier_effect.requirement(
                     actor_instance, counter_instance, context, weapon_instance
@@ -435,8 +418,19 @@ def get_weapon_modifier(
                         actor_instance, modifier_effect.modifier, attr_name
                     )
                     basic_modifier_value += is_requirement_meet * temp_value
+    else:
+        for feature in weapon_instance.weapon_features:
+            for modifier_effect in feature.modifier_effects:
+                if attr_name in modifier_effect.modifier:
+                    is_requirement_meet = modifier_effect.requirement(
+                        actor_instance, counter_instance, context, weapon_instance
+                    )
+                    if is_requirement_meet > 0:
+                        temp_value = get_modifier_attribute_value(
+                            actor_instance, modifier_effect.modifier, attr_name
+                        )
+                        basic_modifier_value += is_requirement_meet * temp_value
     return basic_modifier_value
-
 
 
 def get_heal_level2_modifier(    # (1+角色天赋+角色技能+魂石套装效果(尸魔)+治疗职业的武器强化+饰品)
@@ -463,6 +457,7 @@ def get_heal_level2_modifier(    # (1+角色天赋+角色技能+魂石套装效�
     accumulated_weapon_modifier = get_weapon_modifier(
         attr_name, actor_instance, counter_instance, context
     )
+    accumulated_xingzhihun_modifier = accumulate_xinghun_attribute(actor_instance.temp.xinghun, attr_name)
 
     return (
         accumulated_talents_modifier
@@ -471,4 +466,111 @@ def get_heal_level2_modifier(    # (1+角色天赋+角色技能+魂石套装效�
         + accumulated_stones_effect_modifier
         + accumulated_equipments_modifier
         + accumulated_passives_heal_reduction_modifier
+        + accumulated_xingzhihun_modifier
     )
+
+def get_sstone_perstone_talent_equip_formation_passive_buff_weapon_modifier(    # 魂石套装+魂石百分比词条+天赋+饰品+阵法+被动+buff+武器
+    actor_instance: Hero,
+    counter_instance: Hero or None,
+    attr_name: str,
+    context: Context,
+    is_basic: bool = False,
+) -> float:
+    accumulated_sstones_effect_modifier = accumulate_suit_stone_attribute(
+        actor_instance, counter_instance, attr_name, context
+    )
+    accumulated_perstones_effect_modifier = accumulate_stone_attribute(actor_instance.stones, attr_name)
+    accumulated_talents_modifier = accumulate_talents_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_equipments_modifier = accumulate_equipments_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    formation_modifier = get_formation_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_passives_modifier = get_passives_modifier(
+        actor_instance.enabled_passives, attr_name
+    )
+    accumulated_buff_modifier = get_buff_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_weapon_modifier = get_weapon_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+
+    return (
+        accumulated_talents_modifier
+        + accumulated_sstones_effect_modifier
+        + accumulated_perstones_effect_modifier
+        + accumulated_equipments_modifier
+        + formation_modifier
+        + accumulated_passives_modifier
+        + accumulated_buff_modifier
+        + accumulated_weapon_modifier
+    )
+
+
+def accumulate_xinghun_attribute(xinghun: dict, attr_name: str) -> float:
+    return xinghun.get(attr_name, 0)
+
+
+def accumulate_jishen_attribute(attr_name, actor_instance, counter_instance, context) -> float:
+    modifier_effect = actor_instance.temp.jishen
+    if attr_name in modifier_effect.modifier:
+        is_requirement_meet = modifier_effect.requirement(
+            actor_instance, counter_instance, context, actor_instance.temp.jishen
+        )
+        if is_requirement_meet > 0:
+            temp_value = get_modifier_attribute_value(
+                actor_instance, modifier_effect.modifier, attr_name
+            )
+            return is_requirement_meet * temp_value
+    return 0
+
+
+def get_a_modifier(attr_name, actor_instance, counter_instance, context, skill=None):       # A类增减伤： 天赋/技能/神兵/兵刃/星魂/饰品/魂石套装百分比/buff/战阵
+    accumulated_talents_modifier = accumulate_talents_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_skill_modifier = get_skill_modifier(
+        attr_name, actor_instance, counter_instance, skill, context
+    )
+    accumulated_xinghui_modifier = accumulate_xinghun_attribute(
+        actor_instance.temp.xinghun, attr_name
+    )
+    accumulated_weapon_modifier = get_weapon_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_equipments_modifier = accumulate_equipments_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_sstones_effect_modifier = accumulate_suit_stone_attribute(
+        actor_instance, counter_instance, attr_name, context
+    )
+    accumulated_buff_modifier = get_buff_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    formation_modifier = get_formation_modifier(
+        attr_name, actor_instance, counter_instance, context
+    )
+    accumulated_jishen_modifier = accumulate_jishen_attribute(
+        attr_name, actor_instance, counter_instance, context
+    )
+
+    return (
+        accumulated_talents_modifier
+        + accumulated_skill_modifier
+        + accumulated_xinghui_modifier
+        + accumulated_weapon_modifier
+        + accumulated_equipments_modifier
+        + accumulated_sstones_effect_modifier
+        + accumulated_buff_modifier
+        + formation_modifier
+        + accumulated_jishen_modifier
+    )
+
+
+# def get_b_modifier(attr_name, actor_instance, counter_instance, context):
+#     accumulated_perstones_effect_modifier = accumulate_stone_attribute(actor_instance.stones, attr_name+"_percentage")
+#     return 1 + accumulated_perstones_effect_modifier + XINGYAO_DAMAGE_INCREASE +

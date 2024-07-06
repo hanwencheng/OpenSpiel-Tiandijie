@@ -1,11 +1,14 @@
 from typing import List
 
+from functools import partial
 from open_spiel.python.games.Tiandijie.helpers import is_normal_attack_magic
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender, Professions, HideProfessions
 from open_spiel.python.games.Tiandijie.primitives.hero.Attributes import Attributes, generate_max_level_attributes, get_neigong_enum_value
 from open_spiel.python.games.Tiandijie.primitives.hero.BasicAttributes import AttributesTuple
 from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import create_normal_attack_skill
+from open_spiel.python.games.Tiandijie.primitives.effects.ModifierEffect import ModifierEffect
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -30,6 +33,8 @@ class HeroTemp:
         talent,
         weapons,
         xingzhijing,
+        xinghun=None,
+        fabao=None,
     ):
         self.current_life: float = 1
         self.name = name or "玄羽"
@@ -68,9 +73,15 @@ class HeroTemp:
         self.initialize_attributes()
         self.content: int = 0
         self.has_shield: int = True if self.profession == Professions.WARRIOR else False
+        self.xinghun = xinghun
+        self.jishen = self.init_jishen()
+        self.fabao = fabao
 
     def initialize_attributes(self):
         generate_max_level_attributes(
             self.current_attributes, self.growth_coefficients, self.hide_professions, self.temp_id
         )
         self.current_life = self.current_attributes.life
+
+    def init_jishen(self):
+        return ModifierEffect(partial(Rs.is_in_battle), {"magic_damage_reduction_percentage": 10}) if self.is_normal_attack_magic else ModifierEffect(partial(Rs.is_in_battle), {"physical_damage_reduction_percentage": 10})

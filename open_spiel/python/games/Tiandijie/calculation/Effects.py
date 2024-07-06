@@ -2157,3 +2157,13 @@ class Effects:
         if random() < 0.4:
             benfit_buff = random_select(context.benefit_buffs, 1)
             Effects.add_buffs([benfit_buff], 2, actor_instance, target_instance, context, stone)
+
+
+    @staticmethod
+    def take_effect_of_shierpinliantai(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        primary,
+    ):
+        pass
