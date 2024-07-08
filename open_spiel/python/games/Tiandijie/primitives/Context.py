@@ -278,8 +278,8 @@ class Context:
         )
         mohuahuangfushen.enabled_passives = [Passives.sanquehuisheng.value]
         mohuahuangfushen.enabled_skills = [Skill(0, Skills.anshayouyan.value), Skill(0, Skills.leiyinwanyu.value)]
-        mohuahuangfushen.stones = [Stones.get_stone_by_id("wanghuan"), Stones.get_stone_by_id("wanghuan"),
-                                   Stones.get_stone_by_id("wanghuan")]
+        # mohuahuangfushen.stones = [Stones.get_stone_by_id("wanghuan"), Stones.get_stone_by_id("wanghuan"),
+        #                            Stones.get_stone_by_id("wanghuan")]
         hero_list.append(mohuahuangfushen)
 
         fuyayu = Hero(
@@ -287,9 +287,8 @@ class Context:
             HeroeTemps.fuyayu.value,
             (0, 6),
             # (8, 9),
-            []
-            # [Equipments.binglinyinhuan_yan.value, Equipments.pixieyupei_yan.value,
-            #  Equipments.xuanwuyu.value, Equipments.youyaoxiuhuan.value]
+            [Equipments.binglinyinhuan_yan.value, Equipments.yuanyujinling.value,
+             Equipments.xuanwuyu.value, Equipments.youyaoxiuhuan.value]
         )
         fuyayu.enabled_passives = []
         # fuyayu.enabled_skills = [Skill(0, Skills.shenqiliuzhuan.value), Skill(0, Skills.zaizhouhaoling.value),
@@ -298,44 +297,44 @@ class Context:
         #                  Stones.get_stone_by_id("minkui")]
         hero_list.append(fuyayu)
 
-        huoyong = Hero(
-            0,
-            HeroeTemps.huoyong.value,
-            (1, 6),
-            [Equipments.tianhezhusha.value, Equipments.qingshenjingyu.value,
-             Equipments.xuanqueyaodai.value, Equipments.yujilingzhuo_yan.value]
-        )
-        huoyong.enabled_passives = [Passives.bianmou.value]
+        # huoyong = Hero(
+        #     0,
+        #     HeroeTemps.huoyong.value,
+        #     (1, 6),
+        #     [Equipments.tianhezhusha.value, Equipments.qingshenjingyu.value,
+        #      Equipments.xuanqueyaodai.value, Equipments.yujilingzhuo_yan.value]
+        # )
+        # huoyong.enabled_passives = [Passives.bianmou.value]
+        #
+        # huoyong.enabled_skills = [Skill(0, Skills.huntiantuixing.value), Skill(0, Skills.lihuoshenjue.value), Skill(0, Skills.wutianheiyan.value), Skill(0, Skills.tianshuangxuewu.value)]
+        # huoyong.stones = [Stones.get_stone_by_id("yuanhu"), Stones.get_stone_by_id("yuanhu"),
+        #                   Stones.get_stone_by_id("yuanhu")]
+        # hero_list.append(huoyong)
 
-        huoyong.enabled_skills = [Skill(0, Skills.huntiantuixing.value), Skill(0, Skills.lihuoshenjue.value), Skill(0, Skills.wutianheiyan.value), Skill(0, Skills.tianshuangxuewu.value)]
-        huoyong.stones = [Stones.get_stone_by_id("yuanhu"), Stones.get_stone_by_id("yuanhu"),
-                          Stones.get_stone_by_id("yuanhu")]
-        hero_list.append(huoyong)
-
-        zhenyin = Hero(
-            0,
-            HeroeTemps.zhenyin.value,
-            (1, 5),
-            [Equipments.feiquanmingyu.value, Equipments.lingyuepeihuan_yan.value,
-             Equipments.yanshanpei.value, Equipments.huanniaojie.value]
-        )
-        zhenyin.enabled_passives = []
-        # zhenyin.enabled_skills = [Skill(0, Skills.shiguizhaohuan.value), Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
-        zhenyin.enabled_skills = [Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
-        zhenyin.stones = [Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing")]
-        hero_list.append(zhenyin)
-
-        zhujin = Hero(
-            0,
-            HeroeTemps.zhujin.value,
-            (2, 1),
-            [Equipments.tianhezhusha.value, Equipments.lingyuepeihuan_chen.value,
-             Equipments.xuanqueyaodai.value, Equipments.yujilingzhuo_yan.value]
-        )
-        zhujin.enabled_passives = []
-        zhujin.enabled_skills = [Skill(0, Skills.juezhanwushuang.value), Skill(0, Skills.yanranchuanyun.value), Skill(0, Skills.chiqilingyao.value)]
-        zhujin.stones = [Stones.get_stone_by_id("zhuyanmohuo"),Stones.get_stone_by_id("zhuyanmohuo"),Stones.get_stone_by_id("zhuyanmohuo")]
-        hero_list.append(zhujin)
+        # zhenyin = Hero(
+        #     0,
+        #     HeroeTemps.zhenyin.value,
+        #     (1, 5),
+        #     [Equipments.feiquanmingyu.value, Equipments.lingyuepeihuan_yan.value,
+        #      Equipments.yanshanpei.value, Equipments.huanniaojie.value]
+        # )
+        # zhenyin.enabled_passives = []
+        # # zhenyin.enabled_skills = [Skill(0, Skills.shiguizhaohuan.value), Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
+        # zhenyin.enabled_skills = [Skill(0, Skills.jingangfalun.value), Skill(0, Skills.diyuzhizhen.value)]
+        # zhenyin.stones = [Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing"), Stones.get_stone_by_id("zhoushibing")]
+        # hero_list.append(zhenyin)
+        #
+        # zhujin = Hero(
+        #     0,
+        #     HeroeTemps.zhujin.value,
+        #     (2, 1),
+        #     [Equipments.tianhezhusha.value, Equipments.lingyuepeihuan_chen.value,
+        #      Equipments.xuanqueyaodai.value, Equipments.yujilingzhuo_yan.value]
+        # )
+        # zhujin.enabled_passives = []
+        # zhujin.enabled_skills = [Skill(0, Skills.juezhanwushuang.value), Skill(0, Skills.yanranchuanyun.value), Skill(0, Skills.chiqilingyao.value)]
+        # zhujin.stones = [Stones.get_stone_by_id("zhuyanmohuo"),Stones.get_stone_by_id("zhuyanmohuo"),Stones.get_stone_by_id("zhuyanmohuo")]
+        # hero_list.append(zhujin)
 
         mohuahuangfushen = Hero(
             1,
@@ -353,24 +352,24 @@ class Context:
         fuyayu = Hero(
             1,
             HeroeTemps.fuyayu.value,
-            (2, 9),
+            (6, 10),
             # (7, 10),
-            []
-            # [Equipments.binglinyinhuan_yan.value, Equipments.yuanyujinling.value,
-            #  Equipments.xuanwuyu.value, Equipments.youyaoxiuhuan.value]
+            [Equipments.binglinyinhuan_yan.value, Equipments.yuanyujinling.value,
+             Equipments.xuanwuyu.value, Equipments.youyaoxiuhuan.value]
         )
         fuyayu.enabled_passives = []
         fuyayu.enabled_skills = [Skill(0, Skills.shenqiliuzhuan.value), Skill(0, Skills.zaizhouhaoling.value),
                                  Skill(0, Skills.liwankuanglan.value)]
-        # fuyayu.stones = [Stones.get_stone_by_id("minkui"), Stones.get_stone_by_id("minkui"),
-        #                  Stones.get_stone_by_id("minkui")]
+        fuyayu.stones = [Stones.get_stone_by_id("minkui"), Stones.get_stone_by_id("minkui"),
+                         Stones.get_stone_by_id("minkui")]
         hero_list.append(fuyayu)
 
         huoyong = Hero(
             1,
             HeroeTemps.huoyong.value,
-            (6, 10),
-            []
+            (5, 9),
+            [Equipments.fengxiyaxuan.value, Equipments.canghaiyueming.value,
+             Equipments.tianjingfuhun.value, Equipments.yujilingzhuo_yan.value]
         )
         huoyong.enabled_passives = [Passives.bianmou.value]
 

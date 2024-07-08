@@ -1597,7 +1597,7 @@ class Effects:
         if buff.trigger >= max_trigger_limit:
             return
         partners = context.get_partners_in_diamond_range(actor, range_value)
-        partner = random_select(partners, 1)
+        partner = random_select(partners, 1)[0]
         _remove_actor_certain_buff(buff_id, actor)
         _add_buffs(actor, partner, [context.get_buff_by_id(buff_id)], 2, context)
 
@@ -1642,7 +1642,7 @@ class Effects:
     def take_effect_of_qijin(actor_instance: Hero, target_instance: Hero, context: Context, buff: Buff):
         enemies = context.get_enemies_in_diamond_range(actor_instance, 2)
         if enemies:
-            enemy = random_select(enemies, 1)
+            enemy = random_select(enemies, 1)[0]
             Effects.add_buffs(["yunxuan"], 1, actor_instance, enemy, context, buff)
 
     # Field buffs
@@ -1842,7 +1842,7 @@ class Effects:
         enemies = context.get_enemies_in_cross_range(actor_instance, 7)
         if not enemies:
             return
-        target_enemy = random_select(enemies, 1)
+        target_enemy = random_select(enemies, 1)[0]
         if state == "yan":
             buff_name = "piruo"
         elif state == "chen":
@@ -1887,7 +1887,7 @@ class Effects:
         equipment: Equipment
     ):
         partners = context.get_partners_in_diamond_range(actor_instance, 1)
-        partner = random_select(partners, 1)
+        partner = random_select(partners, 1)[0]
         for hero in [actor_instance, partner]:
             Effects.add_buffs(["shenhu"], 1, actor_instance, hero, context, equipment)
             Effects.add_buffs(["pixian"], 1, actor_instance, hero, context, equipment)
@@ -2155,7 +2155,7 @@ class Effects:
         stone,
     ):
         if random() < 0.4:
-            benfit_buff = random_select(context.benefit_buffs, 1)
+            benfit_buff = random_select(context.benefit_buffs, 1)[0]
             Effects.add_buffs([benfit_buff], 2, actor_instance, target_instance, context, stone)
 
 

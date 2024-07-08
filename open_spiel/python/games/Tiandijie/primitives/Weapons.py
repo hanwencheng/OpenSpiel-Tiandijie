@@ -157,7 +157,7 @@ class Weapons(Enum):
         "执妄不破",
         [
             ModifierEffect(
-                partial(Rs.PositionChecks.element_hero_in_range, [Elements.DARK, Elements.THUNDER]),
+                partial(Rs.PositionChecks.element_hero_in_square, [Elements.DARK, Elements.THUNDER], 2),
                 {Ma.physical_penetration_percentage: 20},
             ),
             ModifierEffect(

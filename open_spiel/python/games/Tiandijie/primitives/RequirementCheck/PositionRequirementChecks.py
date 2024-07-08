@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
     from open_spiel.python.games.Tiandijie.primitives.Passive import Passive
 from typing import List
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range, calculate_if_target_in_square_range
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender
 from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
@@ -140,6 +140,30 @@ class PositionRequirementChecks:
                         ):
                             count += 1
                             break
+
+        return 1 if count == len(elements) else 0
+
+    @staticmethod
+    def element_hero_in_square(
+        elements: List[Elements],
+        range_value: int,
+        actor_hero: Hero,
+        target_hero: Hero,
+        context: Context,
+        primitive,
+    ) -> int:
+        actor_position = actor_hero.position
+        count = 0
+        for element in elements:
+            for hero in context.heroes:
+                if hero.id == actor_hero.id:
+                    continue
+                if hero.temp.element == element:
+                    if calculate_if_target_in_square_range(
+                        actor_position, hero.position, range_value
+                    ):
+                        count += 1
+                        break
 
         return 1 if count == len(elements) else 0
 

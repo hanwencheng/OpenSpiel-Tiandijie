@@ -2053,13 +2053,13 @@ class BuffTemps(Enum):
             [
                 ModifierEffect(
                     RS.always_true,
-                    {ma.critical_percentage_reduction: 30},
+                    {ma.luck_percentage: -30},
                 ),
             ],
             [
                 ModifierEffect(
                     RS.always_true,
-                    {ma.critical_percentage_reduction: 35},
+                    {ma.luck_percentage: -35},
                 ),
             ],
         ],
@@ -5896,6 +5896,18 @@ class BuffTemps(Enum):
             )
         ],
     )
+
+    # 辟险	有益	可驱散	可扩散	可偷取	 免疫敌方造成的位移效果（位移效果包含：「击退」「拉拽」）
+    pixian = BuffTemp(
+        "pixian",
+        BuffTypes.Benefit,
+        True,
+        True,
+        True,
+        [],
+        [],
+    )
+
 
     # 火源	其他	不可驱散	不可扩散	不可偷取	最多储存「梦种灯」最大气血的100%，行动结束时消化50%储存总量为3格内其他友方恢复气血（必定在2回合内消化储存总量）
 

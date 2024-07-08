@@ -214,7 +214,7 @@ def move_event(
     context: Context,
     apply_func: Callable[[Hero, Action, Context], None],
 ):
-    if action.movable:
+    if action.move_point != action.initial_position:
         event_listener_calculator(actor, None, EventTypes.move_start, context)
         apply_func(actor, action, context)
         event_listener_calculator(actor, None, EventTypes.move_end, context)

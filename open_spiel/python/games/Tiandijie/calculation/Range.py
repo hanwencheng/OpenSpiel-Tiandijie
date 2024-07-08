@@ -199,6 +199,15 @@ def calculate_if_targe_in_diamond_range(
     )
 
 
+def calculate_if_target_in_square_range(
+    base_position: Position, target_position: Position, range_value: int
+) -> bool:
+    return (
+        abs(base_position[0] - target_position[0]) <= range_value
+        and abs(base_position[1] - target_position[1]) <= range_value
+    )
+
+
 def check_if_target_in_skill_attack_range(actor: Hero, target: Hero, skill) -> bool:
     return calculate_if_targe_in_diamond_range(
         actor.position, target.position, skill.temp.range_instance.range_value

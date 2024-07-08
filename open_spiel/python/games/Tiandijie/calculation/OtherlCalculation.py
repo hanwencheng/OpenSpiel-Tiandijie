@@ -79,6 +79,7 @@ def calculate_add_buff(
             prevent = True
     if not prevent:
         new_buff = Buff(buff_temp, duration, caster.id, level)
+        new_buff.duration = duration + 1
         existing_buff = next(
             (buff for buff in target.buffs if buff.temp.id == new_buff.temp.id), None
         )
@@ -89,7 +90,6 @@ def calculate_add_buff(
                 target.buffs.append(new_buff)
             else:
                 _increase_actor_certain_buff_stack(new_buff.temp.id, target, 1)
-                existing_buff.duration = duration + 1
         else:
             target.buffs.append(new_buff)
 

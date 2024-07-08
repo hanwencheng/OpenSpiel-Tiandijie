@@ -53,7 +53,7 @@ class TerrainBuffTemps(Enum):
     # 移动力 - 1
     ice = TerrainBuffTemp("ice", True, [ModifierEffect(partial(Rs.always_true), {Ma.move_range: -1})])
     # 「剑牢」：敌人无法触发再移动和自身赋予的再行动，暴击率-20%
-    jianlao = TerrainBuffTemp("jianlao", True, [ModifierEffect(partial(Rs.always_true), {Ma.critical_percentage_reduction: 30})])
+    jianlao = TerrainBuffTemp("jianlao", True, [ModifierEffect(partial(Rs.always_true), {Ma.critical_percentage: -30})])
     # 相邻1格内开启「限制区域」：敌方移动力消耗 + 1。主动攻击前驱散敌方1个「有益状态」，并施加「燃烧」状态，持续2回合。
     jinwuqi = TerrainBuffTemp(
         "jinwuqi",

@@ -10,6 +10,7 @@ from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import E
 from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
 from random import random
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
+from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import calculate_remove_buff
 
 skill_related_events = [
     EventTypes.skill_start,
@@ -156,6 +157,15 @@ def event_listener_calculator(
                     EventListenerContainer(event_listener, passive)
                 )
 
+    # Calculate Passives
+    equipments = actor_instance.equipments
+    for equipment in equipments:
+        for event_listener in equipment.on_event:
+            if event_listener.event_type == event_type:
+                event_listener_containers.append(
+                    EventListenerContainer(event_listener, equipment)
+                )
+
     # re-order the event listeners by priority in accumulated_event_listeners
     event_listener_containers.sort(key=lambda x: x.event_listener.priority)
 
@@ -207,16 +217,21 @@ def action_end_event(actor_instance: 'Hero', context):
     if context.battlemap.get_terrain(actor_instance.position).terrain_type == TerrainType.ZHUOWU:
         context.set_hero_died(actor_instance)
     # 所有的buff的duration-1, 技能, 天赋cd-1
+    remove_buffs = []
     for buff in actor_instance.buffs:
         buff.duration -= 1
         if buff.duration == 0:
-            from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import calculate_remove_buff
+            remove_buffs.append(buff)
+    for buff in remove_buffs:
+        calculate_remove_buff(buff, actor_instance, context)
 
-            calculate_remove_buff(buff, actor_instance, context)
+    remove_buffs = []
     for buff in actor_instance.field_buffs:
         buff.duration -= 1
         if buff.duration == 0:
-            actor_instance.field_buffs.remove(buff)
+            remove_buffs.append(buff)
+    for buff in remove_buffs:
+        actor_instance.field_buffs.remove(buff)
 
     actor_instance.temp.talent.cooldown -= 1
     if actor_instance.temp.talent.cooldown < 0:

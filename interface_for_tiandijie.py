@@ -525,7 +525,7 @@ class TIANDIJIEGUI:
                 break
         legal_actions = self.now_state.legal_actions_dic[1]
         for action in legal_actions:
-            if action.actor != hero or action.move_point == self.tentative_position['position']:
+            if action.actor == hero and action.move_point == self.tentative_position['position']:
                 if temp_skill:
                     if action.skill and action.skill.temp.chinese_name == temp_skill:
                         if action.skill.temp.target_type.value == 3:

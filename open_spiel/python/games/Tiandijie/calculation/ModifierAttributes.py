@@ -6,10 +6,10 @@ class ModifierAttributes:
     heal = "heal"
     life = "life"
     luck = "luck"
-    critical_percentage = "critical_percentage"  # critical_damage
-    critical_percentage_reduction = "critical_reduction"
-    suffer_critical_percentage = "suffer_critical"  # 受到暴击绿
-    suffer_critical_damage_reduction_percentage = "suffer_critical_damage"  # 受到暴击伤害减免
+    critical_percentage = "critical_percentage"  # 暴击率增加
+    critical_percentage_reduction = "critical_reduction"    # 暴击绿减少
+    suffer_critical_percentage = "suffer_critical"  # 受到暴击率
+    suffer_critical_damage_reduction_percentage = "suffer_critical_damage"  # 暴击抗性
     attack_percentage = "attack_percentage"
     skill_damage_percentage = "skill_damage_percentage"
     single_target_skill_damage_percentage = "single_target_skill_damage_percentage"
@@ -38,7 +38,7 @@ class ModifierAttributes:
     be_healed_percentage = "be_healed_percentage"
     life_percentage = "life_percentage"
     luck_percentage = "luck_percentage"
-    critical_damage_percentage = "critical_damage_percentage"
+    critical_damage_percentage = "critical_damage_percentage"   # 暴击率伤害增加
     critical_damage_reduction_percentage = (
         "critical_damage_reduction_percentage"  # 暴击伤害降低
     )

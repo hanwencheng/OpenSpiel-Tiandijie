@@ -349,7 +349,7 @@ class Formations:
         [
             ModifierEffect(
                 partial(Check.in_battle_with_non_flyable),
-                {ma.battle_damage_percentage: 8, ma.critical_percentage_reduction: 8},
+                {ma.battle_damage_percentage: 8, ma.suffer_critical_damage_reduction_percentage: 8},
             )
         ],
     )

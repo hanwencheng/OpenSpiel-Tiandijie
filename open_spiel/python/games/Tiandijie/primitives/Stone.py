@@ -86,7 +86,7 @@ class Stones(Enum):
                 "life_percentage": 10,
                 "magic_damage_reduction_percentage": 8,
                 "defense_percentage": 7,
-                "physical_damage_percentage": 7,
+                "physical_damage_percentage": 5,
             },
             {
                 "life": 868,
