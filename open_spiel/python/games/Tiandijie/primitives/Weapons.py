@@ -21,6 +21,7 @@ class Weapon:
         self.modifier_effects = modifier_effects
         self.on_event = on_event
         self.weapon_features = weapon_features
+        self.fabao_mark = False
 
 
 class WeaponFeature:

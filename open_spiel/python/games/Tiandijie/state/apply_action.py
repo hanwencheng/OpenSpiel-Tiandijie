@@ -9,19 +9,17 @@ from open_spiel.python.games.Tiandijie.state.state_calculator import (
     check_if_double_attack,
     check_if_chase_attack,
 )
-
 if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.Context import Context
     from open_spiel.python.games.Tiandijie.primitives.Action import Action
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
-
 from typing import Callable
-
 from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator, death_event_listener, before_death_event_listener
 from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
-
 from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
 from open_spiel.python.games.Tiandijie.primitives.skill.SkillTemp import SkillTargetTypes
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_a_modifier
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_target_in_diamond_range
 
 # move actor to the desired position
 
@@ -87,23 +85,45 @@ skill_type_to_event_dict: dict[SkillTargetTypes, tuple[EventTypes, EventTypes]] 
 }
 
 
-def counterattack_actions(context: Context):
-    action = context.get_last_action()
+def counterattack_actions(action, context: Context, is_first: bool):
     counter_attacker = action.get_defender_hero_in_battle()
     actor = action.actor
-    event_listener_calculator(
-        counter_attacker, actor, EventTypes.counterattack_start, context
-    )
-    event_listener_calculator(
-        actor, counter_attacker, EventTypes.counterattack_start, context
-    )
+    target = action.targets[0]
+    if get_a_modifier("counterattack_disabled", target, None, context):
+        return
+    range_value = target.temp.profession.value[1] + get_a_modifier("counterattack_range", target, None, context)
+    if not calculate_if_target_in_diamond_range(target.position, action.move_point, range_value):
+        return
+
+    if is_first:
+        event_listener_calculator(
+            counter_attacker, actor, EventTypes.counterattack_first_start, context
+        )
+        event_listener_calculator(
+            actor, counter_attacker, EventTypes.under_counterattack_first_start, context
+        )
+    else:
+        event_listener_calculator(
+            counter_attacker, actor, EventTypes.counterattack_start, context
+        )
+        event_listener_calculator(
+            actor, counter_attacker, EventTypes.under_counterattack_start, context
+        )
     apply_counterattack_damage(counter_attacker, action.actor, action, context)
-    event_listener_calculator(
-        counter_attacker, actor, EventTypes.counterattack_end, context
-    )
-    event_listener_calculator(
-        actor, counter_attacker, EventTypes.counterattack_end, context
-    )
+    if is_first:
+        event_listener_calculator(
+            counter_attacker, actor, EventTypes.counterattack_first_end, context
+        )
+        event_listener_calculator(
+            actor, counter_attacker, EventTypes.under_counterattack_first_end, context
+        )
+    else:
+        event_listener_calculator(
+            counter_attacker, actor, EventTypes.counterattack_end, context
+        )
+        event_listener_calculator(
+            counter_attacker, actor, EventTypes.under_counterattack_end, context
+        )
 
 
 def double_attack_event(context: Context):
@@ -136,7 +156,7 @@ def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
     event_listener_calculator(actor, target, EventTypes.battle_start, context)
     event_listener_calculator(target, actor, EventTypes.battle_start, context)
     if check_if_counterattack_first(action, context):       # 先攻
-        counterattack_actions(context)  # take damage
+        counterattack_actions(action, context, True)  # take damage
         if is_hero_live(actor, target, context):
             attack_or_skill_events(actor, target, action, context, apply_damage)
             if is_hero_live(actor, target, context):
@@ -149,7 +169,7 @@ def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
             if check_if_double_attack(action, context):     # 连击
                 double_attack_event(context)
             if is_hero_live(target, actor, context):
-                counterattack_actions(context)
+                counterattack_actions(action, context, False)
             if is_hero_live(target, actor, context):
                 if check_if_chase_attack(action, context):  # 追击
                     # chase_attack_event(context) todo

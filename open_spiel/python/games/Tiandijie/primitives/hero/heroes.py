@@ -28,7 +28,8 @@ class HeroeTemps(Enum):
         talent=Talents.anxingnixing.value,
         weapons=Weapons.zhiwangbupo.value,
         xingzhijing=Attributes(194, 56, 61, 0, 59, 22),
-        xinghun={"critical_damage_percentage": 5}
+        xinghun={"life_percentage": 5},
+        fabao=Fabaos.zijinhulu.value
     )
 
     fuyayu = HeroTemp(

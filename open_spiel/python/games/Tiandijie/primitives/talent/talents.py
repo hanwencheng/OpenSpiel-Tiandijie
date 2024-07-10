@@ -369,7 +369,7 @@ class Talents(Enum):
                 EventTypes.game_start,
                 2,
                 partial(Rs.always_true),
-                partial(Effects.add_self_buffs, ["chiqi"], 15),
+                partial(Effects.add_self_buffs, ["chiqi"], 200),
             ),
             EventListener(
                 EventTypes.before_action_end,
@@ -1213,7 +1213,7 @@ class Talents(Enum):
                 EventTypes.turn_start,
                 1,
                 partial(TRs.youfenghuashen_requires_check),
-                partial(Effects.add_self_buffs, ["hanlan", "fanyu", "xuanyou"], 15),
+                partial(Effects.add_self_buffs, ["hanlan", "fanyu", "xuanyou"], 200),
             ),
         ],
     )

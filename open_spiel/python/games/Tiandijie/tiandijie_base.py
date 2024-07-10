@@ -224,7 +224,7 @@ class TianDiJieState(pyspiel.State):
         new_action.update_action_type(ActionTypes.PASS)
         actions.append(new_action)
         from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillTargetTypes, SkillType
-        from open_spiel.python.games.Tiandijie.calculation.Range import calculate_diamond_area, calculate_if_targe_in_diamond_range
+        from open_spiel.python.games.Tiandijie.calculation.Range import calculate_diamond_area, calculate_if_target_in_diamond_range
         from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_level2_modifier
         from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
         def get_new_action(self, hero_in_skill, skill, moveable_position, target_position):
@@ -308,7 +308,7 @@ class TianDiJieState(pyspiel.State):
                         new_action = get_new_action(actor, hero_in_skill, skill, actor.position,
                                                     actor.position)
                         actions.append(new_action)
-                    elif calculate_if_targe_in_diamond_range(actor.position, target.position,
+                    elif calculate_if_target_in_diamond_range(actor.position, target.position,
                                                              int(skill_new_distance)):
                         new_action = get_new_action(actor, hero_in_skill, skill, actor.position, target.position)
                         actions.append(new_action)

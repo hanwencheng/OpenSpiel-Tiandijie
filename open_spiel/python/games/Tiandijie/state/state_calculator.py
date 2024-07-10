@@ -10,8 +10,9 @@ from open_spiel.python.games.Tiandijie.calculation.Range import RangeType
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     get_modifier,
     get_skill_modifier,
-    calculate_if_targe_in_diamond_range,
+    calculate_if_target_in_diamond_range,
 )
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_a_modifier
 from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 from open_spiel.python.games.Tiandijie.calculation.Range import check_if_target_in_skill_attack_range
 from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType, SkillTargetTypes
@@ -27,10 +28,10 @@ def check_if_counterattack(actor: Hero, target: Hero, context: Context):
 def check_if_counterattack_first(action: Action, context: Context):
     target = action.get_defender_hero_in_battle()
     actor = action.actor
-    is_counterattack_first = get_modifier(
+    is_counterattack_first = get_a_modifier(
         ma.is_counterattack_first, target, actor, context
     )
-    counterattack_first_limit = get_modifier(
+    counterattack_first_limit = get_a_modifier(
         ma.counterattack_first_limit, target, actor, context
     )
     return (
@@ -46,19 +47,6 @@ def check_if_in_battle(action: Action, context: Context):
         and action.skill.temp.range_instance.range_type == RangeType.POINT
         and (action.skill.temp.skill_type in {SkillType.Physical, SkillType.Magical})
     ):
-        # defender = action.get_defender_hero_in_battle()
-        # be_protected = action.targets[0]
-        # if check_if_counterattack(action.actor, defender, context):
-        # if (
-        #     action.type == ActionTypes.NORMAL_ATTACK
-        #     and calculate_if_targe_in_diamond_range(
-        #         # action.action_point, be_protected.position, action.actor.temp.hide_professions.value[1]
-        #         action.action_point, be_protected.position, get_attack_range(action.actor, context)
-        #     )
-        #     or (action.skill and check_if_target_in_skill_attack_range(
-        #         action.actor, be_protected, action.skill
-        #     ))
-        # ):
         action.update_is_in_battle(True)
         return True
     else:
@@ -91,14 +79,12 @@ def check_protector(context: Context):
                 ma.magic_protect_range if is_magic else ma.physical_protect_range
             )
             protect_range = get_modifier(attr_name, defender, action.actor, context)
-            # protect_range = get_max_modifier(attr_name, defender, action.actor, context)
             if protect_range >= 1:
                 distance = abs(defender.position[0] - target.position[0]) + abs(
                     defender.position[1] - target.position[1]
                 )
                 if distance <= protect_range:
                     possible_protectors.append((defender, distance))
-        # if there are multiple protectors, choose the one with the smallest distance
         if len(possible_protectors) > 0:
             possible_protectors.sort(key=lambda x: x[1])
             protector = possible_protectors[0][0]

@@ -132,13 +132,13 @@ def calculate_remove_buff(
 
 
 def calculate_additional_action(
-    actor: Hero, context: Context, move_range = None,
+    actor: Hero, context: Context, move_range=None,
 ):
     from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
     action_disabled = get_buff_modifier("is_extra_action_disabled", actor, None, context)
     if action_disabled:
         return
     if move_range is None:
-        move_range = actor.temp.hide_professions.value[2] + get_level2_modifier(actor, None, "move_range", context)
+        move_range = actor.temp.profession.value[2] + get_a_modifier(actor, None, "move_range", context)
     action = context.get_last_action()
     action.update_additional_action(move_range, context)

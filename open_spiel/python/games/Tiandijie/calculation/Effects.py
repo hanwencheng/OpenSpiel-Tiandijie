@@ -136,7 +136,7 @@ def _add_field_buffs(
     duration: int,
     context: Context,
 ):
-    new_field_buffs = [FieldBuff(b, duration, caster.id) for b in field_buff_temp]
+    new_field_buffs = [FieldBuff(b, duration + 1, caster.id) for b in field_buff_temp]
     for new_field_buff in new_field_buffs:
         existing_field_buff = next(
             (
@@ -1624,6 +1624,8 @@ class Effects:
             for partner in context.get_enemies_in_cross_range(actor_instance, 7)
             if not partner.actionable
         ]
+        if not partners:
+            return
         target_hero = partners[0]
         for partner in partners:
             if get_attack(target_hero, target_instance, context, True) / get_attack(
@@ -1911,7 +1913,7 @@ class Effects:
     def take_effect_of_leiyinwanyu(actor_instance: Hero, target_instance: Hero, context: Context, skill: Skill):
         actor_instance.transfor_enable_skill("leiyinwanyu", "tianshanluanhun")
         action = context.get_last_action()
-        enemies = context.get_enemies_in_square_range(actor_instance, action.action_point, 2)
+        enemies = context.get_enemies_in_square_range(actor_instance, 2)
         partner_positions = set(context.get_all_partners_position(actor_instance))
 
         map_rule = [
@@ -1961,7 +1963,7 @@ class Effects:
                     used_positions.add(new_position)
                     break  # Exit inner loop once a valid position is found
 
-        now_enemies = context.get_enemies_in_square_range(actor_instance, action.action_point, 2)
+        now_enemies = context.get_enemies_in_square_range(actor_instance, 2)
         if len(now_enemies) >= 3:
             Effects.update_self_additional_action(0, actor_instance, target_instance, context, skill)
 
@@ -2050,20 +2052,20 @@ class Effects:
         context: Context,
         skill: Skill,
     ):
-        if state == 1:
-            action = context.get_last_action()
-            enemies = context.get_enemies_in_diamond_range_by_target_point(actor_instance, action.action_point, 2)
-            for enemy in enemies:
-                Effects.add_fixed_damage_by_caster_magic_attack(0.2, actor_instance, enemy, context, skill)
-        elif state == 2:
-            target_position = context.get_last_action().action_point
-            Effects.remove_jinwuqi(context)
-            Effects.remove_actor_certain_buff("chiqi", actor_instance, target_instance, context, skill)
-            Effects.set_jinwuqi(actor_instance, target_position, context)
-            if actor_instance.special_mark:
-                actor_instance.special_mark = False
-                calculate_additional_action(actor_instance, context)
-                Effects.add_self_buffs(["ranyan"], 2, actor_instance, None, context, skill)
+        Effects.add_shield_by_self_max_life(0.25, actor_instance, None, context, skill)
+        action = context.get_last_action()
+        enemies = context.get_enemies_in_diamond_range_by_target_point(actor_instance, action.action_point, 2)
+        for enemy in enemies:
+            Effects.add_fixed_damage_by_caster_magic_attack(0.2, actor_instance, enemy, context, skill)
+
+        target_position = context.get_last_action().action_point
+        Effects.remove_jinwuqi(context)
+        Effects.remove_actor_certain_buff("chiqi", actor_instance, target_instance, context, skill)
+        Effects.set_jinwuqi(actor_instance, target_position, context)
+        if actor_instance.special_mark:
+            actor_instance.special_mark = False
+            calculate_additional_action(actor_instance, context, 3)
+            Effects.add_self_buffs(["ranyan"], 2, actor_instance, None, context, skill)
 
     @staticmethod
     def take_effect_of_yanranchuanyun(
@@ -2144,7 +2146,7 @@ class Effects:
                 partner.current_life / get_max_life(partner, actor_instance, context)
                 > 0.8
             ):
-                Effects.add_buffs(["shuangkai"], 15, actor_instance, partner, context, weapon)
+                Effects.add_buffs(["shuangkai"], 200, actor_instance, partner, context, weapon)
 
 
     @staticmethod

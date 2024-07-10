@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.Context import Context
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_target_in_diamond_range
 from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 
@@ -35,7 +35,7 @@ def check_buff_in_range(
         ):
             for buff in hero.buffs:
                 if buff.temp.type == buff_type:
-                    if calculate_if_targe_in_diamond_range(
+                    if calculate_if_target_in_diamond_range(
                         actor_position, hero.position, range_value
                     ):
                         return 1

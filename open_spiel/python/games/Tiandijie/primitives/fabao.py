@@ -35,3 +35,19 @@ class Fabaos(Enum):
             ),
         ],
     )
+
+    # 气血大于等于50 % 时，主动攻击「对战中」伤害提升10 %。    气血大于等于50 % 时，主动攻击「对战中」暴击率提升10 %。    每场战斗首次遭受攻击免伤提升30 %。
+    zijinhulu = Fabao(
+        "zijinhulu",
+        [
+            ModifierEffect(
+                partial(Rs.zijinhulu_requires_check, 1),
+                {Ma.battle_damage_percentage: 10, Ma.critical_percentage: 10},
+            ),
+            ModifierEffect(
+                partial(Rs.zijinhulu_requires_check, 2),
+                {Ma.physical_damage_reduction_percentage: 30, Ma.magic_damage_reduction_percentage: 30},
+            ),
+        ],
+        [],
+    )

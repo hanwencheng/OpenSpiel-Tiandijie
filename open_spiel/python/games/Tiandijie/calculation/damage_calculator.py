@@ -37,7 +37,7 @@ def calculate_skill_damage(
 
     # Calculating attack-defense difference
     attack_defense_difference = (
-        get_attack(attacker_instance, target_instance, context, is_magic)
+        get_attack(attacker_instance, target_instance, context, is_magic, skill=skill)
         * attacker_elemental_multiplier
         - get_defense_with_penetration(
             attacker_instance, target_instance, context
@@ -71,14 +71,12 @@ def calculate_skill_damage(
           "防御面板", get_defense_with_penetration(attacker_instance, target_instance, context, is_magic), "\n",
           "基础伤害计算为", attack_defense_difference, "\n",
           "-\n",
-          "暴击率", critical_probability, "\n",
           "技能名", skill.temp.id if skill else "无", "\n",
           "技能伤害系数", skill.temp.multiplier if skill else 0, "\n",
           "A类增减伤", get_a_damage_modifier(attacker_instance, target_instance, skill, is_magic, context), "\n",
           "B类增减伤", get_b_damage_modifier(attacker_instance, target_instance, skill, is_magic, context), "\n",
-          # "暴击倍率", CRIT_MULTIPLIER, "\n",
-          # "暴击伤害加成", get_critical_damage_modifier(attacker_instance, target_instance, context), "\n",
-          # "暴击承伤加成", get_critical_damage_reduction_modifier(target_instance, attacker_instance, context)
+          "暴击倍率", CRIT_MULTIPLIER, "\n",
+          "暴击伤害加成", get_critical_damage_modifier(attacker_instance, target_instance, context), "\n",
           )
 
 

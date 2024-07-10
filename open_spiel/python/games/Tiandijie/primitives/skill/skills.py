@@ -117,7 +117,7 @@ class Skills(Enum):
         "leiyinwanyu",
         "雷引万宇",
         2,
-        Elements.DARK,
+        Elements.THUNDER,
         SkillType.Physical,
         SkillTargetTypes.SELF,
         3,
@@ -143,7 +143,7 @@ class Skills(Enum):
         "tianshanluanhun",
         "天闪乱魂",
         0,
-        Elements.DARK,
+        Elements.THUNDER,
         SkillType.Physical,
         SkillTargetTypes.ENEMY,
         0,
@@ -293,20 +293,20 @@ class Skills(Enum):
         [],
         [
             EventListener(
-                EventTypes.skill_start,
-                1,
-                partial(Rs.always_true),
-                partial(Effects.add_self_buffs, ["hanlan", "fanyu", "xuanyou"], 15),
-            ),
-            EventListener(
-                EventTypes.skill_start,
+                EventTypes.skill_end,
                 2,
                 partial(Rs.always_true),
-                partial(Effects.add_self_buffs, ["huntian"], 2),
+                partial(Effects.add_self_buffs, ["hanlan", "fanyu", "xuanyou"], 200),
             ),
             EventListener(
                 EventTypes.skill_end,
                 1,
+                partial(Rs.always_true),
+                partial(Effects.add_self_buffs, ["huntian"], 1),
+            ),
+            EventListener(
+                EventTypes.skill_end,
+                3,
                 partial(Rs.always_true),
                 partial(Effects.update_self_additional_action, 2),
             )

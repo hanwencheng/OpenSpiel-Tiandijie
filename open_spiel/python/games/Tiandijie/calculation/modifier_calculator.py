@@ -13,7 +13,8 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
     from open_spiel.python.games.Tiandijie.primitives.Stone import Stone
     from open_spiel.python.games.Tiandijie.primitives.Passive import Passive
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_target_in_diamond_range, calculate_if_target_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.RangeType import RangeType
 
 from functools import reduce
 from typing import List
@@ -113,6 +114,41 @@ def get_buff_modifier(
     attr_name: str, actor_instance: Hero, target_instance: Hero or None, context: Context
 ) -> float:
     basic_modifier_value = 0
+    basic_modifier_value += get_normal_buff_value(attr_name, actor_instance, target_instance, context)
+
+    for hero in context.heroes:
+        for field_buff in hero.field_buffs:
+            if (
+                get_normal_buff_value("passives_disabled", hero, None, context) and field_buff.temp.field_from == "passive"
+                or get_normal_buff_value("active_skill_disabled", hero, None, context) and field_buff.temp.field_from == "skill"
+            ):
+                continue
+            if (
+                calculate_if_target_in_diamond_range(actor_instance.position, hero.position, field_buff.temp.buff_range)
+                or (field_buff.temp.range_type == RangeType.SQUARE and calculate_if_target_in_diamond_range(actor_instance.position, hero.position, field_buff.temp.buff_range))
+            ):
+                field_buff_modifier_levels_effects = field_buff.temp.modifier_effects
+                if len(field_buff_modifier_levels_effects) == 0:
+                    continue
+                buff_modifier_effects: List[ModifierEffect] = field_buff_modifier_levels_effects[
+                    field_buff.level - 1
+                ]
+                for modifier_effects in buff_modifier_effects:
+                    if attr_name in modifier_effects.modifier:
+                        is_requirement_meet = modifier_effects.requirement(
+                            actor_instance, target_instance, context, field_buff
+                        )
+                        if is_requirement_meet > 0:
+                            modifier_value = get_modifier_attribute_value(
+                                actor_instance, modifier_effects.modifier, attr_name
+                            )
+                            basic_modifier_value += modifier_value
+
+    return basic_modifier_value
+
+
+def get_normal_buff_value(attr_name: str, actor_instance: Hero, target_instance: Hero or None, context: Context):
+    basic_modifier_value = 0
     for buff in actor_instance.buffs:
         buff_modifier_levels_effects = buff.temp.modifier_effects
         if len(buff_modifier_levels_effects) == 0:
@@ -139,41 +175,6 @@ def get_buff_modifier(
                         is_requirement_meet
                         * modifier_value * buff.stack
                     )
-    for field_temp_buff in context.fieldbuffs_temps.values():
-        field_target_instances = context.get_hero_list_by_id(field_temp_buff.caster_id)
-        for (
-            field_target_instance
-        ) in field_target_instances:  # 双方同时上阵相同hero的情况
-            if (field_target_instance.get_field_buff_by_id(field_temp_buff.id)
-                and calculate_if_targe_in_diamond_range(
-                    actor_instance.position, field_target_instance.position, field_temp_buff.buff_range
-                )
-            ):
-                field_buff_instance = field_target_instance.get_field_buff_by_id(
-                    field_temp_buff.id
-                )
-                field_buff_modifier_levels_effects = (
-                    field_buff_instance.temp.modifier_effects
-                )
-                if len(field_buff_modifier_levels_effects) == 0:
-                    continue
-                field_buff_modifier_effects: List[ModifierEffect] = (
-                    field_buff_modifier_levels_effects[field_buff_instance.level - 1]
-                )
-                for modifier_effects in field_buff_modifier_effects:
-                    if attr_name in modifier_effects.modifier:
-                        is_requirement_meet = modifier_effects.requirement(
-                            actor_instance,
-                            target_instance,
-                            context,
-                            field_buff_instance,
-                        )
-                        if is_requirement_meet > 0:
-                            modifier_value = get_modifier_attribute_value(
-                                actor_instance, modifier_effects.modifier, attr_name
-                            )
-                            basic_modifier_value += modifier_value
-
     return basic_modifier_value
 
 

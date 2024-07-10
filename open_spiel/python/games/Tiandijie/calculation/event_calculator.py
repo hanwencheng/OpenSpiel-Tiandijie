@@ -7,10 +7,11 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
 from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
 from open_spiel.python.games.Tiandijie.primitives.effects.EventListener import EventListener
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_target_in_diamond_range
 from random import random
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import calculate_remove_buff
+from open_spiel.python.games.Tiandijie.calculation.RangeType import RangeType
 
 skill_related_events = [
     EventTypes.skill_start,
@@ -91,19 +92,14 @@ def event_listener_calculator(
                     )
 
     # Calculated FieldBuffs
-    for field_temp_buff in context.fieldbuffs_temps.values():
-        field_target_instances = context.get_hero_list_by_id(field_temp_buff.caster_id)
-        for (
-            field_target_instance
-        ) in field_target_instances:  # 双方同时上阵相同hero的情况
-            if (field_target_instance.get_field_buff_by_id(field_temp_buff.id)
-                and calculate_if_targe_in_diamond_range(
-                    actor_instance.position, field_target_instance.position, field_temp_buff.buff_range
-                )
+    for hero in context.heroes:
+        for field_buff in hero.field_buffs:
+            if (
+                calculate_if_target_in_diamond_range(actor_instance.position, hero.position, field_buff.temp.buff_range)
+                or (field_buff.temp.range_type == RangeType.SQUARE and calculate_if_target_in_diamond_range(actor_instance.position, hero.position, field_buff.temp.buff_range))
             ):
-                field_buff_event_listeners: List[EventListener] = field_temp_buff.event_listeners
+                field_buff_event_listeners: List[EventListener] = field_buff.temp.event_listeners
                 for event_listener in field_buff_event_listeners:
-                    field_buff = field_target_instance.get_field_buff_by_id(field_temp_buff.id)
                     if event_listener.event_type == event_type:
                         probability = event_listener.requirement(
                             actor_instance,

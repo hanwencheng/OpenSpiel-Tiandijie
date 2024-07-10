@@ -22,4 +22,4 @@ buff_trigger_limit = {
 
 
 def get_buff_max_trigger_limit(buff_id: str):
-    return buff_trigger_limit[buff_id][0] if buff_id in buff_trigger_limit else 1
+    return buff_trigger_limit[buff_id].max_triggerlimit if buff_id in buff_trigger_limit else 1

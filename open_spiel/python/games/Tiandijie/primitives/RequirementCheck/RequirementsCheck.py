@@ -73,7 +73,7 @@ class RequirementCheck:
     ) -> int:
         caster_id = buff.caster_id
         action = context.get_last_action()
-        if action.is_in_battle:
+        if action and action.is_in_battle and target_hero:
             if target_hero.id == caster_id:
                 return 1
         return 0
@@ -84,7 +84,7 @@ class RequirementCheck:
     ) -> int:
         caster_id = buff.caster_id
         action = context.get_last_action()
-        if _is_attacker(target_hero, context):
+        if action and target_hero and _is_attacker(target_hero, context):
             if target_hero.id == caster_id:
                 return 1
         return 0
@@ -790,6 +790,27 @@ class RequirementCheck:
             if actor_hero.temp.temp_id == hero_temp_id:
                 return 1
         return 0
+
+
+    # Fabao
+
+    @staticmethod
+    def zijinhulu_requires_check(
+        state, actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ) -> int:
+        if state == 1:
+            if context.get_last_action():
+                if _is_attacker(actor_hero, context):
+                    if LifeRequirementChecks.self_life_is_higher(0.5, actor_hero, target_hero, context, primitive):
+                        return 1
+            return 0
+        if state == 2:
+            if context.get_last_action():
+                if _is_attacker(target_hero, context) and not primitive.fabao_mark:
+                    primitive.fabao_mark = True
+                    print("zijinhulu_suc")
+                    return 1
+            return 0
 
     LifeChecks = LifeRequirementChecks
     PositionChecks = PositionRequirementChecks

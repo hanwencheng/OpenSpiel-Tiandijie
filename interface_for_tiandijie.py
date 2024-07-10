@@ -20,7 +20,7 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = 9000
+EpisodeTime = 3000
 
 
 class TIANDIJIEGUI:
@@ -358,6 +358,7 @@ class TIANDIJIEGUI:
 
     def check_all_actionable_heroes(self):
         for hero in self.heroes:
+            self.update_hero_attribute(hero, hero.position)
             if hero.actionable and self.data_dict[hero.position]['button'].cget("state") == "disabled":
                 self.data_dict[hero.position]['button'].config(state="normal",
                                                                command=lambda p=hero: self.show_action(p))
@@ -421,8 +422,14 @@ class TIANDIJIEGUI:
     def update_hero_attribute(self, hero, position):
         hero_id = hero.id
         shield_text = f"shield: {hero.shield} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n" if hero.temp.has_shield else ""
-        buff_list = [buff.temp.id for buff in hero.buffs]
-        buff_text = f"buff: {buff_list}\n" if buff_list else ""
+        buff_text = ""
+        for buff in hero.buffs:
+            duration_text = f"{buff.duration}" if buff.duration > 15 else "no"
+            if buff.stack > 1:
+                buff_text = f"{buff.temp.id} x {buff.stack}: {duration_text}\n"
+            else:
+                buff_text = f"{buff.temp.id}: {duration_text}\n"
+
         text = (
             f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage / 100)} / "
             f"{math.ceil(get_max_life(hero, None, self.now_state.context))}\n"

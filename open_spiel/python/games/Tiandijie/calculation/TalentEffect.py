@@ -467,8 +467,8 @@ class TalentEffects:
             Effects.add_self_buffs(
                 ["juexin"], 15, actor_instance, actor_instance, context, talent
             )
-            partners = context.get_partners_in_diamond_range(actor_instance, 2)
-            element_values = {partner.temp.element for partner in partners}
+            targets = context.get_partner_in_square_range(actor_instance, 2) + context.get_enemies_in_square_range(actor_instance, 2)
+            element_values = [target.temp.element for target in targets]
             if Elements.DARK in element_values and Elements.THUNDER in element_values:
                 Effects.add_buffs(
                     ["juexin"], 15, actor_instance, actor_instance, context, talent
@@ -485,10 +485,11 @@ class TalentEffects:
                 )
         else:
             enemies = context.get_enemies_in_diamond_range(actor_instance, 2)
-            target_enemy = enemies[0]
-            for enemy in enemies:
-                if enemy.current_life_percentage < target_enemy.current_life_percentage:
-                    target_enemy = enemy
-            Effects.add_fixed_damage_by_caster_physical_attack(
-                0.9, actor_instance, target_enemy, context, talent
-            )
+            if enemies:
+                target_enemy = enemies[0]
+                for enemy in enemies:
+                    if enemy.current_life_percentage < target_enemy.current_life_percentage:
+                        target_enemy = enemy
+                Effects.add_fixed_damage_by_caster_physical_attack(
+                    0.9, actor_instance, target_enemy, context, talent
+                )

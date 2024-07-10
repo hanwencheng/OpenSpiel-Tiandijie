@@ -39,6 +39,12 @@ class Passives(Enum):
                 1,
                 partial(Rs.sanquehuisheng_requires_check),
                 partial(Effects.heal_self, 0.25),
+            ),
+            EventListener(
+                EventTypes.game_start,
+                1,
+                Rs.always_true,
+                partial(Effects.add_self_field_buff, ["sanquehuisheng"], 200),
             )
         ],
     )

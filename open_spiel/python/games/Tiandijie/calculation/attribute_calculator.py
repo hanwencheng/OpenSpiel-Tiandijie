@@ -16,7 +16,7 @@ from open_spiel.python.games.Tiandijie.helpers import is_normal_attack_magic
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_target_in_diamond_range
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
 from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     accumulate_attribute,
@@ -136,7 +136,7 @@ def check_in_battle(context: Context) -> bool:
     if len(target) != 1:
         return False
     actor = current_action.actor
-    if calculate_if_targe_in_diamond_range(
+    if calculate_if_target_in_diamond_range(
         actor, target, get_counter_attack_range(target, context)
     ):
         return True
@@ -160,12 +160,12 @@ def get_max_life(
                 + JIANREN
             )/100
     )
-    elif hero_instance.id == "zhujin0":
-        basic_life = 2858 + 1690
-    elif hero_instance.id == "huoyong0":
-        basic_life = 3753 + 1808
-    elif hero_instance.id == "fuyayu0":
-        basic_life = 5541 + 944
+    # elif hero_instance.id == "zhujin0":
+    #     basic_life = 2858 + 1690
+    # elif hero_instance.id == "huoyong0":
+    #     basic_life = 3753 + 1808
+    # elif hero_instance.id == "fuyayu0":
+    #     basic_life = 5541 + 944
     return basic_life * (
         1
         + (
@@ -195,14 +195,14 @@ def get_defense(
             + (hero_instance.temp.strength_attributes.magic_defense if is_magic else hero_instance.temp.strength_attributes.defense)
             + (hero_instance.temp.xingzhijing.magic_defense if is_magic else hero_instance.temp.xingzhijing.defense))
 
-    if hero_instance.id == "mohuahuangfushen0":
-        basic_defense = 1245 + 648 if is_magic else 1197 + 530
-    elif hero_instance.id == "zhujin0":
-        basic_defense = 501 + 353 if is_magic else 566 + 242
-    elif hero_instance.id == "huoyong0":
-        basic_defense = 766 + 323 if is_magic else 625 + 299
-    elif hero_instance.id == "fuyayu0":
-        basic_defense = 1423 + 324 if is_magic else 1128 + 208
+    # if hero_instance.id == "mohuahuangfushen0":
+    #     basic_defense = 1245 + 242 if is_magic else 1197 + 216
+    # elif hero_instance.id == "zhujin0":
+    #     basic_defense = 501 + 353 if is_magic else 566 + 242
+    # elif hero_instance.id == "huoyong0":
+    #     basic_defense = 766 + 323 if is_magic else 625 + 299
+    # elif hero_instance.id == "fuyayu0":
+    #     basic_defense = 1423 + 324 if is_magic else 1128 + 208
 
     return basic_defense * (1 + get_level2_modifier(
         hero_instance, counter_instance, attr_name+"_percentage", context, is_basic
@@ -215,6 +215,7 @@ def get_attack(
     context: Context,
     is_magic_input=None,
     is_basic: bool = False,
+    skill: Skill or None = None,
 ) -> float:
     action = context.get_last_action()
     if is_magic_input is not None:
@@ -235,17 +236,17 @@ def get_attack(
             + (actor_instance.temp.strength_attributes.magic_attack if is_magic else actor_instance.temp.strength_attributes.attack)
             + (actor_instance.temp.xingzhijing.magic_attack if is_magic else actor_instance.temp.xingzhijing.attack))
 
-    if actor_instance.id == "mohuahuangfushen0":
-        basic_attack = 454 if is_magic else 3193 + 1895
-    elif actor_instance.id == "zhujin0":
-        basic_attack = 1848 + 1099 if is_magic else 232
-    elif actor_instance.id == "huoyong0":
-        basic_attack = 2134 + 1194 if is_magic else 256
-    elif actor_instance.id == "fuyayu0":
-        basic_attack = 2150 + 437 if is_magic else 325
+    # if actor_instance.id == "mohuahuangfushen0":
+    #     basic_attack = 454 if is_magic else 3193 + 458
+    # elif actor_instance.id == "zhujin0":
+    #     basic_attack = 1848 + 1099 if is_magic else 232
+    # # elif actor_instance.id == "huoyong0":
+    # #     basic_attack = 2134 + 1194 if is_magic else 256
+    # elif actor_instance.id == "fuyayu0":
+    #     basic_attack = 2150 + 437 if is_magic else 325
 
-    return basic_attack * (1 + get_level2_modifier(
-        actor_instance, target_instance, attr_name+"_percentage", context, is_basic
+    return basic_attack * (1 + get_a_modifier(
+        attr_name+"_percentage", actor_instance, target_instance, context, skill
         )/100)
 
 
@@ -358,12 +359,13 @@ def get_b_damage_modifier(  # 魂石百分比词条加这里
             - accumulate_stone_attribute(counter_instance.stones, ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage)
             - XINGYAO_DAMAGE_REDUCTION
     )
-    print("-------------------------B类增减伤-------------------------------", modifier, "attacker:", attacker_instance.id)
-    print("stone增伤词条", accumulate_stone_attribute(attacker_instance.stones, ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage), "\n",
-          "XINGYAO_DAMAGE_INCREASE", XINGYAO_DAMAGE_INCREASE, "\n",
-          "stone减伤词条", accumulate_stone_attribute(counter_instance.stones, ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage), "\n",
-          "XINGYAO_DAMAGE_REDUCTION", XINGYAO_DAMAGE_REDUCTION, "\n",
-          )
+    # print("-------------------------B类增减伤-------------------------------", modifier, "attacker:", attacker_instance.id)
+    # print("stone增伤词条", accumulate_stone_attribute(attacker_instance.stones, ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage), "\n",
+    #       "XINGYAO_DAMAGE_INCREASE", XINGYAO_DAMAGE_INCREASE, "\n",
+    #       "星盘加伤", accumulated_liexing_modifier, "\n",
+    #       "stone减伤词条", accumulate_stone_attribute(counter_instance.stones, ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage), "\n",
+    #       "XINGYAO_DAMAGE_REDUCTION", XINGYAO_DAMAGE_REDUCTION, "\n",
+    #       )
     return 1 + modifier / 100
 
 

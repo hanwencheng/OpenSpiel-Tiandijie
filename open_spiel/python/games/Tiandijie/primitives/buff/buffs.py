@@ -583,9 +583,9 @@ class BuffTemps(Enum):
         True,
         True,
         [
-            [ModifierEffect(RS.always_true, {ma.physical_damage_percentage: 10})],
-            [ModifierEffect(RS.always_true, {ma.physical_damage_percentage: 20})],
-            [ModifierEffect(RS.always_true, {ma.physical_damage_percentage: 25})],
+            [ModifierEffect(RS.always_true, {ma.physical_damage_percentage: 10, ma.magic_damage_percentage: 10})],
+            [ModifierEffect(RS.always_true, {ma.physical_damage_percentage: 20, ma.magic_damage_percentage: 20})],
+            [ModifierEffect(RS.always_true, {ma.physical_damage_percentage: 25, ma.magic_damage_percentage: 25})],
         ],
         [],
     )

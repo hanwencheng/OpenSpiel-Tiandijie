@@ -14,6 +14,7 @@ from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.TalentRequire
 )
 from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as ma
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.calculation.RangeType import RangeType
 
 
 class FieldBuffsTemps(Enum):
@@ -446,6 +447,21 @@ class FieldBuffsTemps(Enum):
                 partial(Effects.take_effect_of_xuanmiejie, 2),
             ),
         ],
+    )
+
+    # 且「对战中」使目标物攻、法攻降低20%。
+    sanquehuisheng = FieldBuffTemp(
+        "sanquehuisheng",
+        "mohuahuangfushen",
+        2,
+        [
+            ModifierEffect(
+                partial(RS.battle_with_caster), {ma.attack_percentage: -20, ma.magic_attack_percentage: -20}
+            )
+        ],
+        [],
+        RangeType.SQUARE,
+        "passive"
     )
 
     @classmethod

@@ -189,7 +189,7 @@ def create_square_range(range_value: int) -> Range:
     return Range(RangeType.SQUARE, range_value)
 
 
-def calculate_if_targe_in_diamond_range(
+def calculate_if_target_in_diamond_range(
     base_position: Position, target_position: Position, range_value: int
 ) -> bool:
     return (
@@ -209,7 +209,7 @@ def calculate_if_target_in_square_range(
 
 
 def check_if_target_in_skill_attack_range(actor: Hero, target: Hero, skill) -> bool:
-    return calculate_if_targe_in_diamond_range(
+    return calculate_if_target_in_diamond_range(
         actor.position, target.position, skill.temp.range_instance.range_value
     )
 

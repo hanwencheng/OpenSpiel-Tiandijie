@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
     from open_spiel.python.games.Tiandijie.primitives.Passive import Passive
 from typing import List
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range, calculate_if_target_in_square_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_target_in_diamond_range, calculate_if_target_in_square_range
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Gender
 from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
@@ -32,7 +32,7 @@ class PositionRequirementChecks:
         if enemy_base_hero.player_id != actor_hero.player_id:
             actor_position = actor_hero.position
             caster_position = enemy_base_hero.position
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, caster_position, range_value
             ):
                 return 1
@@ -51,7 +51,7 @@ class PositionRequirementChecks:
         if caster.player_id != actor_hero.player_id:
             actor_position = actor_hero.position
             caster_position = caster.position
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, caster_position, range_value
             ):
                 return 1
@@ -70,7 +70,7 @@ class PositionRequirementChecks:
         if caster.player_id != actor_hero.player_id:
             actor_position = actor_hero.position
             caster_position = caster.position
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, caster_position, range_value
             ):
                 return 0
@@ -85,7 +85,7 @@ class PositionRequirementChecks:
             if hero.id == actor_hero.id:
                 continue
             if hero.player_id == actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
+                if calculate_if_target_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
                     return 0
@@ -100,7 +100,7 @@ class PositionRequirementChecks:
             if hero.id == actor_hero.id:
                 continue
             if hero.player_id == target_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
+                if calculate_if_target_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
                     return 0
@@ -135,7 +135,7 @@ class PositionRequirementChecks:
                     continue
                 if hero.player_id == actor_hero.player_id:
                     if hero.temp.element == element:
-                        if calculate_if_targe_in_diamond_range(
+                        if calculate_if_target_in_diamond_range(
                             actor_position, hero.position, range_value
                         ):
                             count += 1
@@ -144,7 +144,7 @@ class PositionRequirementChecks:
         return 1 if count == len(elements) else 0
 
     @staticmethod
-    def element_hero_in_square(
+    def element_hero_in_square(     # 存在一个就生效， 对象是所有角色
         elements: List[Elements],
         range_value: int,
         actor_hero: Hero,
@@ -152,20 +152,11 @@ class PositionRequirementChecks:
         context: Context,
         primitive,
     ) -> int:
-        actor_position = actor_hero.position
-        count = 0
-        for element in elements:
-            for hero in context.heroes:
-                if hero.id == actor_hero.id:
-                    continue
-                if hero.temp.element == element:
-                    if calculate_if_target_in_square_range(
-                        actor_position, hero.position, range_value
-                    ):
-                        count += 1
-                        break
-
-        return 1 if count == len(elements) else 0
+        targets = context.get_enemies_in_square_range(actor_hero, 2) + context.get_partner_in_square_range(actor_hero, 2)
+        for target in targets:
+            if target.temp.element in elements:
+                return 1
+        return 0
 
     @staticmethod
     def has_element_hero_in_range(
@@ -183,7 +174,7 @@ class PositionRequirementChecks:
                     continue
                 if hero.player_id == actor_hero.player_id:
                     if hero.temp.element == element:
-                        if calculate_if_targe_in_diamond_range(
+                        if calculate_if_target_in_diamond_range(
                             actor_position, hero.position, range_value
                         ):
                             return 1
@@ -198,7 +189,7 @@ class PositionRequirementChecks:
         for hero in context.heroes:
             if hero.id == actor_hero.id:
                 continue
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, hero.position, range_value
             ):
                 return 1
@@ -213,7 +204,7 @@ class PositionRequirementChecks:
             if hero.id == actor_hero.id:
                 continue
             if hero.player_id == actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
+                if calculate_if_target_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
                     return 1
@@ -227,7 +218,7 @@ class PositionRequirementChecks:
         for hero in context.heroes:
             if hero.id == actor_hero.id:
                 continue
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, hero.position, range_value
             ):
                 if hero.temp.gender == Gender.MALE:
@@ -242,7 +233,7 @@ class PositionRequirementChecks:
         for hero in context.heroes:
             if hero.id == actor_hero.id:
                 continue
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, hero.position, range_value
             ):
                 if hero.temp.gender == Gender.FEMALE:
@@ -263,7 +254,7 @@ class PositionRequirementChecks:
         for hero in context.heroes:
             if hero.id == actor_hero.id:
                 continue
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, hero.position, range_value
             ):
                 count += 1
@@ -284,7 +275,7 @@ class PositionRequirementChecks:
             if hero.id == actor_hero.id:
                 continue
             if hero.player_id == actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
+                if calculate_if_target_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
                     count += 1
@@ -305,7 +296,7 @@ class PositionRequirementChecks:
             if hero.id == actor_hero.id:
                 continue
             if hero.player_id != actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
+                if calculate_if_target_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
                     count += 1
@@ -326,7 +317,7 @@ class PositionRequirementChecks:
             if hero.id == actor_hero.id:
                 continue
             if hero.player_id != actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
+                if calculate_if_target_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
                     enemy_count += 1
@@ -347,7 +338,7 @@ class PositionRequirementChecks:
             if hero.id == actor_hero.id:
                 continue
             if hero.player_id == actor_hero.player_id:
-                if calculate_if_targe_in_diamond_range(
+                if calculate_if_target_in_diamond_range(
                     actor_position, hero.position, range_value
                 ):
                     partner_count += 1
@@ -408,7 +399,7 @@ class PositionRequirementChecks:
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, hero.position, range_value
             ):
                 if hero.current_life < hero.max_life:
@@ -421,7 +412,7 @@ class PositionRequirementChecks:
     ) -> int:
         actor_position = actor_hero.position
         for hero in context.heroes:
-            if calculate_if_targe_in_diamond_range(
+            if calculate_if_target_in_diamond_range(
                 actor_position, hero.position, range_value
             ):
                 if hero.actionable:
@@ -448,6 +439,6 @@ class PositionRequirementChecks:
         action = context.get_last_action()
         actor_position = action.move_point
         target_position = action.targets[0].position
-        if calculate_if_targe_in_diamond_range(actor_position, target_position, range_value):
+        if calculate_if_target_in_diamond_range(actor_position, target_position, range_value):
             return 1
         return 0

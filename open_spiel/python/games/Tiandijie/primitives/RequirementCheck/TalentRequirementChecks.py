@@ -9,7 +9,7 @@ from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsCheck import RequirementCheck as Rs
 from open_spiel.python.games.Tiandijie.primitives.talent.Talent import Talent
 from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions
-from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_targe_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_if_target_in_diamond_range
 
 
 class TalentRequirementChecks:
@@ -176,7 +176,7 @@ class TalentRequirementChecks:
                     target_hero,
                     context,
                 )
-            ) and calculate_if_targe_in_diamond_range(actor_hero, caster, 1):
+            ) and calculate_if_target_in_diamond_range(actor_hero, caster, 1):
                 return 1
             return 0
         elif state == 2:

@@ -62,6 +62,11 @@ class EventTypes(enum.Enum):
     counterattack_end = "counterattack_end"
     under_counterattack_start = "under_counterattack_start"
     under_counterattack_end = "under_counterattack_end"
+    # counterattack_first
+    counterattack_first_start = "counterattack_first_start"
+    counterattack_first_end = "counterattack_first_end"
+    under_counterattack_first_start = "under_counterattack_first_start"
+    under_counterattack_first_end = "under_counterattack_first_end"
     # teleport
     teleport_start = "teleport_start"
     teleport_end = "teleport_end"
