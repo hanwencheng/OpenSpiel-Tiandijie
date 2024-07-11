@@ -2053,8 +2053,7 @@ class Effects:
         skill: Skill,
     ):
         Effects.add_shield_by_self_max_life(0.25, actor_instance, None, context, skill)
-        action = context.get_last_action()
-        enemies = context.get_enemies_in_diamond_range_by_target_point(actor_instance, action.action_point, 2)
+        enemies = context.get_enemies_in_diamond_range_by_target_point(actor_instance, 2)
         for enemy in enemies:
             Effects.add_fixed_damage_by_caster_magic_attack(0.2, actor_instance, enemy, context, skill)
 
