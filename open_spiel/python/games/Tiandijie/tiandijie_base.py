@@ -8,6 +8,10 @@ from open_spiel.python.games.Tiandijie.calculation.PathFinding import bfs_move_r
 from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
 from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator
 from open_spiel.python.observation import IIGObserverForPublicInfoGame
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillTargetTypes, SkillType
+from open_spiel.python.games.Tiandijie.calculation.Range import calculate_diamond_area, calculate_if_target_in_diamond_range
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_a_modifier
+from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 
 _NUM_PLAYERS = 2
 _MAX_GAME_LENGTH = 15
@@ -223,10 +227,6 @@ class TianDiJieState(pyspiel.State):
         new_action = Action(actor, [], None, actor.position, actor.position)
         new_action.update_action_type(ActionTypes.PASS)
         actions.append(new_action)
-        from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillTargetTypes, SkillType
-        from open_spiel.python.games.Tiandijie.calculation.Range import calculate_diamond_area, calculate_if_target_in_diamond_range
-        from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_level2_modifier
-        from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
         def get_new_action(self, hero_in_skill, skill, moveable_position, target_position):
             new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)
             if skill.temp.skill_type == SkillType.Support:
@@ -237,11 +237,11 @@ class TianDiJieState(pyspiel.State):
                 new_action.update_action_type(ActionTypes.SKILL_ATTACK)
             return new_action
 
-        def get_hero_in_skill(target, target_hero_list, skill, moveable_position):
+        def get_hero_in_skill(target, target_hero_list, skill, moveable_position, context):
             return [target] + [
                 effect_hero for effect_hero in target_hero_list
                 if effect_hero != target and skill.temp.range_instance.check_if_target_in_range(
-                    moveable_position, target.position, effect_hero.position, self.context.battlemap
+                    moveable_position, moveable_position, effect_hero.position, context.battlemap
                 )
             ]
 
@@ -292,8 +292,8 @@ class TianDiJieState(pyspiel.State):
 
                 skill_new_distance = (
                         skill.temp.distance.distance_value +
-                        get_level2_modifier(actor, None, "active_skill_range", self.context) +
-                        get_level2_modifier(
+                        get_a_modifier(actor, None, "active_skill_range", self.context) +
+                        get_a_modifier(
                             actor,
                             None,
                             "single_skill_range" if skill.temp.range_instance.range_value == 0 else "range_skill_range",
@@ -302,7 +302,7 @@ class TianDiJieState(pyspiel.State):
                 )
 
                 for target in target_hero_list:
-                    hero_in_skill = get_hero_in_skill(target, target_hero_list, skill, actor.position)
+                    hero_in_skill = get_hero_in_skill(target, target_hero_list, skill, actor.position, self.context)
 
                     if actor == target:
                         new_action = get_new_action(actor, hero_in_skill, skill, actor.position,
@@ -310,6 +310,10 @@ class TianDiJieState(pyspiel.State):
                         actions.append(new_action)
                     elif calculate_if_target_in_diamond_range(actor.position, target.position,
                                                              int(skill_new_distance)):
+                        if skill.temp.range_instance.check_if_target_in_range(
+                                actor.position, target.position, actor.position, self.context.battlemap
+                        ):
+                            hero_in_skill.append(actor)
                         new_action = get_new_action(actor, hero_in_skill, skill, actor.position, target.position)
                         actions.append(new_action)
             return actions

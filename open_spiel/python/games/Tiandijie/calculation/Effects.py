@@ -1346,11 +1346,6 @@ class Effects:
         for enemy in enemies:
             _reduce_actor_energy(enemy, energy_value)
 
-    # shield
-    @staticmethod
-    def add_shield():
-        pass
-
     @staticmethod
     def take_effect_of_quxing(
         actor: Hero,
@@ -1603,10 +1598,10 @@ class Effects:
 
     @staticmethod
     def transfer_buff_to_other_buff(
-        buff_id: str, target_buff_id: str, actor: Hero, target: Hero, context: Context, primary
+        buff_id: str, target_buff_id: str, duration: int, actor: Hero, target: Hero, context: Context, primary
     ):
         _remove_actor_certain_buff(buff_id, actor)
-        _add_buffs(actor, target, [context.get_buff_by_id(target_buff_id)], 2, context)
+        _add_buffs(actor, target, [context.get_buff_by_id(target_buff_id)], duration, context)
 
     @staticmethod
     def add_extra_skill(
@@ -1983,7 +1978,23 @@ class Effects:
         context: Context,
         skill: Skill,
     ):
-        pass
+        for i in range(3):
+            Effects.add_self_buffs(
+                ["juexin"], 200, actor_instance, actor_instance, context, skill
+            )
+        Effects.add_buffs(
+            ["jinliao"], 2, actor_instance, target_instance, context, skill
+        )
+        from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
+        if BuffRequirementChecks.self_buff_stack_reach(
+            5, "juexin", actor_instance, actor_instance, context, skill
+        ):
+            Effects.remove_actor_certain_buff(
+                "juexin", actor_instance, actor_instance, context, skill
+            )
+            Effects.add_self_buffs(
+                ["zhilu"], 3, actor_instance, actor_instance, context, skill
+            )
 
     @staticmethod
     def take_effect_of_juezhanwushuang(
@@ -2046,17 +2057,12 @@ class Effects:
 
     @staticmethod
     def take_effect_of_buqi(
-        state: int,
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
         skill: Skill,
     ):
         Effects.add_shield_by_self_max_life(0.25, actor_instance, None, context, skill)
-        enemies = context.get_enemies_in_diamond_range_by_target_point(actor_instance, 2)
-        for enemy in enemies:
-            Effects.add_fixed_damage_by_caster_magic_attack(0.2, actor_instance, enemy, context, skill)
-
         target_position = context.get_last_action().action_point
         Effects.remove_jinwuqi(context)
         Effects.remove_actor_certain_buff("chiqi", actor_instance, target_instance, context, skill)
@@ -2129,7 +2135,6 @@ class Effects:
             if other_skill.temp.id in {"tianshuangxuewu", "wutianheiyan", "lihuoshenjue"}:
                 other_skill.cool_down = skill.cool_down
 
-
     # weapon Effects
 
     @staticmethod
@@ -2141,12 +2146,20 @@ class Effects:
     ):
         partners = context.get_partners_in_diamond_range(actor_instance, 3)
         for partner in partners:
-            if (
-                partner.current_life / get_max_life(partner, actor_instance, context)
-                > 0.8
-            ):
+            if partner.current_life_percentage > 0.8:
                 Effects.add_buffs(["shuangkai"], 200, actor_instance, partner, context, weapon)
 
+    # stone Effects
+
+    @staticmethod
+    def add_stone_stack(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        stone,
+    ):
+        if stone.stack < stone.max_stack:
+            stone.stack += 1
 
     @staticmethod
     def take_effect_of_minkui(

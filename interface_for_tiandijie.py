@@ -20,7 +20,7 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = 3000
+EpisodeTime = 5000
 
 
 class TIANDIJIEGUI:
@@ -422,14 +422,13 @@ class TIANDIJIEGUI:
     def update_hero_attribute(self, hero, position):
         hero_id = hero.id
         shield_text = f"shield: {hero.shield} / {math.ceil(get_max_life(hero, None, self.now_state.context))}\n" if hero.temp.has_shield else ""
-        buff_text = ""
+        buff_text = "buff:\n"
         for buff in hero.buffs:
-            duration_text = f"{buff.duration}" if buff.duration > 15 else "no"
+            duration_text = f"{buff.duration}" if buff.duration < 15 else "no limit"
             if buff.stack > 1:
-                buff_text = f"{buff.temp.id} x {buff.stack}: {duration_text}\n"
+                buff_text += f"     {buff.temp.id}X{buff.stack}: {duration_text},\n"
             else:
-                buff_text = f"{buff.temp.id}: {duration_text}\n"
-
+                buff_text += f"     {buff.temp.id}: {duration_text},\n"
         text = (
             f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage / 100)} / "
             f"{math.ceil(get_max_life(hero, None, self.now_state.context))}\n"

@@ -165,12 +165,12 @@ def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
         event_listener_calculator(actor, target, EventTypes.battle_end, context)
     else:
         attack_or_skill_events(actor, target, action, context, apply_damage)
-        if is_hero_live(actor, target, context):
+        if is_hero_live(target, target, context):
             if check_if_double_attack(action, context):     # 连击
                 double_attack_event(context)
             if is_hero_live(target, actor, context):
                 counterattack_actions(action, context, False)
-            if is_hero_live(target, actor, context):
+            if is_hero_live(actor, target, context):
                 if check_if_chase_attack(action, context):  # 追击
                     # chase_attack_event(context) todo
                     pass
@@ -258,9 +258,9 @@ def apply_action(context: Context, action: Action):
         action.type == ActionTypes.NORMAL_ATTACK
         or action.type == ActionTypes.SKILL_ATTACK
     ):
-        check_protector(context)
         action.update_is_in_battle(check_if_in_battle(action, context))
         if action.is_in_battle:
+            check_protector(context)
             target = action.get_defender_hero_in_battle()
             battle_events(action.actor, target, action, context)
             is_hero_live(action.actor, True, context)

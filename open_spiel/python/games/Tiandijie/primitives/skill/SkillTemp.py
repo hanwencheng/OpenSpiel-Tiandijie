@@ -36,6 +36,7 @@ class SkillTemp:
         multiplier: float,
         effects: List[ModifierEffect] = None,
         event_listeners: List[EventListener] = None,
+        is_battle_skill: bool = False,
     ):
         if effects is None:
             effects = []
@@ -53,6 +54,7 @@ class SkillTemp:
         self.multiplier = multiplier
         self.modifier_effects = effects
         self.event_listeners = event_listeners
+        self.is_battle_skill = is_battle_skill
 
     def is_magic(self):
         return self.skill_type == SkillType.Magical

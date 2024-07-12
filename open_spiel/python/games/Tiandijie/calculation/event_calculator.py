@@ -77,20 +77,6 @@ def event_listener_calculator(
                     EventListenerContainer(event_listener, buff)
                 )
 
-    if event_type == EventTypes.battle_start or event_type == EventTypes.battle_end:
-        for buff in counter_instance.buffs:
-            buff_event_levels_listeners = buff.temp.event_listeners
-            if len(buff_event_levels_listeners) == 0:
-                continue
-            buff_event_listeners: List[EventListener] = buff_event_levels_listeners[
-                buff.level - 1
-            ]
-            for event_listener in buff_event_listeners:
-                if event_listener.event_type == event_type:
-                    event_listener_containers.append(
-                        EventListenerContainer(event_listener, buff)
-                    )
-
     # Calculated FieldBuffs
     for hero in context.heroes:
         for field_buff in hero.field_buffs:
@@ -118,7 +104,7 @@ def event_listener_calculator(
     # Calculated Skills
     if current_action:
         skill = current_action.skill
-        if skill:
+        if skill and current_action.actor.id == actor_instance.id:
             for event_listener in skill.temp.event_listeners:
                 if event_listener.event_type == event_type:
                     event_listener_containers.append(
@@ -132,6 +118,18 @@ def event_listener_calculator(
             event_listener_containers.append(
                 EventListenerContainer(event_listener, talent)
             )
+
+    # Calculate Weapon
+    weapon = actor_instance.temp.weapon
+    for event_listener in weapon.on_event:
+        if event_listener.event_type == event_type:
+            event_listener_containers.append(
+                EventListenerContainer(event_listener, talent)
+            )
+
+    # Calculate suit Stone
+    stones = actor_instance.stones
+
 
     # Calculate Formation
     formation = context.get_formation_by_player_id(actor_instance.player_id)
@@ -212,7 +210,7 @@ def death_event_listener(
 def action_end_event(actor_instance: 'Hero', context):
     if context.battlemap.get_terrain(actor_instance.position).terrain_type == TerrainType.ZHUOWU:
         context.set_hero_died(actor_instance)
-    # 所有的buff的duration-1, 技能, 天赋cd-1
+    # 所有的buff的duration-1, 技能, 天赋cd-1, 清空护盾
     remove_buffs = []
     for buff in actor_instance.buffs:
         buff.duration -= 1
@@ -237,6 +235,8 @@ def action_end_event(actor_instance: 'Hero', context):
     if not action.has_additional_action:
         actor_instance.actionable = False
 
+    remove_shield(actor_instance, action)
+
 
 def before_action_end_event(actor_instance: 'Hero', context):
     for skill in actor_instance.enabled_skills:
@@ -252,3 +252,17 @@ def new_turn_event(actor_instance: 'Hero', context):
         buff.temp.trigger = 0
     for buff in actor_instance.field_buffs:
         buff.temp.trigger = 0
+
+
+def remove_shield(actor_instance, action):
+    if actor_instance.temp.has_shield:  # 只结算护盾角色， 本回合未获得护盾护盾消失
+        if actor_instance.get_shield:
+            if action.additional_skill_list:
+                return
+            else:
+                actor_instance.get_shield = False
+        else:
+            if action.additional_skill_list:
+                return
+            else:
+                actor_instance.shield = 0

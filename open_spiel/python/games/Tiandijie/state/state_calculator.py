@@ -43,9 +43,7 @@ def check_if_counterattack_first(action: Action, context: Context):
 def check_if_in_battle(action: Action, context: Context):
     if action.type == ActionTypes.NORMAL_ATTACK or (
         action.type == ActionTypes.SKILL_ATTACK
-        and action.skill.temp.target_type == SkillTargetTypes.ENEMY
-        and action.skill.temp.range_instance.range_type == RangeType.POINT
-        and (action.skill.temp.skill_type in {SkillType.Physical, SkillType.Magical})
+        and action.skill.temp.is_battle_skill
     ):
         action.update_is_in_battle(True)
         return True
@@ -55,41 +53,36 @@ def check_if_in_battle(action: Action, context: Context):
 
 def check_protector(context: Context):
     action = context.get_last_action()
-    if action.type == ActionTypes.NORMAL_ATTACK or (
-        action.type == ActionTypes.SKILL_ATTACK
-        and action.skill.temp.range_instance.range_value == 0
-    ):
-        is_magic = action.is_magic
-        target = action.targets[0]
-        attr_name = ma.is_ignore_protector
+    is_magic = action.is_magic
+    target = action.targets[0]
+    attr_name = ma.is_ignore_protector
 
-        is_ignore_protector = get_modifier(attr_name, action.actor, target, context)
-        if action.skill is not None:
-            is_ignore_protector += get_skill_modifier(
-                attr_name, action.actor, target, action.skill, context
-            )
-        if is_ignore_protector:
-            return
+    is_ignore_protector = 0
+    is_ignore_protector += get_a_modifier(
+        attr_name, action.actor, target, context, action.skill if action.skill else None
+    )
+    if is_ignore_protector:
+        return
 
-        target_player_id = target.player_id
-        possible_defenders = context.get_heroes_by_player_id(target_player_id)
-        possible_protectors: List[tuple[Hero, int]] = []
-        for defender in possible_defenders:
-            attr_name = (
-                ma.magic_protect_range if is_magic else ma.physical_protect_range
+    target_player_id = target.player_id
+    possible_defenders = context.get_heroes_by_player_id(target_player_id)
+    possible_protectors: List[tuple[Hero, int]] = []
+    for defender in possible_defenders:
+        attr_name = (
+            ma.magic_protect_range if is_magic else ma.physical_protect_range
+        )
+        protect_range = get_modifier(attr_name, defender, action.actor, context)
+        if protect_range >= 1:
+            distance = abs(defender.position[0] - target.position[0]) + abs(
+                defender.position[1] - target.position[1]
             )
-            protect_range = get_modifier(attr_name, defender, action.actor, context)
-            if protect_range >= 1:
-                distance = abs(defender.position[0] - target.position[0]) + abs(
-                    defender.position[1] - target.position[1]
-                )
-                if distance <= protect_range:
-                    possible_protectors.append((defender, distance))
-        if len(possible_protectors) > 0:
-            possible_protectors.sort(key=lambda x: x[1])
-            protector = possible_protectors[0][0]
-            action.is_with_protector = True
-            action.protector = protector
+            if distance <= protect_range:
+                possible_protectors.append((defender, distance))
+    if len(possible_protectors) > 0:
+        possible_protectors.sort(key=lambda x: x[1])
+        protector = possible_protectors[0][0]
+        action.is_with_protector = True
+        action.protector = protector
 
 
 def check_if_double_attack(action: Action, context: Context):

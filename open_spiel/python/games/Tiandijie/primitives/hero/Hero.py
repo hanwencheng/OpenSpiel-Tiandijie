@@ -58,6 +58,7 @@ class Hero:
         self.special_mark = False
         self.temp.talent.caster_id = self.id
         self.fabao = []
+        self.get_shield = False
 
     def initialize_attributes(self):
         initial_attributes = generate_max_level_attributes(
@@ -98,6 +99,7 @@ class Hero:
 
     def add_shield(self, shield_value: float):
         if shield_value > 0:
+            self.get_shield = True
             self.shield = min(self.shield + shield_value, self.max_life)
 
     def update_position(self, position: Position):

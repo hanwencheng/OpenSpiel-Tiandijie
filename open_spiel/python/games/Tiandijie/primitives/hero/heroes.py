@@ -26,7 +26,7 @@ class HeroeTemps(Enum):
         level0_attributes=Attributes(188, 93, 31, 23, 30, 56),
         growth_coefficients=(28.18, 13.96, 4.7, 3.49, 4.43, 0.56),
         talent=Talents.anxingnixing.value,
-        weapons=Weapons.zhiwangbupo.value,
+        weapon=Weapons.zhiwangbupo.value,
         xingzhijing=Attributes(194, 56, 61, 0, 59, 22),
         xinghun={"life_percentage": 5},
         fabao=Fabaos.zijinhulu.value
@@ -46,7 +46,7 @@ class HeroeTemps(Enum):
         level0_attributes=Attributes(149, 19, 28, 77, 38, 25),
         growth_coefficients=(22.28, 2.89, 4.16, 11.54, 5.64, 0.25),
         talent=Talents.shenwuqimou.value,
-        weapons=Weapons.shenwuhanwei.value,
+        weapon=Weapons.shenwuhanwei.value,
         xingzhijing=Attributes(188, 0, 25, 92, 36, 14),
         xinghun={"heal_percentage": 10},
         fabao=Fabaos.shierpinliantai.value
@@ -67,7 +67,7 @@ class HeroeTemps(Enum):
         level0_attributes=Attributes(163, 22, 29, 88, 32, 44),
         growth_coefficients=(24.43, 3.29, 4.38, 13.15, 4.75, 0.44),
         talent=Talents.youfenhuashen.value,
-        weapons=Weapons.yourifusu.value,
+        weapon=Weapons.yourifusu.value,
         xingzhijing=Attributes(195, 0, 15, 112, 50, 0),
         xinghun={"range_skill_damage_percentage": 5}
     )
@@ -86,7 +86,7 @@ class HeroeTemps(Enum):
         level0_attributes=Attributes(156, 21, 34, 86, 23, 50),
         growth_coefficients=(23.35, 3.22, 5.1, 12.88, 3.49, 0.5),
         talent=Talents.qilinqiongyu.value,
-        weapons=Weapons.qixiangdimi.value,
+        weapon=Weapons.qixiangdimi.value,
         xingzhijing=Attributes(150, 0, 54, 153, 0, 8),
         xinghun={"battle_damage_reduction_percentage": 5}
     )
@@ -105,7 +105,7 @@ class HeroeTemps(Enum):
         level0_attributes=Attributes(200, 81, 41, 20, 19, 45),
         growth_coefficients=(30.06, 12.21, 6.17, 3.05, 2.82, 0.45),
         talent=Talents.jinlunfatian.value,
-        weapons=Weapons.budaoshensen.value,
+        weapon=Weapons.budaoshensen.value,
         xingzhijing=Attributes(166, 42, 46, 0, 35, 35),
         xinghun={"battle_damage_reduction_percentage": 5}
     )
@@ -124,7 +124,7 @@ class HeroeTemps(Enum):
         level0_attributes=Attributes(200, 81, 41, 20, 19, 45),
         growth_coefficients=(30.06, 12.21, 6.17, 3.05, 2.82, 0.45),
         talent=Talents.jinlunfatian.value,
-        weapons=Weapons.budaoshensen.value,
+        weapon=Weapons.budaoshensen.value,
         xingzhijing=Attributes(166, 42, 46, 0, 35, 35),
         xinghun={"battle_damage_reduction_percentage": 5}
     )

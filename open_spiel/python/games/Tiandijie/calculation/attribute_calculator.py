@@ -170,7 +170,7 @@ def get_max_life(
         1
         + (
             get_a_modifier(
-                ma.life_percentage, hero_instance, target_instance, context, is_basic
+                ma.life_percentage, hero_instance, target_instance, context
             )
             + JIANREN
         )/100
@@ -204,8 +204,8 @@ def get_defense(
     # elif hero_instance.id == "fuyayu0":
     #     basic_defense = 1423 + 324 if is_magic else 1128 + 208
 
-    return basic_defense * (1 + get_level2_modifier(
-        hero_instance, counter_instance, attr_name+"_percentage", context, is_basic
+    return basic_defense * (1 + get_a_modifier(
+        attr_name+"_percentage", hero_instance, counter_instance, context
     )/100)
 
 
@@ -305,36 +305,8 @@ def get_a_damage_modifier(
             )
             - get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context)
     )
-    from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import accumulate_talents_modifier, accumulate_xinghun_attribute, accumulate_equipments_modifier, get_weapon_modifier, get_buff_modifier, get_formation_modifier, accumulate_jishen_attribute
-    print("-------------------------A类增减伤-------------------------------", "attacker:", attacker_instance.id)
-    print("A类增伤", get_a_modifier(ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage, attacker_instance, counter_instance, context) + get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill), "\n",
-          "其中"
-          "talents",  accumulate_talents_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
-          "skill",  get_skill_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, skill, context), "\n",
-          "xinghun",  accumulate_xinghun_attribute(attacker_instance.temp.xinghun, ma.magic_damage_percentage), "\n",
-          "weapon",  get_weapon_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
-          "equipments",  accumulate_equipments_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
-          "suit_stone",  accumulate_suit_stone_attribute(attacker_instance, counter_instance, ma.magic_damage_percentage, context), "\n",
-          "buff",  get_buff_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
-          "formation",  get_formation_modifier(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
-          "jishen",  accumulate_jishen_attribute(ma.magic_damage_percentage, attacker_instance, counter_instance, context), "\n",
-          "action", get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill), "\n",
-          "----------------------------------------------------", "\n",
-          "A类减伤", get_a_modifier(ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage, counter_instance, attacker_instance, context) - get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context), "\n",
-          "其中"
-          "talents", accumulate_talents_modifier(ma.magic_damage_reduction_percentage, counter_instance, attacker_instance, context), "\n",
-          "skill", get_skill_modifier(ma.magic_damage_reduction_percentage, counter_instance, attacker_instance, skill, context), "\n",
-          "xinghun", accumulate_xinghun_attribute(attacker_instance.temp.xinghun, ma.magic_damage_reduction_percentage), "\n",
-          "weapon", get_weapon_modifier(ma.magic_damage_reduction_percentage, counter_instance, attacker_instance, context), "\n",
-          "equipments", accumulate_equipments_modifier(ma.magic_damage_reduction_percentage, counter_instance, attacker_instance, context),
-          "\n",
-          "suit_stone", accumulate_suit_stone_attribute(counter_instance, attacker_instance, ma.magic_damage_reduction_percentage, context),
-          "\n",
-          "buff", get_buff_modifier(ma.magic_damage_reduction_percentage, counter_instance, attacker_instance, context), "\n",
-          "formation", get_formation_modifier(ma.magic_damage_reduction_percentage, counter_instance, attacker_instance, context), "\n",
-          "jishen", accumulate_jishen_attribute(ma.magic_damage_reduction_percentage, counter_instance, attacker_instance, context), "\n",
-          "action", get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context), "\n",
-    )
+    # print("action增伤:", get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill))
+    # print("action减伤:", get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context))
 
     return 1 + modifier / 100
 
@@ -534,13 +506,11 @@ def get_critical_damage_modifier(
     actor_hero: Hero, counter_instance: Hero, context: Context
 ) -> float:
     critical_stones_damage_percentage_modifier = accumulate_stone_attribute(actor_hero.stones, ma.critical_damage_percentage)
-    return (
-        1
-        + (
+    critical_stones_suffer_damage_percentage_modifier = accumulate_stone_attribute(actor_hero.stones, ma.suffer_critical_damage_reduction_percentage)
+    return(
             get_a_modifier(
                 ma.critical_damage_percentage, actor_hero, counter_instance, context
             )
-            + critical_stones_damage_percentage_modifier
             - get_a_modifier(
                 ma.critical_damage_reduction_percentage,
                 actor_hero,
@@ -553,9 +523,9 @@ def get_critical_damage_modifier(
                 actor_hero,
                 context,
             )  # 被攻击者的暴击抗性
-        )
-        / 100
-    )
+            + critical_stones_damage_percentage_modifier
+            - critical_stones_suffer_damage_percentage_modifier
+        )/ 100
 
 
 def get_fixed_damage_reduction_modifier(

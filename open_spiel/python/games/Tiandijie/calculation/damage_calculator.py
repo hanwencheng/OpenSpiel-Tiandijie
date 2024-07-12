@@ -29,6 +29,12 @@ def calculate_skill_damage(
     attacker_instance: Hero, target_instance: Hero, action: Action, context: Context
 ):
     skill = action.skill
+    damage_multiplier = 1
+    if skill:
+        if skill.temp.multiplier == 0:
+            return
+        else:
+            damage_multiplier = skill.temp.multiplier
     is_magic = check_is_magic_action(skill, attacker_instance)
 
     attacker_elemental_multiplier = get_element_attacker_multiplier(
@@ -49,10 +55,8 @@ def calculate_skill_damage(
             attack_defense_difference
             * get_a_damage_modifier(attacker_instance, target_instance, skill, is_magic, context)
             * get_b_damage_modifier(attacker_instance, target_instance, skill, is_magic, context)
+            * damage_multiplier
     )
-    if skill:
-        damage_multiplier = skill.temp.multiplier
-        actual_damage = actual_damage * damage_multiplier
 
     critical_probability = (
         get_critical_hit_probability(attacker_instance, target_instance, context, skill)
@@ -61,34 +65,26 @@ def calculate_skill_damage(
 
     critical_damage_multiplier = (
         CRIT_MULTIPLIER
-        * get_critical_damage_modifier(attacker_instance, target_instance, context)
+        + get_critical_damage_modifier(attacker_instance, target_instance, context)
     )
 
-    print("=======================================计算伤害==================================================")
-    print("calculate_skill_damage111:", "攻击者", attacker_instance.id, "被攻击者", target_instance.id)
-    print("攻击面板", get_attack(attacker_instance, target_instance, context, is_magic), "\n",
-          "克制伤害加成系数", attacker_elemental_multiplier, "\n",
-          "防御面板", get_defense_with_penetration(attacker_instance, target_instance, context, is_magic), "\n",
-          "基础伤害计算为", attack_defense_difference, "\n",
-          "-\n",
-          "技能名", skill.temp.id if skill else "无", "\n",
-          "技能伤害系数", skill.temp.multiplier if skill else 0, "\n",
-          "A类增减伤", get_a_damage_modifier(attacker_instance, target_instance, skill, is_magic, context), "\n",
-          "B类增减伤", get_b_damage_modifier(attacker_instance, target_instance, skill, is_magic, context), "\n",
-          "暴击倍率", CRIT_MULTIPLIER, "\n",
-          "暴击伤害加成", get_critical_damage_modifier(attacker_instance, target_instance, context), "\n",
-          )
+    if actual_damage <= 0:
+        return
 
-
-
-
-
-
-
-
-
-
-
+    # print("=======================================计算伤害==================================================")
+    # print("calculate_skill_damage111:", "攻击者", attacker_instance.id, "被攻击者", target_instance.id)
+    # print("攻击面板", get_attack(attacker_instance, target_instance, context, is_magic), "\n",
+    #       "克制伤害加成系数", attacker_elemental_multiplier, "\n",
+    #       "防御面板", get_defense_with_penetration(attacker_instance, target_instance, context, is_magic), "\n",
+    #       "基础伤害计算为", attack_defense_difference, "\n",
+    #       "-\n",
+    #       "技能名", skill.temp.id if skill else "无", "\n",
+    #       "技能伤害系数", skill.temp.multiplier if skill else 0, "\n",
+    #       "A类增减伤", get_a_damage_modifier(attacker_instance, target_instance, skill, is_magic, context), "\n",
+    #       "B类增减伤", get_b_damage_modifier(attacker_instance, target_instance, skill, is_magic, context), "\n",
+    #       "暴击倍率", CRIT_MULTIPLIER, "\n",
+    #       "暴击伤害加成", get_critical_damage_modifier(attacker_instance, target_instance, context), "\n",
+    #       )
 
     if random() < critical_probability:
         # Critical hit occurs

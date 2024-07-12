@@ -7,6 +7,15 @@ from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.LifeRequireme
 from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.PositionRequirementChecks import (
     PositionRequirementChecks,
 )
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
+from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType
+from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_modifier
+from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
+from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import calculate_remove_buff
+from typing import List
+from open_spiel.python.games.Tiandijie.primitives.hero.Element import get_elemental_relationship, ElementRelationships
+from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
+from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions, Gender
 
 if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.Context import Context
@@ -14,17 +23,6 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.buff.Buff import Buff
     from open_spiel.python.games.Tiandijie.primitives.fieldbuff.FieldBuff import FieldBuff
     from open_spiel.python.games.Tiandijie.primitives.Action import Action
-
-from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
-from open_spiel.python.games.Tiandijie.primitives.skill.SkillTypes import SkillType
-from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_modifier
-from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
-
-from typing import List
-from open_spiel.python.games.Tiandijie.primitives.hero.Element import get_elemental_relationship, ElementRelationships
-from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
-
-from open_spiel.python.games.Tiandijie.primitives.hero.HeroBasics import Professions, Gender
 
 
 class RequirementCheck:
@@ -540,9 +538,8 @@ class RequirementCheck:
     def wangzhezitai_requires_check(
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
-        if _is_attacker(
-            target_hero, context
-        ) and BuffRequirementChecks.target_has_certain_buff(
+        action = context.get_last_action()
+        if action and action.actor == target_hero and BuffRequirementChecks.target_has_certain_buff(
             "zhanyin", actor_hero, target_hero, context, primitive
         ):
             return 1
@@ -626,9 +623,8 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
-        if _is_attacker(actor_hero, context) and action.is_in_battle():
-            if RequirementCheck.target_has_counterattack_first(action, context):
-                return 1
+        if action.actor == actor_hero and action.is_in_battle and not RequirementCheck.target_has_counterattack_first(action, context):
+            return 1
         return 0
 
     @staticmethod
@@ -646,6 +642,22 @@ class RequirementCheck:
             and counterattack_first_limit > target.counterattack_count
         )
 
+    @staticmethod
+    def shuangkai_requires_check(
+        actor_hero: Hero, target_hero: Hero, context: Context, buff
+    ) -> int:
+        action = context.get_last_action()
+        if (
+            action
+            and action.actor == actor_hero
+            and action.is_in_battle
+        ):
+            print("shuangkai_requires_check", actor_hero.id)
+            calculate_remove_buff(buff, actor_hero, context)
+            return 1
+        return 0
+
+
     # Field Buffs
 
     @staticmethod
@@ -656,11 +668,11 @@ class RequirementCheck:
         caster = context.get_hero_by_id(buff.caster_id)
         if (
             _is_attacker(actor_hero, context)
-            and action.is_in_battle()
+            and action.is_in_battle
             and actor_hero.player_id == caster.player_id
+            and not RequirementCheck.target_has_counterattack_first(action, context)
         ):
-            if RequirementCheck.target_has_counterattack_first(action, context):
-                return 1
+            return 1
         return 0
 
     @staticmethod

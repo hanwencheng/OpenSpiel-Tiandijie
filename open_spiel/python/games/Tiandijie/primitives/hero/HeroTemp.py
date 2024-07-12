@@ -31,7 +31,7 @@ class HeroTemp:
         level0_attributes,
         growth_coefficients,
         talent,
-        weapons,
+        weapon,
         xingzhijing,
         xinghun=None,
         fabao=None,
@@ -64,8 +64,8 @@ class HeroTemp:
             "特级": ["晦弓在弦"],
             "极级": ["魂", "贯甲咒"],
         }
-        self.weapons = weapons
-        self.weapon_features = self.weapons.weapon_features
+        self.weapon = weapon
+        self.weapon_features = self.weapon.weapon_features
         # Attributes initialization
         self.current_attributes: Attributes = self.level0_attributes
         self.strength_attributes: Attributes = Attributes(*get_neigong_enum_value(self.hide_professions.name))

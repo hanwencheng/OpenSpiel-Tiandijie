@@ -9,12 +9,12 @@ from functools import partial
 
 
 class Stone:
-    def __init__(self, id, effect, value, event=None, max_stack=1):
+    def __init__(self, id, effect, value, event=None, init_stack=1, max_stack=1):
         self.id = id
         self.effect = effect  # [天, 地, 荒]
         self.value = value  # [带两个, 带三个]
         self.event = event
-        self.stack = 0
+        self.stack = init_stack
         self.max_stack = max_stack
 
 
@@ -69,6 +69,7 @@ class Stones(Enum):
         ],
     )
 
+    # 使用绝学或遭受攻击后，除气血外全属性+3%（最多叠加5层）。
     wanghuan = Stone(
         id="wanghuan",
         effect=[
@@ -114,6 +115,28 @@ class Stones(Enum):
                 ),
             ],
         ],
+        event=[
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_stone_stack),
+            ),
+            EventListener(
+                EventTypes.under_skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_stone_stack),
+            ),
+            EventListener(
+                EventTypes.under_normal_attack_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_stone_stack),
+            )
+        ],
+        init_stack=0,
+        max_stack=5,
     )
 
     # 三枚	对友方使用绝学后，40%概率使目标获得1个随机「有益状态」。

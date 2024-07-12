@@ -38,6 +38,7 @@ class Skills(Enum):
         1.3,
         [ModifierEffect(partial(Rs.always_true), {Ma.is_ignore_protector: True})],
         [],
+        True,
     )
 
     #  纵命格杀	 消耗： 2
@@ -65,6 +66,7 @@ class Skills(Enum):
             )
         ],
         [],
+        True,
     )
 
     # 律隙万变	 消耗： 1
@@ -164,6 +166,7 @@ class Skills(Enum):
                 partial(Effects.take_effect_of_tianshanluanhun),
             )
         ],
+        True,
     )
 
     # 暗霎幽琰	 消耗： 2
@@ -190,6 +193,7 @@ class Skills(Enum):
                 partial(Effects.take_effect_of_anshayouyan),
             )
         ],
+        True,
     )
 
     # 神气流转	 消耗： 2
@@ -389,6 +393,7 @@ class Skills(Enum):
                 partial(Effects.take_effect_of_yanjinliexiong),
             )
         ],
+        True,
     )
 
     # 赤旗凌曜	 消耗： 2
@@ -431,28 +436,15 @@ class Skills(Enum):
         0,
         Distance(DistanceType.NORMAL, 5),
         Range(RangeType.DIAMOND, 2, 1, 1),
-        0,
+        0.2,
         [],
         [
             EventListener(
                 EventTypes.skill_end,
-                2,
-                partial(Rs.always_true),
-                partial(Effects.add_shield_by_self_max_life, 0.25),
-            ),
-
-            EventListener(
-                EventTypes.skill_end,
                 1,
                 partial(Rs.always_true),
-                partial(Effects.take_effect_of_buqi, 1),
+                partial(Effects.take_effect_of_buqi),
             ),
-            EventListener(
-                EventTypes.skill_end,
-                1,
-                partial(Rs.always_true),
-                partial(Effects.take_effect_of_buqi, 2),
-            )
         ],
     )
 
@@ -596,6 +588,7 @@ class Skills(Enum):
                 partial(Effects.take_effect_of_luohouzhenfa),
             )
         ],
+        True,
     )
 
     # 无天黑炎	 消耗： 2
@@ -628,6 +621,7 @@ class Skills(Enum):
                 partial(Effects.take_effect_of_luohouzhenfa),
             )
         ],
+        True,
     )
 
     # 离火神诀	 消耗： 2
@@ -660,4 +654,5 @@ class Skills(Enum):
                 partial(Effects.take_effect_of_luohouzhenfa),
             )
         ],
+        True,
     )

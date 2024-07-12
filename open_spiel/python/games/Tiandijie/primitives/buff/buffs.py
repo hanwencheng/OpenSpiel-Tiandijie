@@ -3428,7 +3428,7 @@ class BuffTemps(Enum):
                 EventTypes.battle_start,
                 1,
                 partial(RS.wangzhezitai_requires_check),
-                partial(Effects.add_shield, 1),
+                partial(Effects.add_shield_by_self_max_life, 1),
             )
         ],
     )
@@ -4840,19 +4840,11 @@ class BuffTemps(Enum):
         True,
         [
             ModifierEffect(
-                RS.always_true,
+                partial(RS.shuangkai_requires_check),
                 {
                     ma.suffer_physical_damage_reduction_percentage: 30,
                     ma.suffer_magic_damage_reduction_percentage: 30,
                 },
-            ),
-        ],
-        [
-            EventListener(
-                EventTypes.damage_end,
-                1,
-                partial(RS.is_attacker),
-                partial(Effects.remove_actor_certain_buff, "shuangkai"),
             ),
         ],
     )
@@ -5195,14 +5187,7 @@ class BuffTemps(Enum):
                 },
             ),
         ],
-        [
-            EventListener(
-                EventTypes.get_buff_end,
-                1,
-                partial(RS.BuffChecks.get_certain_buff_and_stack_reach, 5, "juexin"),
-                partial(Effects.transfer_buff_to_other_buff, "juexin", "zhilu")
-            ),
-        ],
+        [],
         5,
     )
 
@@ -5242,7 +5227,7 @@ class BuffTemps(Enum):
                 EventTypes.action_end,
                 1,
                 partial(RS.PositionChecks.in_range_of_enemy_caster, 3),
-                partial(Effects.transfer_buff_to_other_buff, "suolian", "jinbi"),
+                partial(Effects.transfer_buff_to_other_buff, "suolian", "jinbi", 1),
             ),
         ],
     )

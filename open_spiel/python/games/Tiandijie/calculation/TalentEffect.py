@@ -465,13 +465,13 @@ class TalentEffects:
     ):
         if state == 1:
             Effects.add_self_buffs(
-                ["juexin"], 15, actor_instance, actor_instance, context, talent
+                ["juexin"], 200, actor_instance, actor_instance, context, talent
             )
             targets = context.get_partner_in_square_range(actor_instance, 2) + context.get_enemies_in_square_range(actor_instance, 2)
             element_values = [target.temp.element for target in targets]
             if Elements.DARK in element_values and Elements.THUNDER in element_values:
                 Effects.add_buffs(
-                    ["juexin"], 15, actor_instance, actor_instance, context, talent
+                    ["juexin"], 200, actor_instance, actor_instance, context, talent
                 )
 
             if BuffRequirementChecks.self_buff_stack_reach(
@@ -481,7 +481,7 @@ class TalentEffects:
                     "juexin", actor_instance, actor_instance, context, talent
                 )
                 Effects.add_self_buffs(
-                    ["juexin"], 3, actor_instance, actor_instance, context, talent
+                    ["zhilu"], 3, actor_instance, actor_instance, context, talent
                 )
         else:
             enemies = context.get_enemies_in_diamond_range(actor_instance, 2)

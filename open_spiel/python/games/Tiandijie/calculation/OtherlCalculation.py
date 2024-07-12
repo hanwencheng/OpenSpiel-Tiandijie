@@ -44,9 +44,10 @@ def calculate_reset_hero_actionable(
 def calculate_fix_shield(
     shield_value, actor_instance: Hero, target_instance: Hero, context: Context
 ):
-    fixed_shield_modifier = get_level2_modifier(
+    fixed_shield_modifier = 1 + get_level2_modifier(
         target_instance, actor_instance, ma.shield_percentage, context
-    )
+    )/100
+    print(":calculate_fix_shield", shield_value * fixed_shield_modifier)
     target_instance.add_shield(shield_value * fixed_shield_modifier)
 
 
