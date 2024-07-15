@@ -20,7 +20,7 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = 5000
+EpisodeTime = 11000
 
 
 class TIANDIJIEGUI:

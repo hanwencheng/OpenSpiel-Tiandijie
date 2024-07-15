@@ -48,6 +48,8 @@ class RequirementCheck:
         hero_temp_id: str, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
+        if not action or not target_hero:
+            return 0
         if action.is_in_battle:
             if (
                 target_hero.temp.temp_id == hero_temp_id
