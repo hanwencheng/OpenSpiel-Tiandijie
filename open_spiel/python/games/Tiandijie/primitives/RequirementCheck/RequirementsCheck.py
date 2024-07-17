@@ -822,7 +822,6 @@ class RequirementCheck:
             if context.get_last_action():
                 if _is_attacker(target_hero, context) and not primitive.fabao_mark:
                     primitive.fabao_mark = True
-                    print("zijinhulu_suc")
                     return 1
             return 0
 

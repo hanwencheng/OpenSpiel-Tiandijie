@@ -133,7 +133,7 @@ class TianDiJieState(pyspiel.State):
         action = self.context.get_last_action()
         if self.turn == 0:
             self.turn += 1
-            print("turn", self.turn)
+            # print("turn", self.turn)
             for hero in hero_list:
                 event_listener_calculator(actor_instance=hero, counter_instance=None, event_type=EventTypes.game_start, context=self.context)
                 event_listener_calculator(actor_instance=hero, counter_instance=None, event_type=EventTypes.turn_start, context=self.context)
@@ -181,7 +181,7 @@ class TianDiJieState(pyspiel.State):
         if self.turn > _MAX_GAME_LENGTH:
             self._is_terminal = True
             return False
-        print("turn", self.turn)
+        # print("turn", self.turn)
         for y in range(len(self.context.battlemap.map)):
             for x in range(len(self.context.battlemap.map[0])):
                 terrain_buff = self.context.battlemap.get_terrain((y, x)).buff
@@ -193,7 +193,7 @@ class TianDiJieState(pyspiel.State):
 
     def check_all_teams_dead(self):
         if len(self.context.get_heroes_by_player_id(0)) == 0 or len(self.context.get_heroes_by_player_id(1)) == 0:
-            print("0队剩余：", len(self.context.get_heroes_by_player_id(0)), "1队剩余：", len(self.context.get_heroes_by_player_id(1)))
+            # print("0队剩余：", len(self.context.get_heroes_by_player_id(0)), "1队剩余：", len(self.context.get_heroes_by_player_id(1)))
             self._is_terminal = True
             return True
 

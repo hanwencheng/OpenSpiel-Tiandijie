@@ -1722,8 +1722,8 @@ class BuffTemps(Enum):
     )
 
     # 怯懦	其他	不可驱散	不可扩散	不可偷取	除气血外全属性降低20%，遭受鲜于超主动攻击「对战中」受到伤害提升20%，且无法反击
-    qienou = BuffTemp(
-        "qienou",
+    qienuo = BuffTemp(
+        "qienuo",
         BuffTypes.Others,
         False,
         False,

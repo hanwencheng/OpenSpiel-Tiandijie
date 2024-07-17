@@ -73,28 +73,28 @@ class Hero:
     def take_harm(self, attacker, harm_value: float, context):
         if harm_value > 0:
             self.current_life = get_max_life(self, attacker, context) * self.current_life_percentage/100
-            print("-")
-            print("承伤前：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life, "伤害", harm_value)
+            # print("-")
+            # print("承伤前：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life, "伤害", harm_value)
             damage = max(harm_value - self.shield, 0)
             self.shield = max(self.shield - harm_value, 0)
             self.receive_damage += damage
             self.current_life = ceil(max(self.current_life - damage, 0))
             self.current_life_percentage = ceil(self.current_life / get_max_life(self, attacker, context) * 100)
-            print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life)
-            print("-")
+            # print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life)
+            # print("-")
 
     def take_healing(self, healing_value: float, context):
         if healing_value > 0:
             max_life = get_max_life(self, None, context)
             self.current_life = max_life * self.current_life_percentage/100
-            print("-")
-            print("治疗前：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life, "治疗量"
-                                                                                                                                                                         ""
-                                                                                                                                                                         "", healing_value)
+            # print("-")
+            # print("治疗前：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life, "治疗量"
+            #                                                                                                                                                              ""
+            #                                                                                                                                                              "", healing_value)
             self.current_life = min(self.current_life + healing_value, max_life)
             self.current_life_percentage = self.current_life / max_life * 100
-            print("治疗后：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life)
-            print("-")
+            # print("治疗后：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life)
+            # print("-")
 
 
     def add_shield(self, shield_value: float):

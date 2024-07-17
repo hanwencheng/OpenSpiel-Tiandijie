@@ -47,7 +47,6 @@ def calculate_fix_shield(
     fixed_shield_modifier = 1 + get_level2_modifier(
         target_instance, actor_instance, ma.shield_percentage, context
     )/100
-    print(":calculate_fix_shield", shield_value * fixed_shield_modifier)
     target_instance.add_shield(shield_value * fixed_shield_modifier)
 
 

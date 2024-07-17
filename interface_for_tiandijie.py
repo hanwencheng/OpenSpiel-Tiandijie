@@ -4,11 +4,14 @@ from tkinter import messagebox, StringVar, OptionMenu
 from absl import flags, app
 from PIL import Image, ImageTk
 import pyspiel
+import logging
 import Pmw
+import numpy as np
 from open_spiel.python import games  # pylint: disable=unused-import
 from open_spiel.python import rl_environment
 from open_spiel.python import rl_tools
 from open_spiel.python.algorithms import tabular_qlearner
+from open_spiel.python.algorithms import random_agent
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 from open_spiel.python.games.Tiandijie.primitives.ActionTypes import ActionTypes
 from open_spiel.python.games.Tiandijie.primitives.hero.heroes import HeroeTemps
@@ -20,7 +23,8 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = 11000
+EpisodeTime = int(5000)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
 class TIANDIJIEGUI:
@@ -43,6 +47,14 @@ class TIANDIJIEGUI:
                 print("创建")
                 self.agents.append(tabular_qlearner.QLearner(player_id=idx, num_actions=self.num_actions))
         self.eval_agents = [self.agents[0], self.agents[1]]
+        # self.eval_agents = [self.agents[1], self.agents[0]]
+        # self.agents[1]._player_id = 0
+
+        # random agents for evaluation
+        self.random_agents = [
+          random_agent.RandomAgent(player_id=idx, num_actions=self.num_actions)
+          for idx in range(2)
+        ]
         self.data_dict = {}
         self.image_cache = {}
         self.heroes = []
@@ -156,7 +168,6 @@ class TIANDIJIEGUI:
 
     def simulation_worker(self):
         while not self.time_step.last() and not self._terminal and not self._paused:
-            time.sleep(1)
             player_id = self.time_step.observations["current_player"]
             if player_id == pyspiel.PlayerId.TERMINAL:
                 print(self.time_step.rewards)
@@ -210,7 +221,6 @@ class TIANDIJIEGUI:
         legal_actions = time_step.observations["legal_actions"][current_player]
         action = -1
         while action not in legal_actions and not self._terminal:
-            time.sleep(1)
             action_str = self.input
             try:
                 action = int(action_str)
@@ -582,7 +592,7 @@ class TIANDIJIEGUI:
         return self.image_cache[path]
 
     def Episode_for_agent(self):
-        threading.Thread(target=self.Episode_for_agent_worker).start()
+        threading.Thread(target=self.Episode_for_agent_worker2).start()
 
     def Episode_for_agent_worker(self):
         self.add_text("Episode_Start")
@@ -599,6 +609,57 @@ class TIANDIJIEGUI:
                 agent_output = self.agents[player_id].step(time_step)
                 time_step = self.env.step([agent_output.action])
 
+            for agent in self.agents:
+                agent.step(time_step)
+
+        with open(f"2xqlearner_model_0x{EpisodeTime}.pkl", "wb") as f:
+            pickle.dump(self.agents[0], f)
+        with open(f"2xqlearner_model_1x{EpisodeTime}.pkl", "wb") as f:
+            pickle.dump(self.agents[1], f)
+        print("Done")
+
+    def eval_against_random_bots(self, env, trained_agents, random_agents, num_episodes):
+        """Evaluates `trained_agents` against `random_agents` for `num_episodes`."""
+        wins = np.zeros(2)
+        for player_pos in range(2):
+            if player_pos == 0:
+                cur_agents = [trained_agents[0], random_agents[1]]
+            else:
+                cur_agents = [random_agents[0], trained_agents[1]]
+            for _ in range(num_episodes):
+                if self._terminal:
+                    return
+                time_step = env.reset()
+                while not time_step.last():
+                    player_id = time_step.observations["current_player"]
+                    if player_id == pyspiel.PlayerId.TERMINAL:
+                        break
+                    agent_output = cur_agents[player_id].step(time_step, is_evaluation=True)
+                    time_step = env.step([agent_output.action])
+                if time_step.rewards[player_pos] > 0:
+                    wins[player_pos] += 1
+        return wins / num_episodes
+
+    def Episode_for_agent_worker2(self):
+        self.add_text("Episode_Start")
+        for cur_episode in range(EpisodeTime):
+            if cur_episode == 0:
+                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 1000)
+                logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
+            time_step = self.env.reset()
+            if self._terminal:
+                return
+            while not time_step.last():
+                player_id = time_step.observations["current_player"]
+                if player_id == pyspiel.PlayerId.TERMINAL:
+                    break
+                agent_output = self.agents[player_id].step(time_step)
+                time_step = self.env.step([agent_output.action])
+
+            # Episode is over, step all agents with final info state.
+            if cur_episode % int(10000) == 0 and cur_episode != 0:
+                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 1000)
+                logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
             for agent in self.agents:
                 agent.step(time_step)
 

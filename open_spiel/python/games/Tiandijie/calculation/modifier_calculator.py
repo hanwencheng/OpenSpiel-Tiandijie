@@ -563,34 +563,34 @@ def get_a_modifier(attr_name, actor_instance, counter_instance, context, skill=N
     accumulated_jishen_modifier = accumulate_jishen_attribute(
         attr_name, actor_instance, counter_instance, context
     )
-    if attr_name == "magic_damage_percentage" or attr_name == "physical_damage_percentage":
-        print("-------------------------A类增伤-------------------------------", "attacker:", actor_instance.id)
-        print(
-          "talents",  accumulate_talents_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "skill",  get_skill_modifier(attr_name, actor_instance, counter_instance, skill, context), "\n",
-          "passives",  accumulate_attribute(actor_instance.temp.passives, attr_name), "\n",
-          "xinghun",  accumulate_xinghun_attribute(actor_instance.temp.xinghun, attr_name), "\n",
-          "weapon",  get_weapon_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "equipments",  accumulate_equipments_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "suit_stone",  accumulate_suit_stone_attribute(actor_instance, counter_instance, attr_name, context), "\n",
-          "buff",  get_buff_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "formation",  get_formation_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "jishen",  accumulate_jishen_attribute(attr_name, actor_instance, counter_instance, context), "\n",
-        )
-    if attr_name == "physical_damage_reduction_percentage" or attr_name == "magic_damage_reduction_percentage":
-        print("------------------------A类减伤------------------------------", "\n",)
-        print(
-          "talents", accumulate_talents_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "skill", get_skill_modifier(attr_name, actor_instance, counter_instance, skill, context), "\n",
-          "passives",  accumulate_attribute(actor_instance.temp.passives, attr_name), "\n",
-          "xinghun", accumulate_xinghun_attribute(actor_instance.temp.xinghun, attr_name), "\n",
-          "weapon", get_weapon_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "equipments", accumulate_equipments_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "suit_stone", accumulate_suit_stone_attribute(actor_instance, counter_instance, attr_name, context), "\n",
-          "buff", get_buff_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "formation", get_formation_modifier(attr_name, actor_instance, counter_instance, context), "\n",
-          "jishen", accumulate_jishen_attribute(attr_name, actor_instance, counter_instance, context), "\n",
-    )
+    # if attr_name == "magic_damage_percentage" or attr_name == "physical_damage_percentage":
+    #     print("-------------------------A类增伤-------------------------------", "attacker:", actor_instance.id)
+    #     print(
+    #       "talents",  accumulate_talents_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "skill",  get_skill_modifier(attr_name, actor_instance, counter_instance, skill, context), "\n",
+    #       "passives",  accumulate_attribute(actor_instance.temp.passives, attr_name), "\n",
+    #       "xinghun",  accumulate_xinghun_attribute(actor_instance.temp.xinghun, attr_name), "\n",
+    #       "weapon",  get_weapon_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "equipments",  accumulate_equipments_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "suit_stone",  accumulate_suit_stone_attribute(actor_instance, counter_instance, attr_name, context), "\n",
+    #       "buff",  get_buff_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "formation",  get_formation_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "jishen",  accumulate_jishen_attribute(attr_name, actor_instance, counter_instance, context), "\n",
+    #     )
+    # if attr_name == "physical_damage_reduction_percentage" or attr_name == "magic_damage_reduction_percentage":
+    #     print("------------------------A类减伤------------------------------", "\n",)
+    #     print(
+    #       "talents", accumulate_talents_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "skill", get_skill_modifier(attr_name, actor_instance, counter_instance, skill, context), "\n",
+    #       "passives",  accumulate_attribute(actor_instance.temp.passives, attr_name), "\n",
+    #       "xinghun", accumulate_xinghun_attribute(actor_instance.temp.xinghun, attr_name), "\n",
+    #       "weapon", get_weapon_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "equipments", accumulate_equipments_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "suit_stone", accumulate_suit_stone_attribute(actor_instance, counter_instance, attr_name, context), "\n",
+    #       "buff", get_buff_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "formation", get_formation_modifier(attr_name, actor_instance, counter_instance, context), "\n",
+    #       "jishen", accumulate_jishen_attribute(attr_name, actor_instance, counter_instance, context), "\n",
+    # )
 
     # if attr_name == "magic_attack_percentage" and actor_instance.id == "zhujin1":
     #     print("-------------------------计算-------------------------------", ":", actor_instance.id)

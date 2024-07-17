@@ -88,12 +88,12 @@ def calculate_skill_damage(
 
     if random() < critical_probability:
         # Critical hit occurs
-        print("Critical hit occurs", actual_damage * critical_damage_multiplier)
+        # print("Critical hit occurs", actual_damage * critical_damage_multiplier)
         critical_damage = max(actual_damage * critical_damage_multiplier, 1)
         target_instance.take_harm(attacker_instance, critical_damage, context)
     else:
         # No critical hit
-        print("No critical hit", actual_damage)
+        # print("No critical hit", actual_damage)
         actual_damage = max(actual_damage, 1)
 
         target_instance.take_harm(attacker_instance, actual_damage, context)
@@ -161,28 +161,28 @@ def calculate_counterattack_damage(
         * get_critical_damage_modifier(attacker_instance, target_instance, context)
     )
 
-    print("=======================================计算反击伤害==================================================")
-    print("calculate_skill_damage111:", "攻击者", attacker_instance.id, "被攻击者", target_instance.id)
-    print("攻击面板", get_attack(attacker_instance, target_instance, context, is_magic), "\n",
-          "克制伤害加成系数", attacker_elemental_multiplier, "\n",
-          "防御面板", get_defense_with_penetration(attacker_instance, target_instance, context, is_magic), "\n",
-          "基础伤害计算为", attack_defense_difference, "\n",
-          "-\n",
-          "暴击率", critical_probability, "\n",
-          "A类增减伤", get_a_damage_modifier(attacker_instance, target_instance, None, is_magic, context), "\n",
-          "B类增减伤", get_b_damage_modifier(attacker_instance, target_instance, None, is_magic, context), "\n",
-          # "暴击倍率", CRIT_MULTIPLIER, "\n",
-          # "暴击伤害加成", get_critical_damage_modifier(attacker_instance, target_instance, context), "\n",
-          # "暴击承伤加成", get_critical_damage_reduction_modifier(target_instance, attacker_instance, context)
-          )
+    # print("=======================================计算反击伤害==================================================")
+    # print("calculate_skill_damage111:", "攻击者", attacker_instance.id, "被攻击者", target_instance.id)
+    # print("攻击面板", get_attack(attacker_instance, target_instance, context, is_magic), "\n",
+    #       "克制伤害加成系数", attacker_elemental_multiplier, "\n",
+    #       "防御面板", get_defense_with_penetration(attacker_instance, target_instance, context, is_magic), "\n",
+    #       "基础伤害计算为", attack_defense_difference, "\n",
+    #       "-\n",
+    #       "暴击率", critical_probability, "\n",
+    #       "A类增减伤", get_a_damage_modifier(attacker_instance, target_instance, None, is_magic, context), "\n",
+    #       "B类增减伤", get_b_damage_modifier(attacker_instance, target_instance, None, is_magic, context), "\n",
+    #       # "暴击倍率", CRIT_MULTIPLIER, "\n",
+    #       # "暴击伤害加成", get_critical_damage_modifier(attacker_instance, target_instance, context), "\n",
+    #       # "暴击承伤加成", get_critical_damage_reduction_modifier(target_instance, attacker_instance, context)
+    #       )
 
     if random() < critical_probability:
         # Critical hit occurs
-        print("Critical hit occurs of counterattack", attacker_instance.id, actual_damage * critical_damage_multiplier)
+        # print("Critical hit occurs of counterattack", attacker_instance.id, actual_damage * critical_damage_multiplier)
         critical_damage = max(actual_damage * critical_damage_multiplier, 1)
         target_instance.take_harm(attacker_instance, critical_damage, context)
     else:
         # No critical hit
-        print("No critical hit of counterattack", attacker_instance.id, actual_damage)
+        # print("No critical hit of counterattack", attacker_instance.id, actual_damage)
         actual_damage = max(actual_damage, 1)
         target_instance.take_harm(attacker_instance, actual_damage, context)
