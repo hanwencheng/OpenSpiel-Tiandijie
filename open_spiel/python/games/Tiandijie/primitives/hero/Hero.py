@@ -42,7 +42,8 @@ class Hero:
         self.field_buffs: List[FieldBuff] = []
         self.talents_field_buffs: List[FieldBuff] = []
         self.initial_attributes = None
-        self.current_life: float = 1.0
+        self.last_life: float = 0.0
+        self.current_life: float = 0.0
         self.current_life_percentage: int = 100
         self.is_alive: bool = True
         self.max_life: float = 1.0
@@ -55,6 +56,7 @@ class Hero:
         self.energy: int = 0
         self.shield: int = 0
         self.receive_damage: int = 0
+        self.receive_healing: int = 0
         self.special_mark = False
         self.temp.talent.caster_id = self.id
         self.fabao = []
@@ -91,7 +93,9 @@ class Hero:
             # print("治疗前：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life, "治疗量"
             #                                                                                                                                                              ""
             #                                                                                                                                                              "", healing_value)
+            self.last_life = self.current_life
             self.current_life = min(self.current_life + healing_value, max_life)
+            self.receive_healing += round(self.current_life - self.last_life)
             self.current_life_percentage = self.current_life / max_life * 100
             # print("治疗后：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life)
             # print("-")
@@ -184,8 +188,6 @@ class Hero:
                     for target_position in target_position_list:
                         target_hero_list = [hero for hero in hero_list if hero.player_id != self.player_id]
                         hero_in_skill = [enemy for enemy in target_hero_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, target_position, enemy.position, context.battlemap)]
-                        # if self.id == "zhujin1":
-                        #     print("hero_in_skill", moveable_position, target_position, skill.temp.range_instance.get_area(target_position, moveable_position, context.battlemap))
                         new_action = Action(self, hero_in_skill, skill, moveable_position, target_position)
                         new_action.update_action_type(ActionTypes.SKILL_ATTACK)
                         self.actionable_list.append(new_action)
@@ -233,7 +235,7 @@ class Hero:
                         return [target] + [
                             effect_hero for effect_hero in target_hero_list
                             if effect_hero != target and skill.temp.range_instance.check_if_target_in_range(
-                                moveable_position, moveable_position, effect_hero.position, context.battlemap
+                                moveable_position, target.position, effect_hero.position, context.battlemap
                             )
                         ]
 

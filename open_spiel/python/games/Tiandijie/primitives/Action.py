@@ -5,7 +5,7 @@ from typing import List
 from open_spiel.python.games.Tiandijie.calculation.PathFinding import a_star_search
 from open_spiel.python.games.Tiandijie.basics import Position
 from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skills
-
+import math
 if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.hero.Hero import Hero
 from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
@@ -44,6 +44,9 @@ class Action:
         self.additional_move: int = 0
         self.additional_skill_list: [AdditionalSkill] or None = None
         self.additional_action = None
+        self.record_active_damage = {}
+        self.record_counter_damage = {}
+        self.record_heal = {}
 
     def update_affected_heroes(self, affected_heroes: List[Hero]):
         self.targets = affected_heroes
@@ -95,27 +98,44 @@ class Action:
         battle_map.hero_move(self.initial_position, self.move_point)
 
     def action_to_string(self, context):
-        # context.battlemap.display_map()
-        action_to_string = ""
-        if self.protector:
-            print(self.protector.id)
+        action_to_string = f"\n{self.actor.id}{self.initial_position}"
+
         if self.type == ActionTypes.MOVE:
-            action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point}"
+            action_to_string += f"moves \n{self.move_point}"
         elif self.type == ActionTypes.PASS:
-            action_to_string = f"{self.actor.id} chooses pass"
+            action_to_string += f"\n{self.actor.id} \nchooses pass"
         elif self.type == ActionTypes.NORMAL_ATTACK:
-            action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use normal attack to{self.targets[0].id}{self.action_point}"
-            if self.protector:
-                action_to_string += f",was protected by {self.protector.id}"
+            action_to_string += f"\nmoves{self.move_point} \nuse normal attack to \n{self.targets[0].id}{self.action_point}"
         elif self.type == ActionTypes.SELF:
-            action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use {self.skill.temp.id}"
+            action_to_string += f"\nmoves{self.move_point},use {self.skill.temp.id}"
         elif self.type in [ActionTypes.HEAL, ActionTypes.SKILL_ATTACK, ActionTypes.SUPPORT]:
             if self.skill.temp.target_type == SkillTargetTypes.TERRAIN:
-                action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point}, use {self.skill.temp.id} to terrain {self.action_point}"
+                action_to_string += f"\nmoves{self.move_point}\nuse {self.skill.temp.id}\nto terrain {self.action_point}"
             else:
-                action_to_string = f"{self.actor.id}{self.initial_position} moves {self.move_point},use {self.skill.temp.id} to {self.targets[0].id if self.targets else ''}, {self.action_point}"
-                if self.protector:
-                    action_to_string += f",was protected by {self.protector.id}"
+                action_to_string += f"\nmoves{self.move_point}\nuse {self.skill.temp.id}\nto {self.targets[0].id if self.targets else ''}{self.action_point}"
+        if self.protector:
+            action_to_string += f"\nwas protected by {self.protector.id}"
+        if self.record_active_damage:
+            action_to_string += f"\ngenerate active damage:"
+            for hero_id, damage_info in self.record_active_damage.items():
+                if damage_info[0]:
+                    action_to_string += f"\n  {hero_id} took critical {math.ceil(damage_info[1])}"
+                else:
+                    action_to_string += f"\n  {hero_id} took {math.ceil(damage_info[1])}"
+        if self.record_counter_damage:
+            action_to_string += f"\ngenerate counter damage:"
+            for hero_id, damage_info in self.record_counter_damage.items():
+                if damage_info[0]:
+                    action_to_string += f"\n  {hero_id} took critical {math.ceil(damage_info[1])}"
+                else:
+                    action_to_string += f"\n  {hero_id} took {math.ceil(damage_info[1])}"
+        if self.record_heal:
+            action_to_string += f"\ngenerate heal:"
+            for hero_id, heal_value in self.record_heal.items():
+                action_to_string += f"\n  {hero_id} healing {math.ceil(heal_value)}"
+
+        action_to_string += "\n=================================="
+        action_to_string = action_to_string.replace("mohuahuangfushen", "mobao")
         return action_to_string
         # elif self.type == ActionTypes.TELEPORT:
         #     action_to_string = f"{self.actor}从{self.initial_position}走到了{self.move_point},使用了{self.skill.temp.id},传送到了{self.action_point}"

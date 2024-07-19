@@ -417,17 +417,6 @@ class Context:
         for hero in self.heroes:
             self.battlemap.add_hero(hero.position)
 
-    def calculate_score(self, player: int) -> float:
-        score = 0.0
-        for hero in self.cemetery:
-            if hero.player_id != player:
-                score += 100000
-        #         score += hero.receive_damage
-        # for hero in self.heroes:
-        #     if hero.player_id != player:
-        #         score += hero.receive_damage
-        return score
-
     def get_hero_by_hero_id(self, id: str) -> Hero:
         return [hero for hero in self.heroes if hero.id == id][0]
 

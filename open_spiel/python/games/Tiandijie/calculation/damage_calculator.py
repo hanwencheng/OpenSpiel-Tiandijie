@@ -89,12 +89,15 @@ def calculate_skill_damage(
     if random() < critical_probability:
         # Critical hit occurs
         # print("Critical hit occurs", actual_damage * critical_damage_multiplier)
-        critical_damage = max(actual_damage * critical_damage_multiplier, 1)
+        critical_damage = round(max(actual_damage * critical_damage_multiplier, 1))
+        action.record_active_damage[target_instance.id] = [True, critical_damage]
+
         target_instance.take_harm(attacker_instance, critical_damage, context)
     else:
         # No critical hit
         # print("No critical hit", actual_damage)
-        actual_damage = max(actual_damage, 1)
+        actual_damage = round(max(actual_damage, 1))
+        action.record_active_damage[target_instance.id] = [False, actual_damage]
 
         target_instance.take_harm(attacker_instance, actual_damage, context)
 
@@ -179,10 +182,12 @@ def calculate_counterattack_damage(
     if random() < critical_probability:
         # Critical hit occurs
         # print("Critical hit occurs of counterattack", attacker_instance.id, actual_damage * critical_damage_multiplier)
-        critical_damage = max(actual_damage * critical_damage_multiplier, 1)
+        critical_damage = round(max(actual_damage * critical_damage_multiplier, 1))
+        action.record_counter_damage[attacker_instance.id] = [True, critical_damage]
         target_instance.take_harm(attacker_instance, critical_damage, context)
     else:
         # No critical hit
         # print("No critical hit of counterattack", attacker_instance.id, actual_damage)
-        actual_damage = max(actual_damage, 1)
+        actual_damage = round(max(actual_damage, 1))
+        action.record_counter_damage[attacker_instance.id] = [False, actual_damage]
         target_instance.take_harm(attacker_instance, actual_damage, context)

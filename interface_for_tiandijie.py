@@ -23,7 +23,7 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = int(5000)
+EpisodeTime = int(3000)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
@@ -203,6 +203,7 @@ class TIANDIJIEGUI:
             if player_id == human_player:
                 action = self.command_line_action(self.time_step)
                 self.time_step = self.env.step([action], self.add_text)
+                logging.info(f"player_reward for 0 {self.time_step.rewards[0]}, player_reward for 1 {self.time_step.rewards[1]}")
                 self.redraw_all()
             else:
                 agent_output = self.eval_agents[player_id].step(self.time_step)
@@ -302,7 +303,7 @@ class TIANDIJIEGUI:
         self.button_dic["battle_with_qlearner"].grid(row=len(self.map) + 1, column=4, padx=10, pady=10)
 
         # 创建文本框
-        self.text_entry = tk.Text(self.map_container, state="disabled", bg="#D9D9D9", width=30, height=3, wrap=tk.WORD)
+        self.text_entry = tk.Text(self.map_container, state="disabled", bg="#D9D9D9", width=35, height=3, wrap=tk.WORD)
         self.text_entry.grid(row=0, column=len(self.map[0]) + 3, padx=10, pady=10, rowspan=len(self.map),
                              sticky='nsew', )
 
@@ -644,7 +645,7 @@ class TIANDIJIEGUI:
         self.add_text("Episode_Start")
         for cur_episode in range(EpisodeTime):
             if cur_episode == 0:
-                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 1000)
+                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 100)
                 logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
             time_step = self.env.reset()
             if self._terminal:
@@ -657,9 +658,13 @@ class TIANDIJIEGUI:
                 time_step = self.env.step([agent_output.action])
 
             # Episode is over, step all agents with final info state.
-            if cur_episode % int(10000) == 0 and cur_episode != 0:
-                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 1000)
+            if cur_episode % int(1000) == 0 and cur_episode != 0:
+                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 100)
                 logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
+            elif cur_episode == EpisodeTime:
+                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 100)
+                logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
+
             for agent in self.agents:
                 agent.step(time_step)
 

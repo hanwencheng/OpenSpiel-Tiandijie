@@ -149,17 +149,17 @@ def get_max_life(
 ) -> float:
     life_attribute = hero_instance.initial_attributes.life
     basic_life = get_level1_modified_result(hero_instance, ma.life, life_attribute) + hero_instance.temp.strength_attributes.life + hero_instance.temp.xingzhijing.life
-    if hero_instance.id == "mohuahuangfushen0":     # 这里是模拟小号的面板写死的
-        basic_life = 6365 + 1059
-        return basic_life * (
-            1
-            + (
-                get_a_modifier(
-                    ma.life_percentage, hero_instance, target_instance, context, is_basic
-                )
-                + JIANREN
-            )/100
-    )
+    # if hero_instance.id == "mohuahuangfushen0":     # 这里是模拟小号的面板写死的
+    #     basic_life = 6365 + 1059
+    #     return basic_life * (
+    #         1
+    #         + (
+    #             get_a_modifier(
+    #                 ma.life_percentage, hero_instance, target_instance, context, is_basic
+    #             )
+    #             + JIANREN
+    #         )/100
+    # )
     # elif hero_instance.id == "zhujin0":
     #     basic_life = 2858 + 1690
     # elif hero_instance.id == "huoyong0":
