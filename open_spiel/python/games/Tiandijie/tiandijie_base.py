@@ -206,7 +206,6 @@ class TianDiJieState(pyspiel.State):
 
     def rewards(self):
         """Total reward for each player over the course of the game so far."""
-        print("\n\n\n\n\n\n===========================================================")
         score0 = self.calculate_score(0)
         score1 = self.calculate_score(1)
         self._player0_score = round(score0 - score1)
@@ -229,7 +228,6 @@ class TianDiJieState(pyspiel.State):
                 healing_score += hero.receive_healing
             if hero.player_id != player:
                 damage_score += hero.receive_damage
-        print("player", player, "healing_score", healing_score, "damage_score", damage_score, "percentage_score", percentage_score)
         return healing_score + damage_score + percentage_score
 
     def shows_cemetery(self):

@@ -23,38 +23,35 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = int(3000)
+EpisodeTime = int(1000)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+Q_LEARNER_AGENTS = []
+for idx in range(2):
+    if os.path.exists(f"2xqlearner_model_{idx}x{EpisodeTime}.pkl"):
+        with open(f"2xqlearner_model_{idx}x{EpisodeTime}.pkl", "rb") as f:
+            Q_LEARNER_AGENTS.append(pickle.load(f))
+        print("读取")
+    else:
+        print("创建")
+        Q_LEARNER_AGENTS.append(tabular_qlearner.QLearner(player_id=idx, num_actions=1000))
+RANDOM_AGENTS = [
+          random_agent.RandomAgent(player_id=idx, num_actions=1000)
+          for idx in range(2)
+]
 
 
 class TIANDIJIEGUI:
     def __init__(self, root):
         self.root = root
         self.root.title("TianDiJieAISimulation")
-        self.root.resizable(False, False)
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
         self._terminal = False
         self.env = rl_environment.Environment("tiandijie")
         self.num_players = self.env.num_players
         self.num_actions = self.env.action_spec()["num_actions"]
-        self.agents = []
-        for idx in range(self.num_players):
-            if os.path.exists(f"2xqlearner_model_{idx}x{EpisodeTime}.pkl"):
-                with open(f"2xqlearner_model_{idx}x{EpisodeTime}.pkl", "rb") as f:
-                    self.agents.append(pickle.load(f))
-                print("读取")
-            else:
-                print("创建")
-                self.agents.append(tabular_qlearner.QLearner(player_id=idx, num_actions=self.num_actions))
-        self.eval_agents = [self.agents[0], self.agents[1]]
-        # self.eval_agents = [self.agents[1], self.agents[0]]
-        # self.agents[1]._player_id = 0
 
         # random agents for evaluation
-        self.random_agents = [
-          random_agent.RandomAgent(player_id=idx, num_actions=self.num_actions)
-          for idx in range(2)
-        ]
         self.data_dict = {}
         self.image_cache = {}
         self.heroes = []
@@ -172,7 +169,7 @@ class TIANDIJIEGUI:
             if player_id == pyspiel.PlayerId.TERMINAL:
                 print(self.time_step.rewards)
                 break
-            agent_output = self.eval_agents[player_id].step(self.time_step)
+            agent_output = Q_LEARNER_AGENTS[player_id].step(self.time_step)
             self.add_text(f"Agent {player_id} chooses {self.env.get_state.action_to_string(agent_output.action)}")
             self.time_step = self.env.step([agent_output.action])
             self.redraw_hero_map()
@@ -206,7 +203,7 @@ class TIANDIJIEGUI:
                 logging.info(f"player_reward for 0 {self.time_step.rewards[0]}, player_reward for 1 {self.time_step.rewards[1]}")
                 self.redraw_all()
             else:
-                agent_output = self.eval_agents[player_id].step(self.time_step)
+                agent_output = Q_LEARNER_AGENTS[player_id].step(self.time_step, is_evaluation=True)
                 self.time_step = self.env.step([agent_output.action], self.add_text)
                 self.redraw_hero_map()
             self.redraw_skill_terrain()
@@ -244,7 +241,7 @@ class TIANDIJIEGUI:
         player_id = self.time_step.observations["current_player"]
         if player_id == pyspiel.PlayerId.TERMINAL:
             return
-        agent_output = self.eval_agents[player_id].step(self.time_step)
+        agent_output = Q_LEARNER_AGENTS[player_id].step(self.time_step)
         self.add_text(f"Agent {player_id} chooses {self.env.get_state.action_to_string(agent_output.action)}")
         self.time_step = self.env.step([agent_output.action])
         self.redraw_hero_map()
@@ -595,30 +592,6 @@ class TIANDIJIEGUI:
     def Episode_for_agent(self):
         threading.Thread(target=self.Episode_for_agent_worker2).start()
 
-    def Episode_for_agent_worker(self):
-        self.add_text("Episode_Start")
-        for cur_episode in range(EpisodeTime):
-            if self._terminal:
-                return
-            self.add_text(f"Episode:{cur_episode}")
-            time_step = self.env.reset()
-            while not time_step.last() and not self._terminal:
-                player_id = time_step.observations["current_player"]
-                if player_id == pyspiel.PlayerId.TERMINAL:
-                    print("Episode_for_agent_worker_TERMINAL", time_step.rewards)
-                    break
-                agent_output = self.agents[player_id].step(time_step)
-                time_step = self.env.step([agent_output.action])
-
-            for agent in self.agents:
-                agent.step(time_step)
-
-        with open(f"2xqlearner_model_0x{EpisodeTime}.pkl", "wb") as f:
-            pickle.dump(self.agents[0], f)
-        with open(f"2xqlearner_model_1x{EpisodeTime}.pkl", "wb") as f:
-            pickle.dump(self.agents[1], f)
-        print("Done")
-
     def eval_against_random_bots(self, env, trained_agents, random_agents, num_episodes):
         """Evaluates `trained_agents` against `random_agents` for `num_episodes`."""
         wins = np.zeros(2)
@@ -644,9 +617,10 @@ class TIANDIJIEGUI:
     def Episode_for_agent_worker2(self):
         self.add_text("Episode_Start")
         for cur_episode in range(EpisodeTime):
-            if cur_episode == 0:
-                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 100)
-                logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
+            logging.info("Starting episode %s", cur_episode)
+            # if cur_episode == 0:
+            #     win_rates = self.eval_against_random_bots(self.env, Q_LEARNER_AGENTS, RANDOM_AGENTS, 100)
+            #     logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
             time_step = self.env.reset()
             if self._terminal:
                 return
@@ -654,24 +628,24 @@ class TIANDIJIEGUI:
                 player_id = time_step.observations["current_player"]
                 if player_id == pyspiel.PlayerId.TERMINAL:
                     break
-                agent_output = self.agents[player_id].step(time_step)
+                agent_output = Q_LEARNER_AGENTS[player_id].step(time_step)
                 time_step = self.env.step([agent_output.action])
 
             # Episode is over, step all agents with final info state.
-            if cur_episode % int(1000) == 0 and cur_episode != 0:
-                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 100)
-                logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
-            elif cur_episode == EpisodeTime:
-                win_rates = self.eval_against_random_bots(self.env, self.agents, self.random_agents, 100)
-                logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
+            # if cur_episode % int(1000) == 0 and cur_episode != 0:
+            #     win_rates = self.eval_against_random_bots(self.env, Q_LEARNER_AGENTS, RANDOM_AGENTS, 100)
+            #     logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
+            # elif cur_episode == EpisodeTime:
+            #     win_rates = self.eval_against_random_bots(self.env, Q_LEARNER_AGENTS, RANDOM_AGENTS, 100)
+            #     logging.info("Starting episode %s, win_rates %s", cur_episode, win_rates)
 
-            for agent in self.agents:
+            for agent in Q_LEARNER_AGENTS:
                 agent.step(time_step)
 
         with open(f"2xqlearner_model_0x{EpisodeTime}.pkl", "wb") as f:
-            pickle.dump(self.agents[0], f)
+            pickle.dump(Q_LEARNER_AGENTS[0], f)
         with open(f"2xqlearner_model_1x{EpisodeTime}.pkl", "wb") as f:
-            pickle.dump(self.agents[1], f)
+            pickle.dump(Q_LEARNER_AGENTS[1], f)
         print("Done")
 
     def on_closing(self):
