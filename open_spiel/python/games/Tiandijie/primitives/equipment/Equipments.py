@@ -13,18 +13,23 @@ from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.RequirementsC
 from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import ModifierAttributes as Ma
 
 
-class Equipment:
-    def __init__(self, equipment_id, modifier_effects: [ModifierEffect], on_event:[EventListener]):
+class EquipmentTemp:
+    def __init__(self, equipment_id, modifier_effects: [], on_event:[]):
         self.equipment_id = equipment_id
         self.modifier_effects = modifier_effects
         self.on_event = on_event
-        self.cool_down = 0
 
+
+class Equipment:
+    def __init__(self, caster_id, equipment_temp):
+        self.caster_id = caster_id
+        self.temp = equipment_temp
+        self.cool_down = 0
 
 
 class Equipments(Enum):
     # 物攻+10%，主动攻击「对战前」施加「封穴」效果，持续1回合。
-    bingchanchuanzhu_chen = Equipment(
+    bingchanchuanzhu_chen = EquipmentTemp(
         "bingchanchuanzhu_chen",
         [ModifierEffect(Rs.always_true, {Ma.attack_percentage: 10})],
         [
@@ -36,9 +41,9 @@ class Equipments(Enum):
             )
         ],
     )
-
+    #
     # 物攻+10%，主动攻击「对战前」施加「封脉」效果，持续1回合。
-    bingchanchuanzhu_yan = Equipment(
+    bingchanchuanzhu_yan = EquipmentTemp(
         "bingchanchuanzhu_yan",
         [ModifierEffect(Rs.always_true, {Ma.attack_percentage: 10})],
         [
@@ -52,7 +57,7 @@ class Equipments(Enum):
     )
 
     # 物防，气血+5%，气血大于等于80%时，遭受攻击时，物理免伤和暴击减伤提升15%
-    yurenjinpei = Equipment(
+    yurenjinpei = EquipmentTemp(
         "yurenjinpei",
         [
             ModifierEffect(
@@ -70,7 +75,7 @@ class Equipments(Enum):
     )
 
     # 法防+5%，气血+5%，在行动结束时，若自身气血低于50%，则恢复35%气血，并驱散1个「有害状态」（间隔1回合触发）
-    xuanqueyaodai = Equipment(
+    xuanqueyaodai = EquipmentTemp(
         "xuanqueyaodai",
         [
             ModifierEffect(
@@ -89,7 +94,7 @@ class Equipments(Enum):
     )
 
     # 全属性+5%，与无克制关系的目标「对战中」伤害额外提升15%
-    zanghaijie = Equipment(
+    zanghaijie = EquipmentTemp(
         "zanghaijie",
         [
             ModifierEffect(
@@ -112,7 +117,7 @@ class Equipments(Enum):
     )
 
     # 治疗效果+15%，对友方使用单体绝学时，附加「披甲」效果，持续1回合。
-    longguxianglian_chen = Equipment(
+    longguxianglian_chen = EquipmentTemp(
         "longguxianglian_chen",
         [ModifierEffect(Rs.always_true, {Ma.heal_percentage: 15})],
         [
@@ -120,13 +125,13 @@ class Equipments(Enum):
                 EventTypes.skill_end,
                 1,
                 partial(Rs.target_is_partner),
-                partial(Effects.add_buffs, buff_list=["piajia"], duration=1),
+                partial(Effects.add_buffs, ["piajia"], 1),
             )
         ],
     )
 
     # 治疗效果+15%，对友方使用单体绝学时，附加「御魔」效果，持续1回合。
-    longguxianglian_yan = Equipment(
+    longguxianglian_yan = EquipmentTemp(
         "longguxianglian_yan",
         [ModifierEffect(Rs.always_true, {Ma.heal_percentage: 15})],
         [
@@ -134,13 +139,13 @@ class Equipments(Enum):
                 EventTypes.skill_end,
                 1,
                 partial(Rs.target_is_partner),
-                partial(Effects.add_buffs, buff_list=["yumo"], duration=1),
+                partial(Effects.add_buffs, ["yumo"], 1),
             )
         ],
     )
 
     # 气血+5%，气血高于50%时，物防+15%
-    pixieyupei_yan = Equipment(
+    pixieyupei_yan = EquipmentTemp(
         "pixieyupei_yan",
         [
             ModifierEffect(Rs.always_true, {Ma.life_percentage: 5}),
@@ -153,7 +158,7 @@ class Equipments(Enum):
     )
 
     # 物防+5%，气血低于50%时，物防+20%
-    pixieyupei_chen = Equipment(
+    pixieyupei_chen = EquipmentTemp(
         "pixieyupei_chen",
         [
             ModifierEffect(Rs.always_true, {Ma.defense_percentage: 5}),
@@ -166,7 +171,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，行动结束时，对自己2格范围内法防属性最高的1个友方施加「御魔」状态，持续1回合。
-    jiaorenbeige_wu = Equipment(
+    jiaorenbeige_wu = EquipmentTemp(
         "jiaorenbeige_wu",
         [ModifierEffect(Rs.always_true, {Ma.life_percentage: 5})],
         [
@@ -180,7 +185,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，行动结束时，对自己2格范围内物攻/法攻属性最高的1个友方施加「神睿」状态，持续1回合。
-    jiaorenbeige_yan = Equipment(
+    jiaorenbeige_yan = EquipmentTemp(
         "jiaorenbeige_yan",
         [ModifierEffect(Rs.always_true, {Ma.life_percentage: 5})],
         [
@@ -194,7 +199,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，行动结束时，对自己2格范围内物防属性最高的1个友方施加「披甲」状态，持续1回合。
-    jiaorenbeige_chen = Equipment(
+    jiaorenbeige_chen = EquipmentTemp(
         "jiaorenbeige_chen",
         [ModifierEffect(Rs.always_true, {Ma.life_percentage: 5})],
         [
@@ -208,7 +213,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，行动结束时，对自己2格范围内会心属性最高的1个友方施加「刺骨」状态，持续1回合。
-    jiaorenbeige_ying = Equipment(
+    jiaorenbeige_ying = EquipmentTemp(
         "jiaorenbeige_ying",
         [ModifierEffect(Rs.always_true, {Ma.life_percentage: 5})],
         [
@@ -222,7 +227,7 @@ class Equipments(Enum):
     )
 
     # 攻防属性+5%，免疫「固定伤害」「封咒」
-    youyaoxiuhuan = Equipment(
+    youyaoxiuhuan = EquipmentTemp(
         "youyaoxiuhuan",
         [
             ModifierEffect(
@@ -240,7 +245,7 @@ class Equipments(Enum):
     )
 
     # 法攻+10%，使用单体绝学时，伤害额外提升15%。
-    tianhezhusha = Equipment(
+    tianhezhusha = EquipmentTemp(
         "tianhezhusha",
         [
             ModifierEffect(
@@ -256,7 +261,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，主动攻击「对战中」物防、法防提升15%
-    qingshenjingyu = Equipment(
+    qingshenjingyu = EquipmentTemp(
         "qingshenjingyu",
         [
             ModifierEffect(
@@ -272,7 +277,7 @@ class Equipments(Enum):
     )
 
     # 法防+7%，气血+7%，行动结束时，若本回合未造成过伤害，则获得「复仇」和「极意I」状态，持续1回合。
-    tianjingfuhun = Equipment(
+    tianjingfuhun = EquipmentTemp(
         "tianjingfuhun",
         [
             ModifierEffect(
@@ -290,7 +295,7 @@ class Equipments(Enum):
     )
 
     # 法攻+8%，使用伤害绝学时，暴击率+20%，暴击伤害+10%
-    zhongyaoyuzhuo = Equipment(
+    zhongyaoyuzhuo = EquipmentTemp(
         "zhongyaoyuzhuo",
         [
             ModifierEffect(
@@ -305,7 +310,7 @@ class Equipments(Enum):
     )
 
     # 物攻+5%，气血+5%，遭受攻击「对战后」，对目标造成一次「固定伤害」（已损失生命的30%）
-    feiquanmingyu = Equipment(
+    feiquanmingyu = EquipmentTemp(
         "feiquanmingyu",
         [
             ModifierEffect(
@@ -323,7 +328,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，行动结束时，对自己直线7格内的一个敌人施加「疲弱」状态，持续1回合。
-    lingyuepeihuan_yan = Equipment(
+    lingyuepeihuan_yan = EquipmentTemp(
         "lingyuepeihuan_yan",
         [ModifierEffect(Rs.always_true, {Ma.life_percentage: 5})],
         [
@@ -337,7 +342,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，行动结束时，对自己直线7格内的一个敌人施加「蚀御」状态，持续1回合。
-    lingyuepeihuan_chen = Equipment(
+    lingyuepeihuan_chen = EquipmentTemp(
         "lingyuepeihuan_chen",
         [ModifierEffect(Rs.always_true, {Ma.life_percentage: 5})],
         [
@@ -351,7 +356,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，行动结束时，对自己直线7格内的一个敌人施加「蚀魔」状态，持续1回合。
-    lingyuepeihuan_wu = Equipment(
+    lingyuepeihuan_wu = EquipmentTemp(
         "lingyuepeihuan_wu",
         [ModifierEffect(Rs.always_true, {Ma.life_percentage: 5})],
         [
@@ -365,7 +370,7 @@ class Equipments(Enum):
     )
 
     # 气血+10%，免疫「禁疗」「固定伤害」
-    huanniaojie = Equipment(
+    huanniaojie = EquipmentTemp(
         "huanniaojie",
         [
             ModifierEffect(
@@ -376,7 +381,7 @@ class Equipments(Enum):
     )
 
     # 气血+5%，自身1格范围内存在其他友方时，法术免伤+10%，遭受暴击率降低10%
-    yanshanpei = Equipment(
+    yanshanpei = EquipmentTemp(
         "yanshanpei",
         [
             ModifierEffect(
@@ -391,7 +396,7 @@ class Equipments(Enum):
     )
 
     # 全属性+5%，使用单体绝学时，伤害提高12%，使用群体绝学时，暴击率提高12%
-    shuangzhijie = Equipment(
+    shuangzhijie = EquipmentTemp(
         "shuangzhijie",
         [
             ModifierEffect(
@@ -418,7 +423,7 @@ class Equipments(Enum):
     )
 
     # 	气血+8%，主动攻击「对战中」，自身物攻提升15%
-    sheshoulingjie_yan = Equipment(
+    sheshoulingjie_yan = EquipmentTemp(
         "sheshoulingjie_yan",
         [
             ModifierEffect(
@@ -436,7 +441,7 @@ class Equipments(Enum):
     )
 
     # 物防、气血+5%，遭受近战攻击「对战前」，对敌方施加「虚损II」和「失智II」状态，持续1回合。
-    xiangsheyinpei_chen = Equipment(
+    xiangsheyinpei_chen = EquipmentTemp(
         "xiangsheyinpei_chen",
         [
             ModifierEffect(
@@ -451,7 +456,7 @@ class Equipments(Enum):
     )
 
     # 摩尼宝珠: 气血 + 5 %，自身周围3格范围内每有1个敌人，免伤、暴击抗性提高3 %（最多提高9 %）。自身气血低于70 % 时，免伤、暴击抗性额外提高6 %。
-    monibaozhu = Equipment(
+    monibaozhu = EquipmentTemp(
         "monibaozhu",
         [
             ModifierEffect(
@@ -481,7 +486,7 @@ class Equipments(Enum):
     )
 
     # 物攻、气血 + 7 %。主动攻击「对战前」50 % 概率对目标施加「乱神II」状态，持续1回合
-    dingbizan = Equipment(
+    dingbizan = EquipmentTemp(
         "dingbizan",
         [
             ModifierEffect(
@@ -503,7 +508,7 @@ class Equipments(Enum):
     )
 
     # 封豨牙悬: 法攻+10%，使用群体绝学时，伤害额外提升15%
-    fengxiyaxuan = Equipment(
+    fengxiyaxuan = EquipmentTemp(
         "fengxiyaxuan",
         [
             ModifierEffect(
@@ -521,7 +526,7 @@ class Equipments(Enum):
     )
 
     # 沧海月明: 气血+5%，遭受近战攻击「对战中」自身物防、法防提升15%。
-    canghaiyueming = Equipment(
+    canghaiyueming = EquipmentTemp(
         "canghaiyueming",
         [
             ModifierEffect(
@@ -539,7 +544,7 @@ class Equipments(Enum):
     )
 
     # 玉玑灵镯·尘: 气血+8%，使用群体绝学时，法攻提升15%
-    yujilingzhuo_chen = Equipment(
+    yujilingzhuo_chen = EquipmentTemp(
         "yujilingzhuo_chen",
         [
             ModifierEffect(
@@ -557,7 +562,7 @@ class Equipments(Enum):
     )
 
     # 玉玑灵镯·烟: 气血+8%，使用单体绝学时，法攻提升15%
-    yujilingzhuo_yan = Equipment(
+    yujilingzhuo_yan = EquipmentTemp(
         "yujilingzhuo_yan",
         [
             ModifierEffect(
@@ -575,7 +580,7 @@ class Equipments(Enum):
     )
 
     # 冰凛银环·烟： 治疗效果+10%，如果本回合使用过治疗绝学，行动结束时为气血最低的1个友方恢复气血（恢复量为施术者法攻的0.5倍）。
-    binglinyinhuan_yan = Equipment(
+    binglinyinhuan_yan = EquipmentTemp(
         "binglinyinhuan_yan",
         [
             ModifierEffect(
@@ -596,7 +601,7 @@ class Equipments(Enum):
     )
 
     # 遭受暴击概率降低40 %，遭受攻击「对战前」30 % 概率对敌人施加「疲弱」状态，持续2回合
-    yuanyujinling = Equipment(
+    yuanyujinling = EquipmentTemp(
         "yuanyujinling",
         [
             ModifierEffect(
@@ -617,7 +622,7 @@ class Equipments(Enum):
     )
 
     # 气血 + 5 %，行动结束时，若自身1格范围内存在其他友方，则对自身和随机1个其他友方施加「神护I」和「辟险」状态，持续1回合。
-    xuanwuyu = Equipment(
+    xuanwuyu = EquipmentTemp(
         "xuanwuyu",
         [
             ModifierEffect(
@@ -638,7 +643,7 @@ class Equipments(Enum):
     )
 
     # 玄朱天护: 法防、气血+5%，遭受远程攻击「对战中」免伤、暴击抗性提升10%
-    xuanzhutianhu = Equipment(
+    xuanzhutianhu = EquipmentTemp(
         "xuanzhutianhu",
         [
             ModifierEffect(
@@ -654,6 +659,67 @@ class Equipments(Enum):
                     Ma.physical_damage_reduction_percentage: 10,
                     Ma.magic_damage_reduction_percentage: 10,
                     Ma.suffer_critical_damage_reduction_percentage: 10,
+                },
+            ),
+        ],
+        [],
+    )
+
+    # 七色缨珞: 物攻+8%，主动造成伤害后，追加一次「固定伤害」（物攻的10%）
+    qiseyingluo = EquipmentTemp(
+        "qiseyingluo",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.attack_percentage: 8,
+                },
+            ),
+        ],
+        [
+            EventListener(
+                EventTypes.damage_end,
+                1,
+                partial(Rs.is_attacker),
+                partial(Effects.add_fixed_damage_by_caster_physical_attack, 0.1),
+            ),
+        ],
+    )
+
+    # 行云流水·尘: 气血+5%，气血50%以上时法防+20%，反之物防+10%
+    xingyunliushui_chen = EquipmentTemp(
+        "xingyunliushui_chen",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 5,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.LifeChecks.self_life_is_higher, 0.5),
+                {
+                    Ma.magic_defense_percentage: 20,
+                },
+            ),
+            ModifierEffect(
+                partial(Rs.LifeChecks.self_life_is_below, 0.5),
+                {
+                    Ma.defense_percentage: 10,
+                },
+            ),
+        ],
+        [],
+    )
+
+    # 琼瞳灵戒: 气血 + 10 %，免疫「禁疗」「移动力降低」
+    qiongtonglingjie = EquipmentTemp(
+        "qiongtonglingjie",
+        [
+            ModifierEffect(
+                Rs.always_true,
+                {
+                    Ma.life_percentage: 10,
                 },
             ),
         ],

@@ -204,7 +204,7 @@ class TIANDIJIEGUI:
                 self.redraw_all()
             else:
                 agent_output = Q_LEARNER_AGENTS[player_id].step(self.time_step, is_evaluation=True)
-                self.time_step = self.env.step([agent_output.action], self.add_text)
+                self.time_step = self.env.step([3], self.add_text)
                 self.redraw_hero_map()
             self.redraw_skill_terrain()
 
@@ -472,13 +472,15 @@ class TIANDIJIEGUI:
             self.config_tooltip_text(self.skill_dic[skill.temp.chinese_name], f"{skill.temp.id}, CD:{skill.cool_down}")
 
         for i, skill in enumerate(hero.enabled_passives):
+            if skill.temp.passive_from == "skill":
+                continue
             temp += 1
-            image_path = f"open_spiel/python/games/Tiandijie/res/{skill.chinese_name}.png"
+            image_path = f"open_spiel/python/games/Tiandijie/res/{skill.temp.chinese_name}.png"
             image = self.load_image(image_path, (100, 100))
-            self.skill_dic[skill.chinese_name] = tk.Button(self.map_container, width=4, height=2)
-            self.skill_dic[skill.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
-            self.skill_dic[skill.chinese_name].config(image=image, width=100, height=100, state="disabled")
-            self.config_tooltip_text(self.skill_dic[skill.chinese_name], f"passive: {skill.passive_id}")
+            self.skill_dic[skill.temp.chinese_name] = tk.Button(self.map_container, width=4, height=2)
+            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
+            self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100, state="disabled")
+            self.config_tooltip_text(self.skill_dic[skill.temp.chinese_name], f"passive: {skill.temp.passive_id}")
 
         for i, skill in enumerate(skill_list):
             if skill in hero.enabled_skills:

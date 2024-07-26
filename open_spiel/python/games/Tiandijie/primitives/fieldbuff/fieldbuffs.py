@@ -464,6 +464,19 @@ class FieldBuffsTemps(Enum):
         "passive"
     )
 
+    #  免疫「晕眩」，且施术者自身反击射程+1（不可驱散）
+    wuyouyu = FieldBuffTemp(
+        "wuyouyu",
+        "suijiu",
+        2,
+        [
+            ModifierEffect(
+                partial(RS.battle_with_caster), {ma.attack_percentage: -20, ma.magic_attack_percentage: -20}
+            )
+        ],
+        [],
+    )
+
     @classmethod
     def get_buff_temp_by_id(cls, buff_id):
         """Return the BuffTemp with the specified ID, or None if not found."""

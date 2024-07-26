@@ -8,8 +8,8 @@ class ModifierAttributes:
     luck = "luck"
     critical_percentage = "critical_percentage"  # 暴击率增加
     critical_percentage_reduction = "critical_reduction"    # 暴击绿减少
-    suffer_critical_percentage = "suffer_critical"  # 受到暴击率
-    suffer_critical_damage_reduction_percentage = "suffer_critical_damage"  # 暴击抗性
+    suffer_critical_percentage = "suffer_critical"  # 受到暴击率（记录被攻击者）
+    suffer_critical_damage_reduction_percentage = "suffer_critical_damage"  # 暴击抗性（记录被攻击者）
     attack_percentage = "attack_percentage"
     skill_damage_percentage = "skill_damage_percentage"
     single_target_skill_damage_percentage = "single_target_skill_damage_percentage"
@@ -38,9 +38,9 @@ class ModifierAttributes:
     be_healed_percentage = "be_healed_percentage"
     life_percentage = "life_percentage"
     luck_percentage = "luck_percentage"
-    critical_damage_percentage = "critical_damage_percentage"   # 暴击率伤害增加
+    critical_damage_percentage = "critical_damage_percentage"   # 暴击率伤害增加(记录攻击者)
     critical_damage_reduction_percentage = (
-        "critical_damage_reduction_percentage"  # 暴击伤害降低
+        "critical_damage_reduction_percentage"  # 暴击伤害降低(记录攻击者)
     )
     fixed_damage_percentage = "fixed_damage_percentage"
     fixed_damage_reduction_percentage = "fixed_damage_reduction_percentage"
@@ -83,6 +83,7 @@ class ModifierAttributes:
     is_double_attack_disabled = "double_attack_disabled"  # 禁用连击
     is_chase_attack_disabled = "chase_attack_disabled"  # 禁用追击
     is_dodge_disabled = "dodge_disabled"  # 禁用闪避
+    is_ignore_disabled = "ignore_disabled"  # 无视闪避
     is_action_disabled = "action_disabled"  # 无法行动
     is_extra_move_disabled = "extra_move_disabled"  # 禁用额外移动
     is_extra_action_disabled = "is_extra_action_disabled"  # 禁用额外行动
@@ -113,6 +114,7 @@ class ModifierAttributes:
     is_attack_to_caster_disable = "is_attack_to_caster_disable"  # 禁止攻击施法者
     is_immunity_fix_damage = "is_immunity_fix_damage"  # 免疫固伤
     is_attribute_reduction_immune = "is_attribute_reduction_immune"  # 免疫属性降低类buff
+    damage_container_percentage = "damage_container_percentage"  # 存储伤害
 
     is_wufangjiejie_disabled = "wufangjiejie_disabled"
     is_jixing_disabled = "jixing_disabled"

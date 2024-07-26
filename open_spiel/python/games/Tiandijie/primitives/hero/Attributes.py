@@ -17,6 +17,7 @@ MAXIMUM_LEVEL = 70
 WUNEI_AMPLIFIERS = (25, 25, 25, 25, 25, 0)
 JISHEN_AMPLIFIERS = (10, 0, 10, 0, 10, 0)
 XINGYAO_AMPLIFIERS = (4, 4, 4, 4, 4, 0)
+SPECIAL_XINGYAO_AMPLIFIERS = (4, 3, 3, 4, 4, 0)
 ATTRIBUTE_NAMES = ["life", "attack", "defense", "magic_attack", "magic_defense", "luck"]
 
 
@@ -155,39 +156,70 @@ def generate_max_level_attributes(
     return Attributes(*value_list)
 
 
-def multiply_attributes(basic_attributes: Attributes, identifier: string) -> Attributes:
+def multiply_attributes(basic_attributes: Attributes, identifier: string, player_id) -> Attributes: #   player_id这个参数只作test用
     profession_values = get_profession_values(identifier)
     xingpan_amplifiers = profession_values.xingpan_amp
     huazhen_amplifiers = profession_values.huazhen_amp
     new_attributes_value_list = []
-    for (
-        attr_name,
-        xingpan_amplifier,
-        huazhen_amplifier,
-        wunei_amplifier,
-        jishen_amplifier,
-        xingyao_amplifier,
-    ) in zip(
-        ATTRIBUTE_NAMES,
-        xingpan_amplifiers,
-        huazhen_amplifiers,
-        WUNEI_AMPLIFIERS,
-        JISHEN_AMPLIFIERS,
-        XINGYAO_AMPLIFIERS,
-    ):
-        current_value = getattr(basic_attributes, attr_name)
-        new_attributes_value_list.append(
-            round(
-                current_value
-                * (
-                    1
-                    + xingpan_amplifier / 100
-                    + huazhen_amplifier / 100
-                    + wunei_amplifier / 100
-                    + jishen_amplifier / 100
-                    + xingyao_amplifier / 100
+    if player_id == 0:
+        for (
+            attr_name,
+            xingpan_amplifier,
+            huazhen_amplifier,
+            wunei_amplifier,
+            jishen_amplifier,
+            xingyao_amplifier,
+        ) in zip(
+            ATTRIBUTE_NAMES,
+            xingpan_amplifiers,
+            huazhen_amplifiers,
+            WUNEI_AMPLIFIERS,
+            JISHEN_AMPLIFIERS,
+            SPECIAL_XINGYAO_AMPLIFIERS,
+        ):
+            current_value = getattr(basic_attributes, attr_name)
+            new_attributes_value_list.append(
+                round(
+                    current_value
+                    * (
+                        1
+                        + xingpan_amplifier / 100
+                        + huazhen_amplifier / 100
+                        + wunei_amplifier / 100
+                        + jishen_amplifier / 100
+                        + xingyao_amplifier / 100
+                    )
+                )
+        )
+    else:
+        for (
+            attr_name,
+            xingpan_amplifier,
+            huazhen_amplifier,
+            wunei_amplifier,
+            jishen_amplifier,
+            xingyao_amplifier,
+        ) in zip(
+            ATTRIBUTE_NAMES,
+            xingpan_amplifiers,
+            huazhen_amplifiers,
+            WUNEI_AMPLIFIERS,
+            JISHEN_AMPLIFIERS,
+            XINGYAO_AMPLIFIERS,
+        ):
+            current_value = getattr(basic_attributes, attr_name)
+            new_attributes_value_list.append(
+                round(
+                    current_value
+                    * (
+                        1
+                        + xingpan_amplifier / 100
+                        + huazhen_amplifier / 100
+                        + wunei_amplifier / 100
+                        + jishen_amplifier / 100
+                        + xingyao_amplifier / 100
+                    )
                 )
             )
-        )
 
     return Attributes(*new_attributes_value_list)

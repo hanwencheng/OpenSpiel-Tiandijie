@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from open_spiel.python.games.Tiandijie.primitives.Passive import Passive
 from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skills
 from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
+from open_spiel.python.games.Tiandijie.primitives.equipment.Equipments import Equipment
 from open_spiel.python.games.Tiandijie.calculation.Range import (
     calculate_diamond_area,
 )
@@ -61,6 +62,7 @@ class Hero:
         self.temp.talent.caster_id = self.id
         self.fabao = []
         self.get_shield = False
+        self.damage_container: float = 0.0
 
     def initialize_attributes(self):
         initial_attributes = generate_max_level_attributes(
@@ -69,19 +71,33 @@ class Hero:
             self.temp.hide_professions,
             self.temp.temp_id,
         )
-        self.initial_attributes = multiply_attributes(initial_attributes, self.temp.hide_professions)
+        self.initial_attributes = multiply_attributes(initial_attributes, self.temp.hide_professions, self.player_id)
         self.current_life = self.initial_attributes.life
 
-    def take_harm(self, attacker, harm_value: float, context):
+    def take_harm(self, attacker, harm_value: float, is_critical, context, action):
         if harm_value > 0:
             self.current_life = get_max_life(self, attacker, context) * self.current_life_percentage/100
             # print("-")
             # print("承伤前：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life, "伤害", harm_value)
             damage = max(harm_value - self.shield, 0)
+            is_damage_container_percentage = get_a_modifier("damage_container_percentage", self, attacker, context)
+            max_life = get_max_life(self, attacker, context)
+
+            if is_damage_container_percentage:
+                max_damage_container = max_life * 0.5
+                act_damage = damage * is_damage_container_percentage/100
+                self.damage_container += damage - act_damage
+                if self.damage_container > max_damage_container:
+                    act_damage = act_damage + self.damage_container - max_damage_container
+                    self.damage_container = max_damage_container
+                damage = act_damage
+
             self.shield = max(self.shield - harm_value, 0)
             self.receive_damage += damage
             self.current_life = ceil(max(self.current_life - damage, 0))
-            self.current_life_percentage = ceil(self.current_life / get_max_life(self, attacker, context) * 100)
+            self.current_life_percentage = ceil(self.current_life / max_life * 100)
+
+            action.record_active_damage[self.id] = [is_critical, damage]
             # print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",self.current_life)
             # print("-")
 
@@ -205,12 +221,15 @@ class Hero:
                         self.actionable_list.append(new_action)
                 elif skill.temp.target_type == SkillTargetTypes.SELF:
                     hero_in_skill = [self]
-                    if skill.temp.skill_type == SkillType.Support:
-                        partner_list = [hero for hero in hero_list if hero.player_id == self.player_id and hero.player_id != self.player_id]
+                    if skill.temp.skill_type in {SkillType.Support, SkillType.Heal}:
+                        partner_list = [hero for hero in hero_list if hero.player_id == self.player_id and hero.id != self.id]
                         hero_in_skill.extend(partner for partner in partner_list if skill.temp.range_instance.check_if_target_in_range(moveable_position, moveable_position, partner.position, context.battlemap))
 
                         new_action = Action(self, hero_in_skill, skill, moveable_position, moveable_position)
-                        new_action.update_action_type(ActionTypes.SELF)
+                        if skill.temp.skill_type == SkillType.Support:
+                            new_action.update_action_type(ActionTypes.SUPPORT)
+                        elif skill.temp.skill_type == SkillType.Heal:
+                            new_action.update_action_type(ActionTypes.HEAL)
                         self.actionable_list.append(new_action)
                     elif skill.temp.skill_type in {SkillType.Physical, SkillType.Magical}:
                         enemy_list = [hero for hero in hero_list if hero.player_id != self.player_id]
@@ -284,5 +303,7 @@ class Hero:
                 break
 
     def init_equipments_caster_id(self):
-        for equipment in self.equipments:
-            equipment.caster_id = self.id
+        equipment_list = []
+        for equipment_temp in self.equipments:
+            equipment_list.append(Equipment(self.id, equipment_temp))
+        self.equipments = equipment_list

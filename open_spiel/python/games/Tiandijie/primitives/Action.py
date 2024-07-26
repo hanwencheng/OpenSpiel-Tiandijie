@@ -75,18 +75,15 @@ class Action:
         else:
             return self.targets[0]
 
-    def update_additional_move(self, actor, additional_move: int, context):
-        move_disabled = get_buff_modifier("is_extra_move_range_disable", actor, None, context)
-        if not move_disabled:
-            self.has_additional_action = True
-            self.additional_move = additional_move
+    def update_additional_move(self, additional_move: int):
+        self.has_additional_action = True
+        self.additional_move = additional_move
 
     def update_additional_skill(self, additional_skill_list):
         self.has_additional_action = True
         self.additional_skill_list = [Skill(0, Skills.get_skill_by_id(skill)) for skill in additional_skill_list]
 
-    def update_additional_action(self, additional_move, context):
-        actor = self.actor
+    def update_additional_action(self, additional_move):
         self.has_additional_action = True
         self.additional_action = additional_move
 

@@ -37,6 +37,7 @@ class SkillTemp:
         effects: List[ModifierEffect] = None,
         event_listeners: List[EventListener] = None,
         is_battle_skill: bool = False,
+        rush=0,
     ):
         if effects is None:
             effects = []
@@ -55,6 +56,7 @@ class SkillTemp:
         self.modifier_effects = effects
         self.event_listeners = event_listeners
         self.is_battle_skill = is_battle_skill
+        self.rush = rush
 
     def is_magic(self):
         return self.skill_type == SkillType.Magical
@@ -62,18 +64,18 @@ class SkillTemp:
 
 class NormalAttackTemp(SkillTemp):
     def __init__(
-        self,
-        skill_temp_id: str,
-        cost: int,
-        skill_element: Elements,
-        skill_type: SkillType,
-        skill_target_type: SkillTargetTypes,
-        max_cool_down: int,
-        distance: Distance,
-        range_value: Range,
-        multiplier: float,
-        effects: List[ModifierEffect] = None,
-        event_listeners: List[SkillListener] = None,
+            self,
+            skill_temp_id: str,
+            cost: int,
+            skill_element: Elements,
+            skill_type: SkillType,
+            skill_target_type: SkillTargetTypes,
+            max_cool_down: int,
+            distance: Distance,
+            range_value: Range,
+            multiplier: float,
+            effects: List[ModifierEffect] = None,
+            event_listeners: List[SkillListener] = None,
     ):
         super().__init__(
             skill_temp_id,
@@ -111,7 +113,7 @@ def is_normal_attack(skill: SkillTemp) -> bool:
 
 
 def create_normal_attack_skill(
-    element: Elements, profession: Professions, is_magic
+        element: Elements, profession: Professions, is_magic
 ) -> NormalAttackTemp:
     if is_magic is None:
         is_magic = is_magic_profession_dict[profession]

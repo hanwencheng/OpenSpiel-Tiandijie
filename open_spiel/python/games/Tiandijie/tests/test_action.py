@@ -29,33 +29,22 @@ class TestHero(unittest.TestCase):
         legal_actions = game_state._legal_actions(game_state._cur_player)
         from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, \
             get_max_life
-
-        zhujin0 = game_context.get_hero_by_id("zhujin0")
+        # get_attack(game_context.get_hero_by_id("fuyayu1"), game_context.get_hero_by_id("fuyayu1"), game_context, True)
+        print(f"现在是玩家{game_state._cur_player}的行动")
         for action in legal_actions:
-            if action.actor.id =="zhujin0" and action.type == ActionTypes.PASS:
+            if action.actor.id =="fuyayu0" and action.type == ActionTypes.NORMAL_ATTACK and action.action_point == (2, 9):
+                print(test_action)
                 test_action = action
                 break
         game_state._apply_action(test_action)
-        print("-----------------------")
-        print(f"现在是玩家{game_state._cur_player}的行动")
-        legal_actions = game_state._legal_actions(game_state._cur_player)
-        for action in legal_actions:
-            if action.actor.id =="zhujin0" and action.skill and action.action_point == (9, 3):
-                test_action = action
-                break
-        game_state._apply_action(test_action)
-        for i in range(9):
-            print("-----------------------")
-            print(f"现在是玩家{game_state._cur_player}的行动")
-            legal_actions = game_state._legal_actions(game_state._cur_player)
-            for action in legal_actions:
-                if action.type == ActionTypes.PASS:
-                    test_action = action
-                    break
-            game_state._apply_action(test_action)
-        print("-----------------------")
-        print(f"现在是玩家{game_state._cur_player}的行动")
-
+        # print("-----------------------")
+        # print(f"现在是玩家{game_state._cur_player}的行动")
+        # legal_actions = game_state._legal_actions(game_state._cur_player)
+        # for action in legal_actions:
+        #     if action.actor.id =="fuyayu1" and action.skill and action.action_point == action.move_point and action.skill.temp.id == "shenqiliuzhuan" and action.move_point == action.initial_position:
+        #         test_action = action
+        #         break
+        # game_state._apply_action(test_action)
 
         # zhenyin1 = game_context.get_hero_by_id("zhenyin1")
         # # for action in legal_actions:
@@ -176,14 +165,14 @@ class TestHero(unittest.TestCase):
         # game_context.battlemap.display_map()
         # print(f"现在是玩家{game_state._cur_player}的行动")
 
-from absl.testing import absltest
-import pyspiel
+# from absl.testing import absltest
+# import pyspiel
 
-
-class DominoesTest(absltest.TestCase):
-    def test_game_from_cc(self):
-        print(111)
-        # """Runs our standard game tests, checking API consistency."""
-        game = pyspiel.load_game("python_tiandijie1")
-        print(game)
-        self.assertEqual(game.num_players(), 2)
+#
+# class DominoesTest(absltest.TestCase):
+#     def test_game_from_cc(self):
+#         print(111)
+#         # """Runs our standard game tests, checking API consistency."""
+#         game = pyspiel.load_game("python_tiandijie1")
+#         print(game)
+#         self.assertEqual(game.num_players(), 2)

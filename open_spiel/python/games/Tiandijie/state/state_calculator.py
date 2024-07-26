@@ -88,10 +88,10 @@ def check_protector(context: Context):
 def check_if_double_attack(action: Action, context: Context):
     target = action.get_defender_hero_in_battle()
     actor = action.actor
-    is_double_attack_disabled = get_modifier(ma.is_double_attack_disabled, actor, target, context)
+    is_double_attack_disabled = get_a_modifier(ma.is_double_attack_disabled, actor, target, context)
     if is_double_attack_disabled:
         return False
-    if_double_attack = get_modifier(ma.is_double_attack, actor, target, context)
+    if_double_attack = get_a_modifier(ma.is_double_attack, actor, target, context, action.skill)
     return if_double_attack
 
 

@@ -14,7 +14,7 @@ from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import ge
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
 
 _NUM_PLAYERS = 2
-_MAX_GAME_LENGTH = 15
+_MAX_GAME_LENGTH = 50
 
 DEFAULT_PARAMS = {'num_distinct_actions': 1000,
                   'num_players': _NUM_PLAYERS,
@@ -40,7 +40,7 @@ GAME_TYPE_KWARGS = {
 _GAME_TYPE = pyspiel.GameType(
     short_name="tiandijie",
     long_name="TianDiJie",
-    utility=pyspiel.GameType.Utility.ZERO_SUM,
+    utility=pyspiel.GameType.Utility.GENERAL_SUM,
     provides_information_state_string=True,
     provides_information_state_tensor=True,
     **GAME_TYPE_KWARGS)
@@ -137,17 +137,15 @@ class TianDiJieState(pyspiel.State):
             for hero in hero_list:
                 event_listener_calculator(actor_instance=hero, counter_instance=None, event_type=EventTypes.game_start, context=self.context)
                 event_listener_calculator(actor_instance=hero, counter_instance=None, event_type=EventTypes.turn_start, context=self.context)
-
         if action is not None and action.has_additional_action:
             actor = action.actor
             self.actionable = True
-            if action.additional_action is not None and action.additional_action >= 0:
-                actor.reset_actionable(self.context, action.additional_action)
-                legal_actions.extend(actor.actionable_list)
-
-            elif action.additional_skill_list and len(action.additional_skill_list) != 0:
+            if action.additional_skill_list and len(action.additional_skill_list) != 0:
                 actions = self.get_additional_skill_action(action.actor, action.additional_skill_list)
-                # actions = get_skill_action(action.actor, action.additional_skill_list, self.context, self.context.heroes)
+                if action.additional_action is not None and action.additional_action >= 0:
+                    for act in actions:
+                        act.has_additional_action = True
+                        act.additional_action = action.additional_action
                 legal_actions.extend(actions)
 
             elif action.additional_move > 0:
@@ -159,7 +157,15 @@ class TianDiJieState(pyspiel.State):
                 for position in movable_range:
                     new_action = Action(action.actor, [], None, position, position)
                     new_action.update_action_type(ActionTypes.MOVE)
+                    if action.additional_action is not None and action.additional_action >= 0:
+                        new_action.additional_action = action.additional_action
+                        new_action.has_additional_action = True
                     legal_actions.append(new_action)
+
+            elif action.additional_action is not None and action.additional_action >= 0:
+                    actor.reset_actionable(self.context, action.additional_action)
+                    legal_actions.extend(actor.actionable_list)
+
         else:
             if not any(hero.actionable for hero in self.context.heroes):    # 所有角色都动过了，开启新的回合
                 if not self.new_turn_event_for_state():
@@ -208,27 +214,28 @@ class TianDiJieState(pyspiel.State):
         """Total reward for each player over the course of the game so far."""
         score0 = self.calculate_score(0)
         score1 = self.calculate_score(1)
-        self._player0_score = round(score0 - score1)
-        return [self._player0_score, -self._player0_score]
+        # print("分数0", score0, "分数1", score1)
+        return [score0, score1]
 
     def calculate_score(self, player):
-        score = 0.0
-        healing_score = 0.0
-        damage_score = 0.0
-        percentage_score = 0.0
-        for hero in self.context.cemetery:
-            if hero.player_id == player:
-                healing_score += hero.receive_healing
-            if hero.player_id != player:
-                # score += 100000
-                damage_score += hero.receive_damage
+        opponent_total_life_percentage = 0.0
+        opponent_hero_count = 0
+
+        # Iterate over the active heroes
         for hero in self.context.heroes:
-            if hero.player_id == player:
-                percentage_score += hero.current_life_percentage*100
-                healing_score += hero.receive_healing
             if hero.player_id != player:
-                damage_score += hero.receive_damage
-        return healing_score + damage_score + percentage_score
+                opponent_total_life_percentage += hero.current_life_percentage
+                opponent_hero_count += 1
+
+        # Calculate the average life percentage of opponent's heroes
+        if opponent_hero_count > 0:
+            opponent_average_life_percentage = opponent_total_life_percentage / opponent_hero_count
+        else:
+            opponent_average_life_percentage = 0.0
+
+        # print("opponent_average_life_percentage:", opponent_average_life_percentage/100)
+        # Calculate the final score
+        return 1 - opponent_average_life_percentage/100
 
     def shows_cemetery(self):
         print("墓地的英灵:")
@@ -311,11 +318,11 @@ class TianDiJieState(pyspiel.State):
 
                 skill_new_distance = (
                         skill.temp.distance.distance_value +
-                        get_a_modifier(actor, None, "active_skill_range", self.context) +
+                        get_a_modifier("active_skill_range", actor, None, self.context) +
                         get_a_modifier(
+                            "single_skill_range" if skill.temp.range_instance.range_value == 0 else "range_skill_range",
                             actor,
                             None,
-                            "single_skill_range" if skill.temp.range_instance.range_value == 0 else "range_skill_range",
                             self.context
                         )
                 )
@@ -335,7 +342,7 @@ class TianDiJieState(pyspiel.State):
                             hero_in_skill.append(actor)
                         new_action = get_new_action(actor, hero_in_skill, skill, actor.position, target.position)
                         actions.append(new_action)
-            return actions
+        return actions
 
 
 class TianDiJieObserver:

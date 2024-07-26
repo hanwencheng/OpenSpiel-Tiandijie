@@ -141,6 +141,15 @@ class RequirementCheck:
         return 0
 
     @staticmethod
+    def target_has_active_skills_not_in_cooldown(
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ) -> int:
+        for skill in target_hero.enabled_skills:
+            if skill.cool_down == 0:
+                return 1
+        return 0
+
+    @staticmethod
     def in_battle_with_non_flyable(
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
@@ -438,14 +447,14 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         action = context.get_last_action()
-        if action.skill and action.total_damage == 0:
+        if action.skill and action.skill.temp.multiplier == 0:
             return 1
         return 0
 
     @staticmethod
     def skill_has_damage(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
         action = context.get_last_action()
-        if action.skill and action.total_damage != 0:
+        if action.skill and action.skill.temp.multiplier != 0:
             return 1
         return 0
 
@@ -460,7 +469,9 @@ class RequirementCheck:
     @staticmethod
     def target_is_single(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
         action = context.get_last_action()
-        return len(action.targets) == 1
+        if action.is_in_battle or action.skill.temp.range_instance.range_value == 0:
+            return 1
+        return 0
 
     @staticmethod
     def skill_is_single_target_damage(
@@ -654,7 +665,6 @@ class RequirementCheck:
             and action.actor == actor_hero
             and action.is_in_battle
         ):
-            print("shuangkai_requires_check", actor_hero.id)
             calculate_remove_buff(buff, actor_hero, context)
             return 1
         return 0
@@ -756,9 +766,7 @@ class RequirementCheck:
             return 1
         return 0
 
-
     # Stone Check
-
 
     @staticmethod
     def self_is_batter_attacker_and_luck_is_higher(
@@ -769,9 +777,7 @@ class RequirementCheck:
             return 1
         return 0
 
-
     # Passive
-
 
     @staticmethod
     def sanquehuisheng_requires_check(
@@ -792,9 +798,7 @@ class RequirementCheck:
             return 1
         return 0
 
-
-    # Stone Check
-
+    # Skill Check
 
     @staticmethod
     def skill_is_used_by_certain_hero(
@@ -804,7 +808,6 @@ class RequirementCheck:
             if actor_hero.temp.temp_id == hero_temp_id:
                 return 1
         return 0
-
 
     # Fabao
 
@@ -824,6 +827,40 @@ class RequirementCheck:
                     primitive.fabao_mark = True
                     return 1
             return 0
+
+    # weapon check
+
+    @staticmethod
+    def haoliweishi_requires_check(
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ):
+        if actor_hero.damage_container > 0:
+            return 1
+        return 0
+
+    @staticmethod
+    def zhenjinbailian_requires_check(
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ):
+        if (
+                RequirementCheck.is_battle_attack_target(actor_hero, target_hero, context, primitive)
+                and RequirementCheck.LifeChecks.self_life_is_below(0.7, actor_hero, target_hero, context, primitive)
+        ):
+            return 1
+        return 0
+
+    @staticmethod
+    def lijiancuihuo_requires_check(
+        actor_hero: Hero, target_hero: Hero, context: Context, primitive
+    ):
+        position = actor_hero.position
+        if (
+                context.battlemap.get_terrain(position).buff
+                and context.battlemap.get_terrain(position).buff.temp.id == "zhenyan"
+                and context.battlemap.get_terrain(position).buff.caster_id[-1] == str(actor_hero.player_id)
+        ):
+            return 1
+        return 0
 
     LifeChecks = LifeRequirementChecks
     PositionChecks = PositionRequirementChecks

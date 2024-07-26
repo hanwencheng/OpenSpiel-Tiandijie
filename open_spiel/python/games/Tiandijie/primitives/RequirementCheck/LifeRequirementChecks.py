@@ -10,11 +10,11 @@ from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 class LifeRequirementChecks:
     @staticmethod
     def life_not_full(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
-        return 1 if actor_hero.current_life < actor_hero.max_life else 0
+        return 1 if actor_hero.current_life_percentage < 100 else 0
 
     @staticmethod
     def life_is_full(actor_hero: Hero, target_hero: Hero, context: Context, primitive) -> int:
-        return 1 if actor_hero.current_life == actor_hero.max_life else 0
+        return 1 if actor_hero.current_life_percentage == 100 else 0
 
     @staticmethod
     def target_life_is_below(
@@ -22,7 +22,7 @@ class LifeRequirementChecks:
     ) -> int:
         return (
             1
-            if target_hero.current_life / target_hero.max_life < percentage / 100
+            if target_hero.current_life_percentage < percentage
             else 0
         )
 
@@ -32,7 +32,7 @@ class LifeRequirementChecks:
     ) -> int:
         return (
             1
-            if target_hero.current_life / target_hero.max_life > percentage / 100
+            if target_hero.current_life_percentage > percentage
             else 0
         )
 
@@ -41,7 +41,7 @@ class LifeRequirementChecks:
         percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return (
-            1 if actor_hero.current_life / actor_hero.max_life > percentage / 100 else 0
+            1 if actor_hero.current_life_percentage > percentage else 0
         )
 
     @staticmethod
@@ -49,7 +49,7 @@ class LifeRequirementChecks:
         percentage: float, actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> int:
         return (
-            1 if actor_hero.current_life / actor_hero.max_life < percentage / 100 else 0
+            1 if actor_hero.current_life_percentage < percentage else 0
         )
 
     @staticmethod

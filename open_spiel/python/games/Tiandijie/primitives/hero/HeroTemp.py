@@ -65,7 +65,7 @@ class HeroTemp:
             "极级": ["魂", "贯甲咒"],
         }
         self.weapon = weapon
-        self.weapon_features = self.weapon.weapon_features
+        self.weapon_features = self.weapon.temp.weapon_features
         # Attributes initialization
         self.current_attributes: Attributes = self.level0_attributes
         self.strength_attributes: Attributes = Attributes(*get_neigong_enum_value(self.hide_professions.name))
@@ -84,4 +84,4 @@ class HeroTemp:
         self.current_life = self.current_attributes.life
 
     def init_jishen(self):
-        return ModifierEffect(partial(Rs.is_battle_attack_target), {"magic_damage_reduction_percentage": 10}) if self.is_normal_attack_magic else ModifierEffect(partial(Rs.is_in_battle), {"physical_damage_reduction_percentage": 10})
+        return ModifierEffect(partial(Rs.is_battle_attack_target), {"magic_damage_reduction_percentage": 10}) if self.is_normal_attack_magic else ModifierEffect(partial(Rs.is_battle_attack_target), {"physical_damage_reduction_percentage": 10})

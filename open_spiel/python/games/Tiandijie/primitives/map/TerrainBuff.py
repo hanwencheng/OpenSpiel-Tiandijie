@@ -23,10 +23,10 @@ class TerrainBuffTemp:
 
 
 class TerrainBuff:
-    def __init__(self, temp: TerrainBuffTemp, duration: int, side: int):
+    def __init__(self, temp: TerrainBuffTemp, duration: int, caster_id: str):
         self.temp = temp
         self.duration = duration
-        self.side = side
+        self.caster_id = caster_id
 
 
 class TerrainBuffTemps(Enum):
@@ -37,8 +37,8 @@ class TerrainBuffTemps(Enum):
                 return buff_temp.value
         return None
 
-    fire = TerrainBuffTemp(
-        "fire",
+    zhenyan = TerrainBuffTemp(
+        "zhenyan",
         True,
         {},
         [
@@ -46,12 +46,12 @@ class TerrainBuffTemps(Enum):
                 EventTypes.action_end,
                 1,
                 Rs.always_true,
-                partial(Effects.take_fixed_damage_by_percentage, percentange=0.1),
+                partial(Effects.take_fixed_damage_by_percentage, percentange=0.24),
             )
         ],
     )
     # 移动力 - 1
-    ice = TerrainBuffTemp("ice", True, [ModifierEffect(partial(Rs.always_true), {Ma.move_range: -1})])
+    shuangdong = TerrainBuffTemp("shuangdong", True, [ModifierEffect(partial(Rs.always_true), {Ma.move_range: -1})])
     # 「剑牢」：敌人无法触发再移动和自身赋予的再行动，暴击率-20%
     jianlao = TerrainBuffTemp("jianlao", True, [ModifierEffect(partial(Rs.always_true), {Ma.critical_percentage: -30})])
     # 相邻1格内开启「限制区域」：敌方移动力消耗 + 1。主动攻击前驱散敌方1个「有益状态」，并施加「燃烧」状态，持续2回合。

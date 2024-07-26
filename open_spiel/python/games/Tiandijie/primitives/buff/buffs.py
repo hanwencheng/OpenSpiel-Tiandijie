@@ -113,7 +113,7 @@ class BuffTemps(Enum):
                 2,
                 RS.always_true,
                 partial(
-                    Effects.add_target_harm_buffs, ["chihuan"], 2
+                    Effects.add_buffs, ["chihuan"], 2
                 ),
             ),
         ],
@@ -526,8 +526,8 @@ class BuffTemps(Enum):
     )
 
     # 御魔I	有益	可驱散	可扩散	可偷取	法防+30%
-    yumou = BuffTemp(
-        "yumou",
+    yumo = BuffTemp(
+        "yumo",
         BuffTypes.Benefit,
         True,
         True,
@@ -3395,7 +3395,7 @@ class BuffTemps(Enum):
                 EventTypes.skill_end,
                 1,
                 partial(RS.skill_is_certain_element, "Dark"),
-                partial(Effects.add_target_harm_buffs, 1),
+                partial(Effects.add_target_random_harm_buff, 1),
             ),
             EventListener(
                 EventTypes.skill_end,
@@ -3490,12 +3490,12 @@ class BuffTemps(Enum):
                     Effects.add_fixed_damage_by_caster_physical_attack, 0.3
                 ),
             ),
-            EventListener(
-                EventTypes.battle_start,
-                1,
-                partial(RS.is_attacker),
-                partial(Effects.add_target_harm_buffs, 2),
-            ),
+            # EventListener(
+            #     EventTypes.battle_start,
+            #     1,
+            #     partial(RS.is_attacker),
+            #     partial(Effects.add_target_harm_buffs, 2),
+            # ),
         ],
     )
 
@@ -3813,7 +3813,7 @@ class BuffTemps(Enum):
                 EventTypes.damage_end,
                 1,
                 partial(RS.is_attacker),
-                partial(Effects.add_target_harm_buffs, 1),
+                partial(Effects.add_target_random_harm_buff, 1),
             ),
         ],
     )
@@ -4815,22 +4815,6 @@ class BuffTemps(Enum):
         ],
     )
 
-    # 霜冻	其他	不可驱散	不可扩散	不可偷取	移动力-1
-    shuangdong = BuffTemp(
-        "shuangdong",
-        BuffTypes.Others,
-        False,
-        False,
-        False,
-        [
-            ModifierEffect(
-                RS.always_true,
-                {ma.move_range: -1},
-            ),
-        ],
-        [],
-    )
-
     # 霜铠	有益	可驱散	可扩散	可偷取	主动攻击「对战中」遭受伤害降低30%。（主动攻击「对战中」受到伤害后消耗）
     shuangkai = BuffTemp(
         "shuangkai",
@@ -5257,6 +5241,12 @@ class BuffTemps(Enum):
                 partial(RS.is_attacker),
                 partial(Effects.add_fixed_damage_by_target_max_life, 0.1),
             ),
+            EventListener(
+                EventTypes.lose_buff_end,
+                1,
+                RS.always_true,
+                partial(Effects.add_self_buffs, ["wendulengque"], 1),
+            ),
         ],
     )
 
@@ -5409,7 +5399,7 @@ class BuffTemps(Enum):
                 EventTypes.skill_end,
                 1,
                 partial(RS.skill_is_certain_element, "Dark"),
-                partial(Effects.add_target_harm_buffs, 1),
+                partial(Effects.add_target_random_harm_buff, 1),
             ),
             EventListener(
                 EventTypes.skill_end,
@@ -5893,6 +5883,27 @@ class BuffTemps(Enum):
         [],
     )
 
+    # 「望归」：行动结束时若处于敌方危险范围和施加者十字7格范围内，则传送至施加者身边（不可驱散，触发后消耗）
+    wanggui = BuffTemp(
+        "wanggui",
+        BuffTypes.Others,
+        False,
+        False,
+        False,
+        [],
+        [],
+    )
+
+    # 「回响」：使用伤害绝学「对战后」若2格内存在其他友方，该绝学冷却 - 1（不可驱散，触发后消耗）
+    huixiang = BuffTemp(
+        "huixiang",
+        BuffTypes.Others,
+        False,
+        False,
+        False,
+        [],
+        [],
+    )
 
     # 火源	其他	不可驱散	不可扩散	不可偷取	最多储存「梦种灯」最大气血的100%，行动结束时消化50%储存总量为3格内其他友方恢复气血（必定在2回合内消化储存总量）
 

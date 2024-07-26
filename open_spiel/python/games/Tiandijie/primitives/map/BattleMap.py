@@ -59,8 +59,8 @@ class BattleMap:
                 init_terrain_type = terrain_type
         self.map[position[1]][position[0]].init_terrain_type(init_terrain_type)
 
-    def add_terrain_buff(self, position, buff, duration):
-        self.map[position[1]][position[0]].buff = TerrainBuff(buff, duration, 1)
+    def add_terrain_buff(self, position, buff, duration, caster_id):
+        self.map[position[1]][position[0]].buff = TerrainBuff(buff, duration, caster_id)
 
     def remove_terrain_buff_by_name(self, buff_id):
         for row in self.map:

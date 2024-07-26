@@ -14,6 +14,7 @@ from open_spiel.python.games.Tiandijie.calculation.OtherlCalculation import (
     calculate_fix_shield,
     calculate_add_buff,
     calculate_additional_action,
+    calculate_additional_move,
 )
 from open_spiel.python.games.Tiandijie.helpers import random_select
 
@@ -273,9 +274,19 @@ class Effects:
         actor: Hero,
         target: Hero,
         context: Context,
-        buff: Buff or Talent,
+        primary,
     ):
         calculate_additional_action(actor, context, additional_move)
+
+    @staticmethod
+    def update_self_additional_move(
+        additional_move: int,
+        actor: Hero,
+        target: Hero,
+        context: Context,
+        primary,
+    ):
+        calculate_additional_move(actor, context, additional_move)
 
     @staticmethod
     def take_effect_of_xiayi(
@@ -314,6 +325,15 @@ class Effects:
         actor_max_life = get_max_life(actor_instance, target_instance, context)
         calculate_fix_heal(
             actor_max_life * multiplier, actor_instance, actor_instance, context
+        )
+
+    @staticmethod
+    def heal_target_by_magic_attack(
+        multiplier: float, actor_instance: Hero, target_instance: Hero, context: Context, primary
+    ):
+        actor_magic_attack = get_attack(actor_instance, target_instance, context, True, True)
+        calculate_fix_heal(
+            actor_magic_attack * multiplier, actor_instance, target_instance, context
         )
 
     @staticmethod
@@ -626,6 +646,7 @@ class Effects:
     ):
         caster = context.get_hero_by_id(buff.caster_id)
         damage = get_max_life(target, actor, context) * multiplier
+        print("战前damage", damage)
         calculate_fix_damage(damage, caster, actor, context)
 
     @staticmethod
@@ -710,7 +731,6 @@ class Effects:
     @staticmethod
     def add_target_harm_buffs(
         buff_temp_ids: List[str],
-        duration: int,
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
@@ -720,7 +740,7 @@ class Effects:
             context.get_harm_buff_temp_by_id(buff_temp_id)
             for buff_temp_id in buff_temp_ids
         ]
-        add_buffs = map(lambda b: Buff(b, duration, actor_instance.id), buff_temps)
+        add_buffs = map(lambda b: Buff(b, 2, actor_instance.id), buff_temps)
         target_instance.buffs.extend(add_buffs)
 
     @staticmethod
@@ -804,6 +824,7 @@ class Effects:
         duration: int,
         range_value: int,
         actor_instance: Hero,
+        target_instance: Hero,
         context: Context,
         primary,
     ):
@@ -815,7 +836,7 @@ class Effects:
             actor_instance.position, actor_instance.position, context.battlemap
         ):
             context.battlemap.add_terrain_buff(
-                position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration
+                position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration, actor_instance.id
             )
 
     @staticmethod
@@ -823,6 +844,7 @@ class Effects:
         terrain_buff: str,
         duration: int,
         range_value: int,
+        actor_instance: Hero,
         target_position: Position,
         context: Context,
     ):
@@ -832,7 +854,7 @@ class Effects:
         buff_range = Range(RangeType.DIAMOND, range_value)
         for position in buff_range.get_area(target_position, target_position, context.battlemap):
             context.battlemap.add_terrain_buff(
-                position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration,
+                position, TerrainBuffTemps.get_buff_temp_by_id(terrain_buff), duration, actor_instance.id
             )
 
     @staticmethod
@@ -1651,7 +1673,7 @@ class Effects:
         actor: Hero,
         target_instance: Hero,
         context: Context,
-        field_buff: FieldBuff,
+        field_buff,
     ):
         _add_field_buffs(
             actor,
@@ -1889,8 +1911,72 @@ class Effects:
             Effects.add_buffs(["shenhu"], 1, actor_instance, hero, context, equipment)
             Effects.add_buffs(["pixian"], 1, actor_instance, hero, context, equipment)
 
-
     # skill effects
+
+    @staticmethod
+    def move_point_by_skill(start_point, end_point, steps, map):
+        def is_occupied(position, map):
+            if not map.get_terrain(position).terrain_type.value[1]:
+                return True
+        start_x, start_y = start_point
+        end_x, end_y = end_point
+
+        direction_x = end_x - start_x
+        direction_y = end_y - start_y
+
+        if direction_x != 0:
+            direction_x = direction_x / abs(direction_x)
+        if direction_y != 0:
+            direction_y = direction_y / abs(direction_y)
+
+        # 移动点
+        new_x = int(start_x + direction_x * steps)
+        new_y = int(start_y + direction_y * steps)
+
+        while new_x < 0 or new_y < 0 or new_x >= map.width or new_y >= map.height or is_occupied((int(new_x), int(new_y)), map):
+            new_x -= direction_x
+            new_y -= direction_y
+        return int(new_x), int(new_y)
+
+    @staticmethod
+    def take_effect_of_tabuyanzhan(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        skill: Skill,
+    ):
+        move_point = context.get_last_action().move_point
+        action_point = context.get_last_action().action_point
+        ending_point = Effects.move_point_by_skill(move_point, action_point, 5, context.battlemap)
+        actor_instance.position = ending_point
+        actor_instance.transfor_enable_skill("tabuyanzhan", "chuanyanglianzhan", 0)
+        enemies = context.get_enemies_in_diamond_range(actor_instance, 2)
+        if len(enemies) <= 3:
+            Effects.update_self_additional_action(2, actor_instance, target_instance, context, skill)
+
+    @staticmethod
+    def take_effect_of_chuanyanglianzhan(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        skill: Skill,
+    ):
+        actor_instance.transfor_enable_skill("chuanyanglianzhan", "tabuyanzhan", 3)
+
+    @staticmethod
+    def take_effect_of_huiyanjianjue(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        skill: Skill,
+    ):
+        targets = context.get_last_action().targets
+        if len(targets) >= 3:
+            for buff in  actor_instance.buffs:
+                if buff.temp.id == "zhuneng":
+                    buff.duration += 2
+        for target in targets:
+            Effects.add_buffs(["liuxue"], 2, actor_instance, target, context, skill)
 
     @staticmethod
     def add_shield_by_self_max_life(
@@ -2051,9 +2137,8 @@ class Effects:
     def set_jinwuqi(actor_instance, target_position, context: Context):
         context.battlemap.set_terrain(target_position, TerrainType.JINWUQI, actor_instance.id)
         Effects.add_terrain_buff_by_target_position(
-            "jinwuqi", 15, 2, target_position, context
+            "jinwuqi", 15, 2, actor_instance, target_position, context
         )
-
 
     @staticmethod
     def take_effect_of_buqi(
@@ -2135,7 +2220,69 @@ class Effects:
             if other_skill.temp.id in {"tianshuangxuewu", "wutianheiyan", "lihuoshenjue"}:
                 other_skill.cool_down = skill.cool_down
 
+    @staticmethod
+    def heal_targets_by_max_life(
+        multiplier: float,
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        skill: Skill,
+    ):
+        target_max_life = get_max_life(target_instance, actor_instance, context)
+        heal_value = target_max_life * multiplier
+        calculate_fix_heal(heal_value, actor_instance, target_instance, context)
+
+    @staticmethod
+    def take_effect_of_niyuanguixin(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        skill: Skill,
+    ):
+        targets = context.get_last_action().targets
+        for target in targets:
+            Effects.reverse_target_harm_buffs(2, actor_instance, target, context, skill)
+            Effects.add_buffs(["guyuan"], 2, actor_instance, target, context, skill)
+            Effects.heal_targets_by_max_life(0.5, actor_instance, target, context, skill)
+
+    @staticmethod
+    def take_effect_of_xiekujiayou(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        skill: Skill,
+    ):
+        Effects.add_self_field_buff(["wuyouyu"], 2, actor_instance, target_instance, context, skill)
+        Effects.add_self_buffs(["huwei"], 2, actor_instance, target_instance, context, skill)
+        partners = context.get_partners_in_diamond_range(actor_instance, 2)
+        partners.append(actor_instance)
+        for partner in partners:
+            Effects.add_buffs(["yumo"], 2, actor_instance, partner, context, skill)
+
+    @staticmethod
+    def take_effect_of_luoshuangjingshen(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        skill: Skill,
+    ):
+        Effects.add_terrain_by_self_position("shuangdong", 2, 2, actor_instance, target_instance, context, skill)
+        if context.get_last_action().total_damage > 0:
+            actor_instance.damage_container = 0.0
+
     # weapon Effects
+
+    @staticmethod
+    def take_effect_of_haoliweishi(
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        weapon
+    ):
+        partners = context.get_partners_in_diamond_range(actor_instance, 3)
+        partners.append(actor_instance)
+        for hero in partners:
+            Effects.add_buffs(["pijia"], 2, actor_instance, hero, context, weapon)
 
     @staticmethod
     def take_effect_of_shenwuhanwei(
@@ -2148,6 +2295,34 @@ class Effects:
         for partner in partners:
             if partner.current_life_percentage > 0.8:
                 Effects.add_buffs(["shuangkai"], 200, actor_instance, partner, context, weapon)
+
+    @staticmethod
+    def take_effect_of_zhenjinbailian(
+            actor_instance: Hero, target_instance: Hero, context: Context, weapon
+    ):
+        enemies = context.get_enemies_in_diamond_range(actor_instance, 3)
+        if not enemies:
+            return
+        for enemy in enemies:
+            Effects.add_fixed_damage_by_caster_physical_attack(
+                0.3, actor_instance, enemy, context, weapon
+            )
+        weapon.cooldown = 2
+
+    @staticmethod
+    def take_effect_of_juehensugu(
+        actor_instance: Hero, target_instance: Hero, context: Context, weapon
+    ):
+        enemies = context.get_enemies_in_diamond_range(actor_instance, 5)
+        count = 0
+        for enemy in enemies:
+            for buff in enemy.buffs:
+                if buff.temp.type == BuffTypes.Harm:
+                    count += 1
+                    break
+            if count >= 5:
+                break
+        Effects.heal_self(count*0.1, actor_instance, actor_instance, context, weapon)
 
     # stone Effects
 
@@ -2172,12 +2347,34 @@ class Effects:
             benfit_buff = random_select(context.benefit_buffs, 1)[0]
             Effects.add_buffs([benfit_buff], 2, actor_instance, target_instance, context, stone)
 
-
     @staticmethod
     def take_effect_of_shierpinliantai(
         actor_instance: Hero,
         target_instance: Hero,
         context: Context,
         primary,
+    ):
+        pass
+
+    # Passive Effects
+
+    @staticmethod
+    def take_effect_of_tongmai(
+        actor_instance: Hero, target_instance: Hero, context: Context, passive
+    ):
+        partners = context.get_all_partners(actor_instance)
+        partner = partners[0]
+        for p in partners:
+            if p.current_life_percentage < partner.current_life_percentage:
+                partner = p
+        temp_percentage = (actor_instance.current_life_percentage + partner.current_life_percentage)/2
+        actor_instance.current_life_percentage = temp_percentage
+        partner.current_life_percentage = temp_percentage
+        for target in [actor_instance, partner]:
+            Effects.heal_target_by_magic_attack(1, actor_instance, target, context, passive)
+
+    @staticmethod
+    def take_effect_of_fengshaganlinshu(
+        actor_instance: Hero, target_instance: Hero, context: Context, primary
     ):
         pass

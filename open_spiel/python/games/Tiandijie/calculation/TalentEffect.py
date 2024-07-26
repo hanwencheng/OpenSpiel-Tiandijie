@@ -21,6 +21,7 @@ from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
 from open_spiel.python.games.Tiandijie.primitives.skill.skills import Skills
 from open_spiel.python.games.Tiandijie.primitives.skill.Skill import Skill
 from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import TerrainType
+from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 from collections import Counter
 from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
@@ -305,11 +306,18 @@ class TalentEffects:
 
     @staticmethod
     def take_effect_of_shangshandaoxin(
-        actor_instance: Hero, target_instance: Hero, context: Context, talent: Talent
+        state: int, actor_instance: Hero, target_instance: Hero, context: Context, talent
     ):
-        talent.cooldown = 2
-        # Effects.add_extra_skill("")
-        pass
+        if state == 1:
+            if talent.cooldown > 0:
+                return
+            talent.cooldown = 2
+            Effects.add_extra_skill(["guanqie", "shouye"], actor_instance, target_instance, context, talent)
+        else:
+            # 并复制身上的3个「有益状态」给目标。
+            buff_list = random_select([buff for buff in actor_instance.buffs if buff.temp.type == BuffTypes.Benefit], 3)
+            for buff in buff_list:
+                Effects.add_buffs([buff.temp.id], buff.duration, actor_instance, target_instance, context, talent)
 
     @staticmethod
     def take_effect_of_nuxiongzhiwei(
@@ -392,7 +400,7 @@ class TalentEffects:
                     0.3, actor_instance, enemy, context, talent
                 )
         Effects.add_terrain_buff_by_target_position(
-            "ice", 2, 1, target_instance.position, context
+            "ice", 2, 1, actor_instance, target_instance.position, context
         )
 
     @staticmethod
@@ -493,3 +501,24 @@ class TalentEffects:
                 Effects.add_fixed_damage_by_caster_physical_attack(
                     0.9, actor_instance, target_enemy, context, talent
                 )
+
+    @staticmethod
+    def take_effect_of_youmengminqi(
+        actor_instance: Hero, target_instance: Hero, context: Context, talent: Talent
+    ):
+        enemies = context.get_enemies_in_diamond_range(actor_instance, 3)
+        if not enemies:
+            return
+        elif len(enemies) > 4:
+            enemies = random_select(enemies, 4)
+        for enemy in enemies:
+            Effects.add_target_random_harm_buff(2, actor_instance, enemy, context, talent)
+
+    @staticmethod
+    def take_effect_of_hanlinhuachou(
+        actor_instance: Hero, target_instance: Hero, context: Context, talent: Talent
+    ):
+        partners = random_select(context.get_partners_in_diamond_range(actor_instance, 3), 4)
+        partners.append(actor_instance)
+        for partner in partners:
+            Effects.add_buffs(["shenrui"], 2, actor_instance, partner, context, talent)

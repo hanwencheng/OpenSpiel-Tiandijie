@@ -108,6 +108,7 @@ class TalentRequirementChecks:
                 actor_hero,
                 target_hero,
                 context,
+                talent
             ):
                 talent.cooldown = 3
                 return 1
@@ -117,6 +118,7 @@ class TalentRequirementChecks:
                 actor_hero,
                 target_hero,
                 context,
+                talent
             ):
                 talent.cooldown = 3
                 return 1
@@ -153,11 +155,7 @@ class TalentRequirementChecks:
             return 1
         return 0
 
-
-
-
     # Talent Field buffs
-
 
     @staticmethod
     def huzongqianli_requires_check(

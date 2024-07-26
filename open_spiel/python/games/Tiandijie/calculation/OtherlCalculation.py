@@ -24,7 +24,8 @@ def calculate_skill_heal(
 
         actual_healing = magic_attack * skill_multiplier * get_fixed_heal_modifier(actor_instance, target_instance, context) * (1 + LIEXING_HEAL_INCREASE / 100)
         actual_healing = round(actual_healing)
-        action.record_heal[target_instance.id] = actual_healing
+        if actual_healing != 0:
+            action.record_heal[target_instance.id] = actual_healing
         target_instance.take_healing(actual_healing, context)
 
 
@@ -34,6 +35,8 @@ def calculate_fix_heal(
     from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
     is_heal_disabled = get_buff_modifier("is_heal_disabled", target_instance, actor_instance, context)
     if not is_heal_disabled:
+        if context.get_last_action():
+            context.get_last_action().record_heal[target_instance.id] = heal
         target_instance.take_healing(heal, context)
 
 
@@ -81,7 +84,9 @@ def calculate_add_buff(
             prevent = True
     if not prevent:
         new_buff = Buff(buff_temp, duration, caster.id, level)
-        new_buff.duration = duration + 1
+        action = context.get_last_action()
+        if action.actor == caster and target == caster:
+            new_buff.duration = duration + 1
         existing_buff = next(
             (buff for buff in target.buffs if buff.temp.id == new_buff.temp.id), None
         )
@@ -143,4 +148,14 @@ def calculate_additional_action(
     if move_range is None:
         move_range = actor.temp.profession.value[2] + get_a_modifier(actor, None, "move_range", context)
     action = context.get_last_action()
-    action.update_additional_action(move_range, context)
+    action.update_additional_action(move_range)
+
+def calculate_additional_move(
+    actor: Hero, context: Context, move_range,
+):
+    from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
+    action_disabled = get_buff_modifier("is_extra_move_range_disable", actor, None, context)
+    if action_disabled:
+        return
+    action = context.get_last_action()
+    action.update_additional_move(move_range)

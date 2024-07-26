@@ -153,18 +153,29 @@ def calculation_events(
 #  若先攻： 先攻 -> 攻击 -> 连击（不触发追击）
 #  非先攻： 攻击 -> 连击 -> 反击 —> 追击
 def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
+
+    if action.skill:
+        event_listener_calculator(
+            actor, target, EventTypes.skill_start, context
+        )
+
+
     event_listener_calculator(actor, target, EventTypes.battle_start, context)
     event_listener_calculator(target, actor, EventTypes.battle_start, context)
     if check_if_counterattack_first(action, context):       # 先攻
         counterattack_actions(action, context, True)  # take damage
         if is_hero_live(actor, target, context):
-            attack_or_skill_events(actor, target, action, context, apply_damage)
+            calculation_events(
+                actor, target, action, context, apply_damage
+            )
             if is_hero_live(actor, target, context):
                 if check_if_double_attack(action, context):
                     double_attack_event(context)
         event_listener_calculator(actor, target, EventTypes.battle_end, context)
     else:
-        attack_or_skill_events(actor, target, action, context, apply_damage)
+        calculation_events(
+            actor, target, action, context, apply_damage
+        )
         if is_hero_live(target, target, context):
             if check_if_double_attack(action, context):     # 连击
                 double_attack_event(context)
@@ -176,7 +187,15 @@ def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
                     pass
         event_listener_calculator(actor, target, EventTypes.battle_end, context)
         event_listener_calculator(target, actor, EventTypes.battle_end, context)
+
     is_hero_live(actor, target, context)
+
+    if action.skill:
+        event_listener_calculator(
+            actor, target, EventTypes.skill_end, context
+        )
+
+
 
 
 def attack_or_skill_events(
@@ -245,8 +264,8 @@ def apply_action(context: Context, action: Action):
 
     if not action.actionable:
         return
-    if action.has_additional_action:
-        action.has_additional_action = False
+    # if action.has_additional_action:
+    #     action.has_additional_action = False
 
     actor = action.actor
     context.add_action(action)

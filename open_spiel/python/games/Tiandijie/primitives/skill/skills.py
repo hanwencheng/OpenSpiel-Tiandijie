@@ -229,7 +229,7 @@ class Skills(Enum):
         "zaizhouhaoling",
         "载舟号令",
         2,
-        Elements.NONE,
+        Elements.WATER,
         SkillType.Support,
         SkillTargetTypes.SELF,
         3,
@@ -255,7 +255,7 @@ class Skills(Enum):
         "liwankuanglan",
         "力挽狂澜",
         2,
-        Elements.NONE,
+        Elements.WATER,
         SkillType.Heal,
         SkillTargetTypes.PARTNER,
         3,
@@ -325,7 +325,7 @@ class Skills(Enum):
         "juezhanwushuang",
         "决战无双",
         2,
-        Elements.NONE,
+        Elements.FIRE,
         SkillType.EFFECT_ENEMY,
         SkillTargetTypes.ENEMY,
         2,
@@ -488,7 +488,7 @@ class Skills(Enum):
         "shiguizhaohuan",
         "式鬼召唤",
         2,
-        Elements.NONE,
+        Elements.THUNDER,
         SkillType.Support,
         SkillTargetTypes.TERRAIN,
         4,
@@ -540,7 +540,7 @@ class Skills(Enum):
         "jingangfalun",
         "金刚法轮",
         2,
-        Elements.NONE,
+        Elements.THUNDER,
         SkillType.Physical,
         SkillTargetTypes.ENEMY,
         3,
@@ -654,5 +654,350 @@ class Skills(Enum):
                 partial(Effects.take_effect_of_luohouzhenfa),
             )
         ],
+        True,
+    )
+
+    # 关切    消耗： -
+    # 类别：支援     冷却：-
+    # 射程：2格     范围：单体
+    # 主动使用，选择2格范围内的1个其他友方，目标和自身获得「回响」状态。
+    guanqie = SkillTemp(
+        "guanqie",
+        "关切",
+        0,
+        Elements.WATER,
+        SkillType.Support,
+        SkillTargetTypes.PARTNER,
+        0,
+        Distance(DistanceType.NORMAL, 2),
+        Range(RangeType.POINT, 0, 1, 1),
+        0,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_buffs, ["huixiang"], 200),
+            ),
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_self_buffs, ["huixiang"], 200),
+            )
+        ],
+    )
+
+    # 授业      消耗： -
+    # 类别：支援       冷却：-
+    # 射程：2格       范围：单体
+    # 主动使用，选择2格范围内的1个其他友方，施加「望归」和「迅捷I」状态，持续2回合。
+    shouye = SkillTemp(
+        "shouye",
+        "授业",
+        0,
+        Elements.WATER,
+        SkillType.Support,
+        SkillTargetTypes.PARTNER,
+        0,
+        Distance(DistanceType.NORMAL, 2),
+        Range(RangeType.POINT, 0, 1, 1),
+        0,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_buffs, ["wanggui", "xunjie"], 2),
+            ),
+        ],
+    )
+
+    # 逆元归心	 消耗： 2
+    # 类别：治疗	 冷却：3回合
+    # 射程：自身	 范围：菱形3格
+    # 主动使用，反转范围内所有友方身上2个「有害状态」，恢复目标最大气血的50%并施加「固元I」状态，持续2回合。绝学后若自身满血则额外获得再行动（2格）。
+    niyuanguixin = SkillTemp(
+        "niyuanguixin",
+        "逆元归心",
+        2,
+        Elements.WATER,
+        SkillType.Heal,
+        SkillTargetTypes.SELF,
+        3,
+        Distance(DistanceType.NORMAL, 0),
+        Range(RangeType.DIAMOND, 3, 7, 7),
+        0,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_start,
+                2,
+                Rs.always_true,
+                partial(Effects.take_effect_of_niyuanguixin),
+            ),
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.LifeChecks.life_is_full),
+                partial(Effects.update_self_additional_action, 2),
+            )
+        ],
+    )
+
+    # 悟真达意        消耗： 2
+    # 类别：法攻伤害     冷却：3回合
+    # 射程：3格       范围：单体
+    # 攻击单个敌人，造成1.6倍伤害，「对战前」获得「精准」状态，持续2回合，若目标携带不在冷却中的主动绝学，本次攻击目标无法闪避和反击。
+    wuzhendayi = SkillTemp(
+        "wuzhendayi",
+        "悟真达意",
+        2,
+        Elements.WATER,
+        SkillType.Magical,
+        SkillTargetTypes.ENEMY,
+        3,
+        Distance(DistanceType.NORMAL, 3),
+        Range(RangeType.POINT, 0, 1, 1),
+        1.6,
+        [
+            ModifierEffect(partial(Rs.target_has_active_skills_not_in_cooldown), {Ma.is_ignore_disabled: True}),
+
+        ],
+        [
+            EventListener(
+                EventTypes.battle_start,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_self_buffs, ["jingzhun"], 2),
+            )
+        ],
+        True,
+    )
+
+    # 风砂甘霖术	 消耗： 2
+    #  类别：治疗	 冷却：4回合
+    #  射程：自身	 范围：菱形4格
+    # [主动]驱散范围内所有友方身上4个「有害状态」，并恢复其气血（恢复量为施术者法攻的1倍）。
+    fengshaganlinshu = SkillTemp(
+        "fengshaganlinshu",
+        "风砂甘霖术",
+        2,
+        Elements.WATER,
+        SkillType.Heal,
+        SkillTargetTypes.SELF,
+        4,
+        Distance(DistanceType.NORMAL, 0),
+        Range(RangeType.DIAMOND, 4, 9, 9),
+        1,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.remove_partner_harm_buffs_in_range, 4, 4),
+            ),
+        ],
+    )
+
+    #  卸苦解忧	 消耗： 2
+    #  类别：主动	 冷却：2回合
+    #  射程：自身	 范围：单体
+    # 主动使用，护卫范围提高到2格，自身周围2格张开领域「无忧域」，并对2格范围内所有友方施加「御魔I」状态，持续2回合。
+    xiekujieyou = SkillTemp(
+        "xiekujieyou",
+        "卸苦解忧",
+        2,
+        Elements.NONE,
+        SkillType.Support,
+        SkillTargetTypes.SELF,
+        2,
+        Distance(DistanceType.NORMAL, 0),
+        Range(RangeType.POINT, 0, 1, 1),
+        0,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.take_effect_of_xiekujiayou),
+            ),
+        ],
+    )
+
+    # 落霜惊神	 消耗： 2
+    # 类别：物攻伤害	 冷却：3回合
+    # 射程：自身	 范围：菱形3格
+    # 对范围内所有敌人造成0.5倍伤害，自身获得「护卫」状态，持续2回合。若造成伤害，则消耗「贮酿」状态，制造「霜冻」地形，持续2回合。
+    luoshuangjingshen = SkillTemp(
+        "luoshuangjingshen",
+        "落霜惊神",
+        2,
+        Elements.WATER,
+        SkillType.Physical,
+        SkillTargetTypes.SELF,
+        3,
+        Distance(DistanceType.NORMAL, 0),
+        Range(RangeType.DIAMOND, 3, 5, 5),
+        0.5,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.take_effect_of_luoshuangjingshen),
+            ),
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                Rs.always_true,
+                partial(Effects.add_self_buffs, ["huwei"], 2),
+            ),
+        ],
+    )
+
+    # 铸焰神剑	 消耗： 2
+    # 类别：物攻伤害	 冷却：2回合
+    # 射程：1格	 范围：单体
+    # 攻击单个敌人，造成1.5倍伤害，「对战前」驱散目标2个「有益状态」，「对战后」恢复自身50%气血。
+    zhuyanshenjian = SkillTemp(
+        "zhuyanshenjian",
+        "铸焰神剑",
+        2,
+        Elements.FIRE,
+        SkillType.Physical,
+        SkillTargetTypes.ENEMY,
+        2,
+        Distance(DistanceType.NORMAL, 1),
+        Range(RangeType.POINT, 0, 1, 1),
+        1.5,
+        [],
+        [
+            EventListener(
+                EventTypes.battle_start,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.remove_target_benefit_buffs, 2),
+            ),
+            EventListener(
+                EventTypes.battle_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.heal_self, 0.5),
+            ),
+        ],
+        True,
+    )
+
+    # 回焱剑诀	 消耗： 2
+    # 类别：物攻伤害	 冷却：3回合
+    # 射程：自身	 范围：菱形3格
+    # 对范围内所有敌人造成0.5倍伤害，施加「流血」状态，持续2回合。若命中目标大于等于3个，则使「注能」状态持续回合+2。
+    huiyanjianjue = SkillTemp(
+        "huiyanjianjue",
+        "回焱剑诀",
+        2,
+        Elements.FIRE,
+        SkillType.Physical,
+        SkillTargetTypes.SELF,
+        3,
+        Distance(DistanceType.NORMAL, 0),
+        Range(RangeType.DIAMOND, 3, 5, 5),
+        0.5,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.take_effect_of_huiyanjianjue),
+            ),
+        ],
+    )
+
+    # 踏步炎斩        消耗： 2
+    # 类别：物攻伤害     冷却：3回合
+    # 射程：自身       范围：直线5格
+    # 向前穿刺并到达作用范围（5格）最远可到达的格子上，对范围内所有敌人造成0.5倍伤害，并驱散1个「有益状态」，若自身2格范围内少于3个敌人，则获得再行动（2格）。使用后切换为「穿阳连斩」。
+    tabuyanzhan = SkillTemp(
+        "tabuyanzhan",
+        "踏步炎斩",
+        2,
+        Elements.FIRE,
+        SkillType.Physical,
+        SkillTargetTypes.DIRECTION,
+        3,
+        Distance(DistanceType.NORMAL, 1),
+        Range(RangeType.DIRECTIONAL, 5, 5, 1),
+        0.5,
+        [],
+        [
+            EventListener(
+                EventTypes.skill_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.take_effect_of_tabuyanzhan),
+            ),
+        ],
+        False,
+    )
+
+    # 穿阳连斩        消耗： 2
+    # 类别：物攻伤害         冷却：-
+    # 射程：2格       范围：单体
+    # 攻击单个敌人，造成0.6倍伤害，并发动「连击」（1倍伤害），「对战前」施加「封穴」「蚀御I」状态，持续2回合。使用后切换为「踏步炎斩」。
+    chuanyanglianzhan = SkillTemp(
+        "chuanyanglianzhan",
+        "穿阳连斩",
+        2,
+        Elements.FIRE,
+        SkillType.Physical,
+        SkillTargetTypes.ENEMY,
+        0,
+        Distance(DistanceType.NORMAL, 2),
+        Range(RangeType.POINT, 0, 1, 1),
+        0.6,
+        [
+            ModifierEffect(Rs.always_true, {Ma.is_double_attack: 1}),
+        ],
+        [
+            EventListener(
+                EventTypes.battle_start,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.add_buffs, ["fengxue", "shiyu"], 2),
+            ),
+            EventListener(
+                EventTypes.battle_end,
+                1,
+                partial(Rs.always_true),
+                partial(Effects.take_effect_of_chuanyanglianzhan),
+            ),
+        ],
+        True,
+    )
+
+    # 无方飞剑        消耗： 2
+    # 类别：物攻伤害         冷却：2回合
+    # 射程：2格       范围：单体
+    # 攻击单个敌人，造成1.5倍伤害。
+    wufangfeijian = SkillTemp(
+        "wufangfeijian",
+        "无方飞剑",
+        2,
+        Elements.NONE,
+        SkillType.Physical,
+        SkillTargetTypes.ENEMY,
+        2,
+        Distance(DistanceType.NORMAL, 2),
+        Range(RangeType.POINT, 0, 1, 1),
+        1.5,
+        [],
+        [],
         True,
     )

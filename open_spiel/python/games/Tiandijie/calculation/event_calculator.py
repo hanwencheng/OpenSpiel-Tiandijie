@@ -50,7 +50,7 @@ def event_listener_calculator(
     current_action = context.get_last_action()
     if current_action is None and event_type != EventTypes.game_start and event_type != EventTypes.turn_start:
         return
-    # 有额外技能的话不结算action_end，在额外技能处结算action_end, 且在释放技能的action无需计算before_action_end
+    # 有额外技能的话不结算action_end，在额外技能处结算action_end(54), 且在释放技能的action无需计算before_action_end(63)
     ignore_event_types = {EventTypes.action_end, EventTypes.before_action_end}
     if event_type in ignore_event_types:
         if current_action.additional_skill_list is not None:
@@ -62,6 +62,7 @@ def event_listener_calculator(
 
     if event_type == EventTypes.before_action_end and len(context.actions) >= 2 and context.actions[-2].actor.id == actor_instance.id and context.actions[-2].additional_skill_list is not None:
         return
+
 
     # Calculated Buffs
     for buff in actor_instance.buffs:
@@ -113,7 +114,7 @@ def event_listener_calculator(
 
     # Calculate Talents
     talent = actor_instance.temp.talent
-    for event_listener in talent.event_listeners:
+    for event_listener in talent.temp.event_listeners:
         if event_listener.event_type == event_type:
             event_listener_containers.append(
                 EventListenerContainer(event_listener, talent)
@@ -121,10 +122,10 @@ def event_listener_calculator(
 
     # Calculate Weapon
     weapon = actor_instance.temp.weapon
-    for event_listener in weapon.on_event:
+    for event_listener in weapon.temp.on_event:
         if event_listener.event_type == event_type:
             event_listener_containers.append(
-                EventListenerContainer(event_listener, talent)
+                EventListenerContainer(event_listener, weapon)
             )
 
     # Calculate suit Stone
@@ -144,7 +145,7 @@ def event_listener_calculator(
     # Calculate Passives
     passives = actor_instance.enabled_passives
     for passive in passives:
-        passive_event_listeners: List[EventListener] = passive.on_event
+        passive_event_listeners: List[EventListener] = passive.temp.on_event
         for event_listener in passive_event_listeners:
             if event_listener.event_type == event_type:
                 event_listener_containers.append(
@@ -154,7 +155,7 @@ def event_listener_calculator(
     # Calculate Passives
     equipments = actor_instance.equipments
     for equipment in equipments:
-        for event_listener in equipment.on_event:
+        for event_listener in equipment.temp.on_event:
             if event_listener.event_type == event_type:
                 event_listener_containers.append(
                     EventListenerContainer(event_listener, equipment)
@@ -228,6 +229,7 @@ def action_end_event(actor_instance: 'Hero', context):
         actor_instance.field_buffs.remove(buff)
 
     actor_instance.temp.talent.cooldown -= 1
+
     if actor_instance.temp.talent.cooldown < 0:
         actor_instance.temp.talent.cooldown = 0
 
