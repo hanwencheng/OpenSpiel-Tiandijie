@@ -21,8 +21,8 @@ class Weapon:
 
 
 class WeaponTemp:
-    def __init__(self, weapon_id, name, modifier_effects, on_event, weapon_features):
-        self.weapon_id = weapon_id
+    def __init__(self, id, name, modifier_effects, on_event, weapon_features):
+        self.id = id
         self.name = name
         self.modifier_effects = modifier_effects
         self.on_event = on_event

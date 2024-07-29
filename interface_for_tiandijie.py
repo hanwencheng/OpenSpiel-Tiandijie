@@ -489,7 +489,7 @@ class TIANDIJIEGUI:
             self.skill_dic[skill.temp.chinese_name] = tk.Button(self.map_container, width=PICTURE_WIDTH, height=PICTURE_HEIGHT)
             self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=SPACING_X, pady=SPACING_Y)
             self.skill_dic[skill.temp.chinese_name].config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT, state="disabled")
-            self.config_tooltip_text(self.skill_dic[skill.temp.chinese_name], f"passive: {skill.temp.passive_id}")
+            self.config_tooltip_text(self.skill_dic[skill.temp.chinese_name], f"passive: {skill.temp.id}")
 
         for i, skill in enumerate(skill_list):
             if skill in hero.enabled_skills:

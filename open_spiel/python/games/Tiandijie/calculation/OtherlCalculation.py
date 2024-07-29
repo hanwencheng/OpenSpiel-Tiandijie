@@ -24,19 +24,22 @@ def calculate_skill_heal(
 
         actual_healing = magic_attack * skill_multiplier * get_fixed_heal_modifier(actor_instance, target_instance, context) * (1 + LIEXING_HEAL_INCREASE / 100)
         actual_healing = round(actual_healing)
-        if actual_healing != 0:
-            action.record_heal[target_instance.id] = actual_healing
+        context.get_last_action().record_action.append(
+            {"actor_id": target_instance.id, "value_type": "heal", "value": actual_healing, "from": skill.temp.id}
+        )
         target_instance.take_healing(actual_healing, context)
 
 
 def calculate_fix_heal(
-    heal, actor_instance: Hero, target_instance: Hero, context: Context
+    heal, actor_instance: Hero, target_instance: Hero, context: Context, heal_from
 ):    # 固定治疗不受词条影响
     from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import get_buff_modifier
     is_heal_disabled = get_buff_modifier("is_heal_disabled", target_instance, actor_instance, context)
     if not is_heal_disabled:
         if context.get_last_action():
-            context.get_last_action().record_heal[target_instance.id] = heal
+            context.get_last_action().record_action.append(
+                {"actor_id": target_instance.id, "value_type": "heal", "value": heal, "from": heal_from}
+            )
         target_instance.take_healing(heal, context)
 
 

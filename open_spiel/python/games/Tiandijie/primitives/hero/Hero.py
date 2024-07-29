@@ -74,7 +74,7 @@ class Hero:
         self.initial_attributes = multiply_attributes(initial_attributes, self.temp.hide_professions, self.player_id)
         self.current_life = self.initial_attributes.life
 
-    def take_harm(self, attacker, harm_value: float, is_critical, context, action):
+    def take_harm(self, attacker, harm_value: float, context):
         if harm_value > 0:
             max_life = self.get_max_life(context)
             current_life = self.get_current_life(context, attacker)
@@ -96,7 +96,6 @@ class Hero:
             self.receive_damage += damage
             self.current_life = ceil(max(current_life - damage, 0))
 
-            action.record_active_damage[self.id] = [is_critical, damage]
             print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",current_life)
             print("-")
 

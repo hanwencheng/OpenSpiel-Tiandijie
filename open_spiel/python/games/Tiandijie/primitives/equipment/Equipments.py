@@ -14,8 +14,8 @@ from open_spiel.python.games.Tiandijie.calculation.ModifierAttributes import Mod
 
 
 class EquipmentTemp:
-    def __init__(self, equipment_id, modifier_effects: [], on_event:[]):
-        self.equipment_id = equipment_id
+    def __init__(self, id, modifier_effects: [], on_event:[]):
+        self.id = id
         self.modifier_effects = modifier_effects
         self.on_event = on_event
 

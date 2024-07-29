@@ -71,7 +71,7 @@ class TalentEffects:
     ):
         talent_owner = talent.caster_id
         damage = get_attack(talent_owner, actor_instance, context, True) * multiplier
-        calculate_fix_damage(damage, talent_owner, actor_instance, context)
+        calculate_fix_damage(damage, talent_owner, actor_instance, context, talent.temp.id)
 
     @staticmethod
     def add_fixed_damage_by_talent_owner_physical_and_magic_attack(
@@ -83,7 +83,7 @@ class TalentEffects:
     ):
         talent_owner = talent.caster_id
         damage = get_attack(talent_owner, actor_instance, context, True) * multiplier
-        calculate_fix_damage(damage, talent_owner, actor_instance, context)
+        calculate_fix_damage(damage, talent_owner, actor_instance, context, talent.temp.id)
 
     @staticmethod
     def init_talent_field_buff(
@@ -190,6 +190,7 @@ class TalentEffects:
                         actor_instance,
                         enemy,
                         context,
+                        talent.temp.id
                     )
                     Effects.add_buffs(
                         ["wucuichihuan"], 2, actor_instance, enemy, context, talent
@@ -219,6 +220,7 @@ class TalentEffects:
                             actor_hero,
                             partner,
                             context,
+                            "yaocaolinghua",
                         )
                     if buff.temp.id == "mingsha":
                         skill_list = []

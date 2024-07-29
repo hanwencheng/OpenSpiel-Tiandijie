@@ -19,8 +19,8 @@ class Passive:
         self.trigger = 0
 
 class PassiveTemp:
-    def __init__(self, passive_id, chinese_name, modifier_effects, on_event, passive_from="Passives"):
-        self.passive_id = passive_id
+    def __init__(self, id, chinese_name, modifier_effects, on_event, passive_from="Passives"):
+        self.id = id
         self.chinese_name = chinese_name
         self.modifier_effects = modifier_effects
         self.on_event = on_event

@@ -9,8 +9,8 @@ from open_spiel.python.games.Tiandijie.calculation.Effects import Effects
 
 
 class Fabao:
-    def __init__(self, weapon_id, modifier_effects, on_event):
-        self.weapon_id = weapon_id
+    def __init__(self, id, modifier_effects, on_event):
+        self.id = id
         self.modifier_effects = modifier_effects
         self.on_event = on_event
         self.cooldown = 0

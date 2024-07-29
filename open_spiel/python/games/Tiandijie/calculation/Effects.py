@@ -324,7 +324,7 @@ class Effects:
     ):
         actor_max_life = actor_instance.get_max_life(context)
         calculate_fix_heal(
-            actor_max_life * multiplier, actor_instance, actor_instance, context
+            actor_max_life * multiplier, actor_instance, actor_instance, context, primary.temp.id
         )
 
     @staticmethod
@@ -333,21 +333,21 @@ class Effects:
     ):
         actor_magic_attack = get_attack(actor_instance, target_instance, context, True, True)
         calculate_fix_heal(
-            actor_magic_attack * multiplier, actor_instance, target_instance, context
+            actor_magic_attack * multiplier, actor_instance, target_instance, context, primary.temp.id
         )
 
     @staticmethod
     def heal_caster(
         multiplier: float,
         actor_instance: Hero,
-        target_instance: Hero,
+        caster_hero: Hero,
         context: Context,
         buff: Buff,
     ):
         caster_hero = context.get_hero_by_id(buff.caster_id)
         caster_max_life = actor_instance.get_max_life(context)
         calculate_fix_heal(
-            caster_max_life * multiplier, actor_instance, caster_max_life, context
+            caster_max_life * multiplier, actor_instance, caster_hero, context, buff.temp.id
         )
 
     @staticmethod
@@ -358,12 +358,11 @@ class Effects:
         context: Context,
         buff: Buff,
     ):
-        caster_hero = context.get_hero_by_id(buff.caster_id)
         caster_magic_attack = get_attack(
-            caster_hero, target_instance, context, False, True
+            actor_instance, None, context, False, True
         )
         calculate_fix_heal(
-            caster_magic_attack * multiplier, actor_instance, target_instance, context
+            caster_magic_attack * multiplier, actor_instance, target_instance, context, buff.temp.id
         )
 
     @staticmethod
@@ -379,7 +378,7 @@ class Effects:
             caster_hero, target_instance, context, True, True
         )
         calculate_fix_heal(
-            caster_magic_attack * multiplier, actor_instance, target_instance, context
+            caster_magic_attack * multiplier, actor_instance, target_instance, context, buff.temp.id
         )
 
     @staticmethod
@@ -501,7 +500,7 @@ class Effects:
     ):
         if check_is_attacker(actor_instance, context):
             current_life = target_instance.get_current_life(context)
-            calculate_fix_damage(current_life * percentage, actor_instance, target_instance, context)
+            calculate_fix_damage(current_life * percentage, actor_instance, target_instance, context, primary.temp.id)
 
     @staticmethod
     def add_fixed_damage_with_attack_and_defense(
@@ -517,7 +516,7 @@ class Effects:
                 get_attack(actor_instance, target_instance, is_magic, context)
                 + get_defense(actor_instance, target_instance, is_magic, context)
             ) * multiplier
-            calculate_fix_damage(damage, actor_instance, target_instance, context)
+            calculate_fix_damage(damage, actor_instance, target_instance, context, primary.temp.id)
 
     @staticmethod
     def add_fixed_damage_with_physical_attack(
@@ -531,7 +530,7 @@ class Effects:
             damage = (
                 get_attack(actor_instance, target_instance, context, False) * multiplier
             )
-            calculate_fix_damage(damage, actor_instance, target_instance, context)
+            calculate_fix_damage(damage, actor_instance, target_instance, context, primary.temp.id)
 
     @staticmethod
     def add_fixed_damage_with_physical_and_magic_attack(
@@ -546,7 +545,7 @@ class Effects:
                 get_attack(actor_instance, target_instance, context, False)
                 + get_attack(actor_instance, target_instance, context, True)
             ) * multiplier
-            calculate_fix_damage(damage, actor_instance, target_instance, context)
+            calculate_fix_damage(damage, actor_instance, target_instance, context, primary.temp.id)
 
     @staticmethod
     def add_fixed_damage_in_range_by_physical_defense(
@@ -560,7 +559,7 @@ class Effects:
         enemies = context.get_enemies_in_square_range(actor_instance, range_value)
         for enemy in enemies:
             damage = get_defense(enemy, actor_instance, False, context) * multiplier
-            calculate_fix_damage(damage, actor_instance, enemy, context)
+            calculate_fix_damage(damage, actor_instance, enemy, context, primary.temp.id)
 
     @staticmethod
     def add_fixed_damage_in_range_by_max_life(
@@ -575,9 +574,9 @@ class Effects:
         targets = context.get_partners_in_diamond_range(actor, range_value)
         for target in targets:
             damage = target.get_max_life(context) * multiplier
-            calculate_fix_damage(damage, caster, target, context)
+            calculate_fix_damage(damage, caster, target, context, buff.temp.id)
         damage = actor.get_max_life(context) * multiplier
-        calculate_fix_damage(damage, caster, actor, context)
+        calculate_fix_damage(damage, caster, actor, context, buff.temp.id)
 
     @staticmethod
     def add_fixed_damage_in_diamond_range_by_caster_magic_attack(
@@ -592,7 +591,7 @@ class Effects:
         targets = context.get_enemies_in_diamond_range(caster, range_value)
         for target in targets:
             damage = get_attack(caster, target, context, True, True) * multiplier
-            calculate_fix_damage(damage, caster, target, context)
+            calculate_fix_damage(damage, caster, target, context, buff.temp.id)
 
     @staticmethod
     def add_fixed_damage_in_range_by_caster_magic_attack(
@@ -607,7 +606,7 @@ class Effects:
         targets = context.get_enemies_in_square_range(caster, range_value)
         for target in targets:
             damage = get_attack(caster, target, context, True, True) * multiplier
-            calculate_fix_damage(damage, caster, target, context)
+            calculate_fix_damage(damage, caster, target, context, buff.temp.id)
 
     @staticmethod
     def add_fixed_damage_in_range_by_caster_physical_attack(
@@ -622,7 +621,7 @@ class Effects:
         targets = context.get_enemies_in_square_range(caster, range_value)
         for target in targets:
             damage = get_attack(caster, target, context, False, True) * multiplier
-            calculate_fix_damage(damage, caster, target, context)
+            calculate_fix_damage(damage, caster, target, context, buff.temp.id)
 
     @staticmethod
     def add_fixed_damage_by_caster_physical_attack(
@@ -634,7 +633,7 @@ class Effects:
     ):
         caster = context.get_hero_by_id(primitive.caster_id)
         damage = get_attack(caster, actor, context, False) * multiplier
-        calculate_fix_damage(damage, caster, target, context)
+        calculate_fix_damage(damage, caster, target, context, primitive.temp.id)
 
     @staticmethod
     def add_fixed_damage_by_caster_magic_attack(
@@ -646,7 +645,7 @@ class Effects:
     ):
         caster = actor if type(primitive) == Skill else context.get_hero_by_id(primitive.caster_id)
         damage = get_attack(caster, actor, context, True) * multiplier
-        calculate_fix_damage(damage, caster, target, context)
+        calculate_fix_damage(damage, caster, target, context, primitive.temp.id)
 
     @staticmethod
     def add_fixed_damage_by_target_max_life(
@@ -659,7 +658,7 @@ class Effects:
         caster = context.get_hero_by_id(buff.caster_id)
         damage = actor.get_max_life(context) * multiplier
         print("战前damage", damage)
-        calculate_fix_damage(damage, caster, actor, context)
+        calculate_fix_damage(damage, caster, actor, context, buff.temp.id)
 
     @staticmethod
     def add_fixed_damage_by_target_lose_life(
@@ -673,7 +672,7 @@ class Effects:
         damage = (
             target.get_max_life(context) - target.get_current_life(context)
         ) * multiplier
-        calculate_fix_damage(damage, caster, actor, context)
+        calculate_fix_damage(damage, caster, actor, context, buff.temp.id)
 
     @staticmethod
     def receive_fixed_damage_by_current_life_percentage(
@@ -686,7 +685,7 @@ class Effects:
     ):
         caster_hero = context.get_hero_by_id(buff.caster_id)
         damage = actor_instance.get_current_life(context) * multiplier
-        calculate_fix_damage(damage, caster_hero, actor_instance, context)
+        calculate_fix_damage(damage, caster_hero, actor_instance, context, buff.temp.id)
 
     @staticmethod
     def receive_fixed_damage_by_max_life_percentage(
@@ -699,7 +698,7 @@ class Effects:
         caster_hero = context.get_hero_by_id(buff.caster_id)
         actor_max_life = actor_instance.get_max_life(context)
         damage = actor_max_life * multiplier
-        calculate_fix_damage(damage, caster_hero, actor_instance, context)
+        calculate_fix_damage(damage, caster_hero, actor_instance, context, buff.temp.id)
 
     @staticmethod
     def receive_fixed_damage_by_caster_physical_attack(
@@ -711,7 +710,7 @@ class Effects:
     ):
         caster_hero = context.get_hero_by_id(buff.caster_id)
         damage = get_attack(caster_hero, actor_instance, context, False) * multiplier
-        calculate_fix_damage(damage, caster_hero, actor_instance, context)
+        calculate_fix_damage(damage, caster_hero, actor_instance, context, buff.temp.id)
 
     @staticmethod
     def receive_fixed_damage_by_caster_magic_attack(
@@ -723,7 +722,7 @@ class Effects:
     ):
         caster_hero = context.get_hero_by_id(buff.caster_id)
         damage = get_attack(caster_hero, actor_instance, context, True) * multiplier
-        calculate_fix_damage(damage, caster_hero, actor_instance, context)
+        calculate_fix_damage(damage, caster_hero, actor_instance, context, buff.temp.id)
 
     @staticmethod
     def receive_fixed_damage_by_physical_defense_and_magic_defense(
@@ -738,7 +737,7 @@ class Effects:
             get_defense(actor_instance, target_instance, False, context)
             + get_defense(actor_instance, target_instance, True, context)
         ) * multiplier
-        calculate_fix_damage(damage, caster_hero, actor_instance, context)
+        calculate_fix_damage(damage, caster_hero, actor_instance, context, buff.temp.id)
 
     @staticmethod
     def add_target_harm_buffs(
@@ -883,7 +882,7 @@ class Effects:
                 actor_instance, target_instance, context, True, True
             )
             calculate_magic_damage(
-                caster_magic_attack * multiplier, caster_hero, actor_instance, context
+                caster_magic_attack * multiplier, caster_hero, actor_instance, context, buff.temp.id
             )
 
     @staticmethod
@@ -909,7 +908,7 @@ class Effects:
         actor_max_life = actor_instance.get_max_life(context)
         caster = context.get_hero_by_id(primary.caster_id)
         calculate_fix_damage(
-            actor_max_life * percentage, actor_instance, caster, context
+            actor_max_life * percentage, actor_instance, caster, context, primary.temp.id
         )
 
     @staticmethod
@@ -922,7 +921,7 @@ class Effects:
         move_count = action.get_moves(context.battlemap, enemies)
         actor_max_life = actor_instance.get_max_life(context)
         multiplier = min(percentage * move_count, max_percentage)
-        calculate_fix_damage(actor_max_life * multiplier, caster, actor_instance, context)
+        calculate_fix_damage(actor_max_life * multiplier, caster, actor_instance, context, primary.temp.id)
 
     @staticmethod
     def remove_actor_certain_buff(
@@ -1280,8 +1279,8 @@ class Effects:
     ):
         caster = context.get_hero_by_id(buff.caster_id)
         damage = get_current_action(context).total_damage
-        calculate_fix_heal(damage * multiplier, actor, caster, context)
-        calculate_fix_heal(damage * multiplier, actor, actor, context)
+        calculate_fix_heal(damage * multiplier, actor, caster, context, buff.temp.id)
+        calculate_fix_heal(damage * multiplier, actor, actor, context, buff.temp.id)
 
     @staticmethod
     def heal_self_and_transfer_self_harm_buff(
@@ -1325,7 +1324,7 @@ class Effects:
             + (actor_max_life - actor.get_current_life(context)) * multiplier2
         )
         caster = context.get_hero_by_id(buff.caster_id)
-        calculate_fix_damage(damage, caster, actor, context)
+        calculate_fix_damage(damage, caster, actor, context, buff.temp.id)
 
     @staticmethod
     def take_effect_of_qingliu(actor: Hero, target: Hero, context: Context, buff: Buff):
@@ -1352,7 +1351,7 @@ class Effects:
         multiplier: float, actor: Hero, target: Hero, context: Context, primary
     ):
         damage = get_current_action(context).total_damage
-        calculate_fix_heal(damage * multiplier, actor, actor, context)
+        calculate_fix_heal(damage * multiplier, actor, actor, context, primary.temp.id)
 
     # energy
     @staticmethod
@@ -1449,7 +1448,7 @@ class Effects:
         target_enemies = context.get_enemies_in_diamond_range(target_enemy, 2)
         for enemy in target_enemies:
             damage = enemy.get_max_life(context) * 0.12
-            calculate_fix_damage(damage, actor, enemy, context)
+            calculate_fix_damage(damage, actor, enemy, context, buff.temp.id)
             _add_buffs(actor, enemy, [context.get_buff_by_id("ranshao")], 2, context)
 
     @staticmethod
@@ -1462,7 +1461,7 @@ class Effects:
         if not target.is_alive:
             return
         damage = get_current_action(context).total_damage
-        calculate_fix_damage(damage, target, actor, context)
+        calculate_fix_damage(damage, target, actor, context, buff.temp.id)
 
     @staticmethod
     def take_effect_of_exin(
@@ -1512,9 +1511,9 @@ class Effects:
             actor, target, context, True
         )
         if actor_luck > target_luck:
-            calculate_fix_damage(damage, actor, target, context)
+            calculate_fix_damage(damage, actor, target, context, buff.temp.id)
         else:
-            calculate_fix_damage(damage * 0.75, actor, target, context)
+            calculate_fix_damage(damage * 0.75, actor, target, context, buff.temp.id)
 
     @staticmethod
     def take_effect_of_longyan(actor: Hero, target: Hero, context: Context, buff: Buff):
@@ -1589,7 +1588,7 @@ class Effects:
         actor_instance: Hero, target_instance: Hero, context: Context, buff: Buff
     ):
         calculate_fix_damage(
-            buff.content * 0.5, actor_instance, actor_instance, context
+            buff.content * 0.5, actor_instance, actor_instance, context, buff.temp.id
         )
 
     @staticmethod
@@ -1601,7 +1600,7 @@ class Effects:
             return
         caster = context.get_hero_by_id(buff.caster_id)
         damage = get_attack(caster, target_instance, context, False, True)
-        calculate_fix_damage(damage * 0.5, caster, target_instance, context)
+        calculate_fix_damage(damage * 0.5, caster, target_instance, context, buff.temp.id)
 
     @staticmethod
     def take_effect_of_shizhou(
@@ -1743,6 +1742,7 @@ class Effects:
             caster,
             actor_instance,
             context,
+            buff.temp.id
         )
         _add_buffs(
             caster, caster, [context.get_field_buff_temp_by_id("baonu")], 1, context
@@ -1766,7 +1766,7 @@ class Effects:
                 context,
             )
             caster.get_max_life(context)
-            calculate_fix_heal(0.3 * caster.max_life, actor_instance, caster, context)
+            calculate_fix_heal(0.3 * caster.max_life, actor_instance, caster, context, buff.temp.id)
             if level_value == 2:
                 Effects.remove_caster_harm_buff(
                     1, actor_instance, caster, context, buff
@@ -2243,7 +2243,7 @@ class Effects:
     ):
         target_max_life = target_instance.get_max_life(context)
         heal_value = target_max_life * multiplier
-        calculate_fix_heal(heal_value, actor_instance, target_instance, context)
+        calculate_fix_heal(heal_value, actor_instance, target_instance, context, skill.temp.id)
 
     @staticmethod
     def take_effect_of_niyuanguixin(

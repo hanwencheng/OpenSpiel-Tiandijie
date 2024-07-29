@@ -44,9 +44,7 @@ class Action:
         self.additional_move: int = 0
         self.additional_skill_list: [AdditionalSkill] or None = None
         self.additional_action = None
-        self.record_active_damage = {}
-        self.record_counter_damage = {}
-        self.record_heal = {}
+        self.record_action = []     # [{actor_id: str, value_type: str, value: int, from, extra_info: str}]
 
     def update_affected_heroes(self, affected_heroes: List[Hero]):
         self.targets = affected_heroes
@@ -112,24 +110,11 @@ class Action:
                 action_to_string += f"\nmoves{self.move_point}\nuse {self.skill.temp.id}\nto {self.targets[0].id if self.targets else ''}{self.action_point}"
         if self.protector:
             action_to_string += f"\nwas protected by {self.protector.id}"
-        if self.record_active_damage:
-            action_to_string += f"\ngenerate active damage:"
-            for hero_id, damage_info in self.record_active_damage.items():
-                if damage_info[0]:
-                    action_to_string += f"\n  {hero_id} took critical {math.ceil(damage_info[1])}"
-                else:
-                    action_to_string += f"\n  {hero_id} took {math.ceil(damage_info[1])}"
-        if self.record_counter_damage:
-            action_to_string += f"\ngenerate counter damage:"
-            for hero_id, damage_info in self.record_counter_damage.items():
-                if damage_info[0]:
-                    action_to_string += f"\n  {hero_id} took critical {math.ceil(damage_info[1])}"
-                else:
-                    action_to_string += f"\n  {hero_id} took {math.ceil(damage_info[1])}"
-        if self.record_heal:
-            action_to_string += f"\ngenerate heal:"
-            for hero_id, heal_value in self.record_heal.items():
-                action_to_string += f"\n  {hero_id} healing {math.ceil(heal_value)}"
+        for record_dic in self.record_action:   # [{actor_id: str, value_type: str, value: int, from, extra_info: str}]
+            if 'extra_info' in record_dic:
+                action_to_string += f"\n{record_dic['actor_id']} take {record_dic['extra_info']} {record_dic['value_type']}: {math.ceil(record_dic['value'])} from {record_dic['from']}"
+            else:
+                action_to_string += f"\n{record_dic['actor_id']} take {record_dic['value_type']}: {math.ceil(record_dic['value'])} from {record_dic['from']}"
 
         action_to_string += "\n=================================="
         action_to_string = action_to_string.replace("mohuahuangfushen", "mobao")
