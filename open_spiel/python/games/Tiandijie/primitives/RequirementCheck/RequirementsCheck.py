@@ -522,7 +522,7 @@ class RequirementCheck:
         actor_hero: Hero, target_hero: Hero, context: Context, primitive
     ) -> float:
         if RequirementCheck.skill_is_single_target_damage:
-            return actor_hero.current_life / actor_hero.max_life
+            return actor_hero.get_current_life(context) / actor_hero.get_max_life(context)
         return 0
 
     @staticmethod
@@ -719,7 +719,7 @@ class RequirementCheck:
 
     @staticmethod
     def self_and_caster_is_enemy(
-        actor_hero: Hero, target_hero: Hero, context: Context, buff: FieldBuff
+        actor_hero: Hero, target_hero: Hero, context: Context, buff
     ) -> int:
         action = context.get_last_action()
         caster = context.get_hero_by_id(buff.caster_id)

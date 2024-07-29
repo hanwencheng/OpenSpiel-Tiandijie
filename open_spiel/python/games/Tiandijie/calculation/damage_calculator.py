@@ -105,10 +105,12 @@ def calculate_fix_damage(
     defender_fix_damage_reduction = get_fixed_damage_reduction_modifier(
         target_instance, actor_instance, context
     )
-
     is_immunity_fix_damage = get_a_modifier("is_immunity_fix_damage", target_instance, target_instance, context)
+
+    print("fix damage hit", damage * defender_fix_damage_reduction, is_immunity_fix_damage)
     if not is_immunity_fix_damage:
-        target_instance.take_harm(actor_instance, damage * defender_fix_damage_reduction, context)
+        print("fix damage hit", damage * defender_fix_damage_reduction)
+        target_instance.take_harm(actor_instance, damage * defender_fix_damage_reduction, False, context, context.get_last_action())
 
 
 def calculate_magic_damage(
@@ -117,7 +119,7 @@ def calculate_magic_damage(
     actual_damage = damage * get_damage_reduction_modifier(
         defender_instance, actor_instance, True, context
     )
-    defender_instance.take_harm(actor_instance, actual_damage, context)
+    defender_instance.take_harm(actor_instance, actual_damage, False, context, context.get_last_action())
 
 
 def calculate_physical_damage(
@@ -126,7 +128,7 @@ def calculate_physical_damage(
     actual_damage = damage * get_damage_reduction_modifier(
         defender_instance, actor_instance, False, context
     )
-    defender_instance.take_harm(actor_instance, actual_damage, context)
+    defender_instance.take_harm(actor_instance, actual_damage, False, context, context.get_last_action())
 
 
 def calculate_counterattack_damage(

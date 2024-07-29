@@ -63,7 +63,6 @@ def event_listener_calculator(
     if event_type == EventTypes.before_action_end and len(context.actions) >= 2 and context.actions[-2].actor.id == actor_instance.id and context.actions[-2].additional_skill_list is not None:
         return
 
-
     # Calculated Buffs
     for buff in actor_instance.buffs:
         buff_event_levels_listeners = buff.temp.event_listeners
@@ -102,6 +101,16 @@ def event_listener_calculator(
                                 field_buff,
                             )
 
+
+    # Calculated terrain_buffs
+    terrain_buff = context.battlemap.get_terrain(actor_instance.position).buff
+    if terrain_buff:
+        for event_listener in terrain_buff.temp.on_event:
+            if event_listener.event_type == event_type:
+                event_listener_containers.append(
+                    EventListenerContainer(event_listener, terrain_buff)
+                )
+
     # Calculated Skills
     if current_action:
         skill = current_action.skill
@@ -130,7 +139,6 @@ def event_listener_calculator(
 
     # Calculate suit Stone
     stones = actor_instance.stones
-
 
     # Calculate Formation
     formation = context.get_formation_by_player_id(actor_instance.player_id)
@@ -211,6 +219,7 @@ def death_event_listener(
 def action_end_event(actor_instance: 'Hero', context):
     if context.battlemap.get_terrain(actor_instance.position).terrain_type == TerrainType.ZHUOWU:
         context.set_hero_died(actor_instance)
+
     # 所有的buff的duration-1, 技能, 天赋cd-1, 清空护盾
     remove_buffs = []
     for buff in actor_instance.buffs:

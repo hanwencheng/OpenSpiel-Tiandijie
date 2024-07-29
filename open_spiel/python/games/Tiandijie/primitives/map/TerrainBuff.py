@@ -45,8 +45,8 @@ class TerrainBuffTemps(Enum):
             EventListener(
                 EventTypes.action_end,
                 1,
-                Rs.always_true,
-                partial(Effects.take_fixed_damage_by_percentage, percentange=0.24),
+                partial(Rs.self_and_caster_is_enemy),
+                partial(Effects.take_fixed_damage_by_percentage, 0.24),
             )
         ],
     )

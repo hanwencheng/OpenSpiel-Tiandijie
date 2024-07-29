@@ -234,11 +234,11 @@ def attack_or_skill_events(
 
 
 def is_hero_live(hero_instance: Hero, counter_instance: Hero or None, context: Context):
-    if hero_instance.current_life <= 0:
+    if hero_instance.get_current_life(context) <= 0:
         before_death_event_listener(
             hero_instance, counter_instance, EventTypes.before_hero_death, context
         )
-        if hero_instance.current_life <= 0:
+        if hero_instance.get_current_life(context) <= 0:
             death_event_listener(
                 hero_instance, counter_instance, EventTypes.hero_death, context
             )

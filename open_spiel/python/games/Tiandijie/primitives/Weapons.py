@@ -168,7 +168,7 @@ class Weapons(Enum):
             ),
             ModifierEffect(
                 partial(Rs.BuffChecks.self_has_certain_buff_in_list, ["zhilu"]),
-                {Ma.counterattack_damage_percentage: 22, Ma.counterattack_range: 1},
+                {Ma.counterattack_damage_percentage: 20, Ma.counterattack_range: 1},
             ),
         ],
         [],

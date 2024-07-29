@@ -402,7 +402,7 @@ class PositionRequirementChecks:
             if calculate_if_target_in_diamond_range(
                 actor_position, hero.position, range_value
             ):
-                if hero.current_life < hero.max_life:
+                if hero.get_current_life(context) < hero.get_max_life(context):
                     return 1
         return 0
 

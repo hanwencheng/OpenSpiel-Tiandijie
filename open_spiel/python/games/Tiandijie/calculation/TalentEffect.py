@@ -25,7 +25,7 @@ from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 
 from collections import Counter
 from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
-from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, get_max_life
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack
 from typing import List
 
 
@@ -174,7 +174,7 @@ class TalentEffects:
                 return
             talent.trigger += 1
             actor_instance.current_life = (
-                get_max_life(actor_instance, actor_instance, context) * 0.5
+                actor_instance.get_max_life(context) * 0.5
             )
             if actor_instance.buff["youshuang"]:
                 enemies = context.get_enemies_in_diamond_range(actor_instance, 3)
@@ -496,7 +496,7 @@ class TalentEffects:
             if enemies:
                 target_enemy = enemies[0]
                 for enemy in enemies:
-                    if enemy.current_life_percentage < target_enemy.current_life_percentage:
+                    if enemy.get_current_life_percentage(context, None) < target_enemy.get_current_life_percentage(context, None):
                         target_enemy = enemy
                 Effects.add_fixed_damage_by_caster_physical_attack(
                     0.9, actor_instance, target_enemy, context, talent

@@ -224,7 +224,7 @@ class TianDiJieState(pyspiel.State):
         # Iterate over the active heroes
         for hero in self.context.heroes:
             if hero.player_id != player:
-                opponent_total_life_percentage += hero.current_life_percentage
+                opponent_total_life_percentage += hero.get_current_life_percentage(self.context, None)
                 opponent_hero_count += 1
 
         # Calculate the average life percentage of opponent's heroes

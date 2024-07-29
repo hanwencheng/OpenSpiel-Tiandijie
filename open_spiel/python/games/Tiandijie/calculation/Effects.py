@@ -33,7 +33,7 @@ from open_spiel.python.games.Tiandijie.primitives.map.TerrainType import Terrain
 from open_spiel.python.games.Tiandijie.primitives.hero.Element import Elements
 from typing import List
 from open_spiel.python.games.Tiandijie.basics import Position
-from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack, get_max_life
+from open_spiel.python.games.Tiandijie.calculation.attribute_calculator import get_defense, get_attack
 from open_spiel.python.games.Tiandijie.primitives.buff.BuffTemp import BuffTypes
 from open_spiel.python.games.Tiandijie.calculation.BuffStack import get_buff_max_stack
 from open_spiel.python.games.Tiandijie.calculation.BuffTriggerLimit import get_buff_max_trigger_limit
@@ -118,12 +118,12 @@ def _reserve_buffs(
     selected_buffs = random_select(target_buffs, buff_count)
     new_opposite_buffs = random_select(context.harm_buffs_temps, buff_count)
 
-    for i in range(buff_count):
+    for i in range(min(buff_count, len(selected_buffs))):
         _remove_actor_certain_buff(selected_buffs[i].temp.id, target)
         _add_buffs(
             actor,
             target,
-            [new_opposite_buffs[i].temp],
+            [new_opposite_buffs[i]],
             selected_buffs[i].duration,
             context,
         )
@@ -322,7 +322,7 @@ class Effects:
     def heal_self(
         multiplier: float, actor_instance: Hero, target_instance: Hero, context: Context, primary
     ):
-        actor_max_life = get_max_life(actor_instance, target_instance, context)
+        actor_max_life = actor_instance.get_max_life(context)
         calculate_fix_heal(
             actor_max_life * multiplier, actor_instance, actor_instance, context
         )
@@ -345,7 +345,7 @@ class Effects:
         buff: Buff,
     ):
         caster_hero = context.get_hero_by_id(buff.caster_id)
-        caster_max_life = get_max_life(caster_hero, actor_instance, context)
+        caster_max_life = actor_instance.get_max_life(context)
         calculate_fix_heal(
             caster_max_life * multiplier, actor_instance, caster_max_life, context
         )
@@ -492,6 +492,18 @@ class Effects:
         )
 
     @staticmethod
+    def add_fixed_damage_by_current_life(
+        percentage: float,
+        actor_instance: Hero,
+        target_instance: Hero,
+        context: Context,
+        primary,
+    ):
+        if check_is_attacker(actor_instance, context):
+            current_life = target_instance.get_current_life(context)
+            calculate_fix_damage(current_life * percentage, actor_instance, target_instance, context)
+
+    @staticmethod
     def add_fixed_damage_with_attack_and_defense(
         multiplier: float,
         is_magic: bool,
@@ -562,9 +574,9 @@ class Effects:
         caster = context.get_hero_by_id(buff.caster_id)
         targets = context.get_partners_in_diamond_range(actor, range_value)
         for target in targets:
-            damage = get_max_life(target, actor, context) * multiplier
+            damage = target.get_max_life(context) * multiplier
             calculate_fix_damage(damage, caster, target, context)
-        damage = get_max_life(actor, target, context) * multiplier
+        damage = actor.get_max_life(context) * multiplier
         calculate_fix_damage(damage, caster, actor, context)
 
     @staticmethod
@@ -645,7 +657,7 @@ class Effects:
         buff: Buff,
     ):
         caster = context.get_hero_by_id(buff.caster_id)
-        damage = get_max_life(target, actor, context) * multiplier
+        damage = actor.get_max_life(context) * multiplier
         print("战前damage", damage)
         calculate_fix_damage(damage, caster, actor, context)
 
@@ -659,7 +671,7 @@ class Effects:
     ):
         caster = context.get_hero_by_id(buff.caster_id)
         damage = (
-            get_max_life(target, actor, context) - target.current_life
+            target.get_max_life(context) - target.get_current_life(context)
         ) * multiplier
         calculate_fix_damage(damage, caster, actor, context)
 
@@ -673,7 +685,7 @@ class Effects:
         buff: Buff,
     ):
         caster_hero = context.get_hero_by_id(buff.caster_id)
-        damage = actor_instance.current_life * multiplier
+        damage = actor_instance.get_current_life(context) * multiplier
         calculate_fix_damage(damage, caster_hero, actor_instance, context)
 
     @staticmethod
@@ -685,7 +697,7 @@ class Effects:
         buff: Buff,
     ):
         caster_hero = context.get_hero_by_id(buff.caster_id)
-        actor_max_life = get_max_life(actor_instance, target_instance, context)
+        actor_max_life = actor_instance.get_max_life(context)
         damage = actor_max_life * multiplier
         calculate_fix_damage(damage, caster_hero, actor_instance, context)
 
@@ -894,9 +906,10 @@ class Effects:
         context: Context,
         primary,
     ):
-        actor_max_life = get_max_life(actor_instance, target_instance, context)
+        actor_max_life = actor_instance.get_max_life(context)
+        caster = context.get_hero_by_id(primary.caster_id)
         calculate_fix_damage(
-            actor_max_life * percentage, actor_instance, target_instance, context
+            actor_max_life * percentage, actor_instance, caster, context
         )
 
     @staticmethod
@@ -907,7 +920,7 @@ class Effects:
         action = context.get_last_action()
         enemies = context.get_enemy_list_by_id(actor_instance.player_id)
         move_count = action.get_moves(context.battlemap, enemies)
-        actor_max_life = get_max_life(actor_instance, caster, context)
+        actor_max_life = actor_instance.get_max_life(context)
         multiplier = min(percentage * move_count, max_percentage)
         calculate_fix_damage(actor_max_life * multiplier, caster, actor_instance, context)
 
@@ -1255,7 +1268,7 @@ class Effects:
         partners = context.get_partners_in_diamond_range(actor, range_value)
         min_heal_actor = partners[0]
         for partner in partners:
-            if partner.current_life < min_heal_actor.current_life:
+            if partner.get_current_life(context) < min_heal_actor.get_current_life(context):
                 min_heal_actor = partner
         Effects.heal_self_by_caster_physical_attack(
             multiplier, actor, min_heal_actor, context, buff
@@ -1306,10 +1319,10 @@ class Effects:
         context: Context,
         buff: Buff,
     ):
-        actor_max_life = get_max_life(actor, target, context)
+        actor_max_life = actor.get_max_life(context)
         damage = (
             actor_max_life * multiplier
-            + (actor_max_life - actor.current_life) * multiplier2
+            + (actor_max_life - actor.get_current_life(context)) * multiplier2
         )
         caster = context.get_hero_by_id(buff.caster_id)
         calculate_fix_damage(damage, caster, actor, context)
@@ -1321,8 +1334,8 @@ class Effects:
         min_life_percentage = 1
         min_life_percentage_partner = partners[0]
         for partner in partners:
-            if partner.current_life / partner.max_life < min_life_percentage:
-                min_life_percentage = partner.current_life / partner.max_life
+            if partner.get_current_life(context) / partner.max_life < min_life_percentage:
+                min_life_percentage = partner.get_current_life(context) / partner.max_life
                 min_life_percentage_partner = partner
         harm_buffs = [
             buff
@@ -1435,7 +1448,7 @@ class Effects:
                 target_enemy = enemies
         target_enemies = context.get_enemies_in_diamond_range(target_enemy, 2)
         for enemy in target_enemies:
-            damage = get_max_life(enemy, actor, context) * 0.12
+            damage = enemy.get_max_life(context) * 0.12
             calculate_fix_damage(damage, actor, enemy, context)
             _add_buffs(actor, enemy, [context.get_buff_by_id("ranshao")], 2, context)
 
@@ -1752,7 +1765,7 @@ class Effects:
                 1,
                 context,
             )
-            get_max_life(caster, actor_instance, context)
+            caster.get_max_life(context)
             calculate_fix_heal(0.3 * caster.max_life, actor_instance, caster, context)
             if level_value == 2:
                 Effects.remove_caster_harm_buff(
@@ -1986,7 +1999,7 @@ class Effects:
         context: Context,
         skill: Skill,
     ):
-        actor_max_life = get_max_life(actor_instance, target_instance, context)
+        actor_max_life = actor_instance.get_max_life(context)
         shield_value = actor_max_life * multiplier
         calculate_fix_shield(shield_value, actor_instance, actor_instance, context)
 
@@ -2228,7 +2241,7 @@ class Effects:
         context: Context,
         skill: Skill,
     ):
-        target_max_life = get_max_life(target_instance, actor_instance, context)
+        target_max_life = target_instance.get_max_life(context)
         heal_value = target_max_life * multiplier
         calculate_fix_heal(heal_value, actor_instance, target_instance, context)
 
@@ -2293,7 +2306,7 @@ class Effects:
     ):
         partners = context.get_partners_in_diamond_range(actor_instance, 3)
         for partner in partners:
-            if partner.current_life_percentage > 0.8:
+            if partner.get_current_life_percentage(context, target_instance) > 0.8:
                 Effects.add_buffs(["shuangkai"], 200, actor_instance, partner, context, weapon)
 
     @staticmethod
@@ -2365,9 +2378,9 @@ class Effects:
         partners = context.get_all_partners(actor_instance)
         partner = partners[0]
         for p in partners:
-            if p.current_life_percentage < partner.current_life_percentage:
+            if p.get_current_life_percentage(context) < partner.get_current_life_percentage(context):
                 partner = p
-        temp_percentage = (actor_instance.current_life_percentage + partner.current_life_percentage)/2
+        temp_percentage = (actor_instance.get_current_life_percentage(context, target_instance) + partner.get_current_life_percentage(context, target_instance))/2
         actor_instance.current_life_percentage = temp_percentage
         partner.current_life_percentage = temp_percentage
         for target in [actor_instance, partner]:

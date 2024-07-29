@@ -23,7 +23,7 @@ class Formations:
                 EventTypes.damage_end,
                 1,
                 Check.always_true,
-                partial(Effects.take_fixed_damage_by_percentage, 0.15),
+                partial(Effects.add_fixed_damage_by_current_life, 0.15),
             )
         ],
     )

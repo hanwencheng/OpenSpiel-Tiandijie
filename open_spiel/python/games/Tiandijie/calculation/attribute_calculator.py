@@ -209,6 +209,10 @@ def get_attack(
             + (actor_instance.temp.strength_attributes.magic_attack if is_magic else actor_instance.temp.strength_attributes.attack)
             + (actor_instance.temp.xingzhijing.magic_attack if is_magic else actor_instance.temp.xingzhijing.attack))
 
+    # print(actor_instance.id, attack_attribute, basic_attack, (actor_instance.temp.strength_attributes.magic_attack if is_magic else actor_instance.temp.strength_attributes.attack), (actor_instance.temp.xingzhijing.magic_attack if is_magic else actor_instance.temp.xingzhijing.attack), basic_attack * (1 + get_a_modifier(
+    #     attr_name+"_percentage", actor_instance, target_instance, context, skill
+    #     )/100))
+
     return basic_attack * (1 + get_a_modifier(
         attr_name+"_percentage", actor_instance, target_instance, context, skill
         )/100)
@@ -701,15 +705,16 @@ def get_counterattack_damage_reduction_modifier(
 def get_damage_elements_modifier(
     actor: Hero, target: Hero, context: Context, skill, test=None
 ):
-    action = context.get_last_action()
-    elements = action.skill.temp.element if action.skill else actor.temp.element
-
-    return get_a_modifier(str(elements.name).lower() + "_damage_percentage", actor, target, context, skill)
+    # action = context.get_last_action()
+    # elements = action.skill.temp.element if action.skill else actor.temp.element
+    #
+    # return get_a_modifier(str(elements.name).lower() + "_damage_percentage", actor, target, context, skill)
+    return 0.0
 
 def get_damage_elements_reduction_modifier(
     defender: Hero, attacker: Hero, context: Context
 ):
     action = context.get_last_action()
-    elements = action.skill.temp.element if action.skill else attacker.temp.element
+    elements = action.skill.temp.element if action.skill and action.skill.temp.element != Elements.NONE else attacker.temp.element
 
     return get_a_modifier(str(elements.name).lower() + "_damage_reduction_percentage", defender, attacker, context)

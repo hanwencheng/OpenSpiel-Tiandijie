@@ -438,7 +438,7 @@ class TIANDIJIEGUI:
             else:
                 buff_text += f"     {buff.temp.id}: {duration_text},\n"
         text = (
-            f"{hero_id[:-1]}  life: {math.ceil(get_max_life(hero, None, self.now_state.context) * hero.current_life_percentage / 100)} / "
+            f"{hero_id[:-1]}  life: {math.ceil(hero.get_current_life(self.now_state.context))} / "
             f"{math.ceil(get_max_life(hero, None, self.now_state.context))}\n"
             f"{shield_text}"
             f"physical_attack: {math.ceil(get_attack(hero, None, self.now_state.context, False))}  magic_attack: {math.ceil(get_attack(hero, None, self.now_state.context, True))}\n"
