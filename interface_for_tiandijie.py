@@ -26,6 +26,15 @@ flags.DEFINE_string("game_string", "tiandijie", "Game string")
 EpisodeTime = int(1000)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+WIDTH = 4
+HEIGHT = 2
+
+PICTURE_WIDTH = 50
+PICTURE_HEIGHT = 50
+PICTURE_SIZE = (50, 50)
+SPACING_X = 10
+SPACING_Y = 6
+
 Q_LEARNER_AGENTS = []
 for idx in range(2):
     if os.path.exists(f"2xqlearner_model_{idx}x{EpisodeTime}.pkl"):
@@ -257,8 +266,8 @@ class TIANDIJIEGUI:
         for position, data in self.data_dict.items():
             if self.now_state.context.battlemap.get_terrain(position).terrain_type.value[0] == TerrainType.JINWUQI.value[0]:
                 image_path = f"open_spiel/python/games/Tiandijie/res/布旗.png"
-                image = self.load_image(image_path, (100, 100))
-                data["button"].config(image=image, width=100, height=100)
+                image = self.load_image(image_path, PICTURE_SIZE)
+                data["button"].config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT)
                 data["button"].image = image
 
     def remove_other_frame(self):
@@ -267,41 +276,41 @@ class TIANDIJIEGUI:
     def create_map(self):
         # map_Frame
         self.map_container = tk.Frame(self.main_frame)
-        self.map_container.pack(padx=10, pady=10)
+        self.map_container.pack(padx=SPACING_X, pady=SPACING_Y)
 
         for row in range(len(self.map)):
             for column in range(len(self.map[0])):
                 # 创建一个不可编辑的标签
-                button = tk.Button(self.map_container, borderwidth=1, relief="solid", width=10, height=5,# text=100,compound='left',
+                button = tk.Button(self.map_container, borderwidth=1, relief="solid", width=WIDTH, height=HEIGHT,# text=100,compound='left',
                                   state="disabled")
-                button.grid(row=row, column=column, padx=10, pady=10)
+                button.grid(row=row, column=column, padx=SPACING_X, pady=SPACING_Y)
                 if self.map[row][column].terrain_type.value[0] == TerrainType.IMPASSABLE_OBSTACLE.value[0]:
                     self.set_grid_to_impassable(button)
                 self.data_dict[(row, column)] = {'button': button, 'hero': None}
 
         # 创建第一个按钮
-        self.button_dic["button_train"] = tk.Button(self.map_container, text="TRAIN", command=self.Episode_for_agent)
-        self.button_dic["button_train"].grid(row=len(self.map) + 1, column=0, padx=10, pady=10)
+        self.button_dic["button_train"] = tk.Button(self.map_container, text="TRAIN", command=self.Episode_for_agent, font=(None, 8))
+        self.button_dic["button_train"].grid(row=len(self.map) + 1, column=0, padx=SPACING_X, pady=SPACING_Y)
 
         # 创建第二个按钮
-        self.button_dic["button_simulate"] = tk.Button(self.map_container, text="SIMULATE", command=self.start_simulation)
-        self.button_dic["button_simulate"].grid(row=len(self.map) + 1, column=1, padx=10, pady=10)
+        self.button_dic["button_simulate"] = tk.Button(self.map_container, text="SIMULATE", command=self.start_simulation, font=(None, 7))
+        self.button_dic["button_simulate"].grid(row=len(self.map) + 1, column=1, padx=SPACING_X, pady=SPACING_Y)
 
-        self.button_dic["button_paused"] = tk.Button(self.map_container, text="PAUSED", command=self.thread_paused,
+        self.button_dic["button_paused"] = tk.Button(self.map_container, text="PAUSED", command=self.thread_paused, font=(None, 7),
                                                      state="disabled")
-        self.button_dic["button_paused"].grid(row=len(self.map) + 1, column=2, padx=10, pady=10)
+        self.button_dic["button_paused"].grid(row=len(self.map) + 1, column=2, padx=SPACING_X, pady=SPACING_Y)
 
-        self.button_dic["button_next_step"] = tk.Button(self.map_container, text="NEXT_STEP", command=self.next_step,
+        self.button_dic["button_next_step"] = tk.Button(self.map_container, text="NEXT_STEP", command=self.next_step, font=(None, 7),
                                                         state="disabled")
-        self.button_dic["button_next_step"].grid(row=len(self.map) + 1, column=3, padx=10, pady=10)
+        self.button_dic["button_next_step"].grid(row=len(self.map) + 1, column=3, padx=SPACING_X, pady=SPACING_Y)
 
-        self.button_dic["battle_with_qlearner"] = tk.Button(self.map_container, text="VS_Q_LEARNER",
+        self.button_dic["battle_with_qlearner"] = tk.Button(self.map_container, text="VS_Q_LEARNER", font=(None, 5),
                                                             command=self.battle_with_qlearner)
-        self.button_dic["battle_with_qlearner"].grid(row=len(self.map) + 1, column=4, padx=10, pady=10)
+        self.button_dic["battle_with_qlearner"].grid(row=len(self.map) + 1, column=4, padx=SPACING_X, pady=SPACING_Y)
 
         # 创建文本框
         self.text_entry = tk.Text(self.map_container, state="disabled", bg="#D9D9D9", width=35, height=3, wrap=tk.WORD)
-        self.text_entry.grid(row=0, column=len(self.map[0]) + 3, padx=10, pady=10, rowspan=len(self.map),
+        self.text_entry.grid(row=0, column=len(self.map[0]) + 3, padx=SPACING_X, pady=SPACING_Y, rowspan=len(self.map),
                              sticky='nsew', )
 
         # 创建垂直滚动条
@@ -382,12 +391,12 @@ class TIANDIJIEGUI:
         for position, data in self.data_dict.items():
             if data["hero"] and data["hero"].id == hero.id:
                 data["hero"] = None
-                data["button"].config(image='', width=10, height=5, bg="#D9D9D9", state="disabled")
+                data["button"].config(image='', width=WIDTH, height=HEIGHT, bg="#D9D9D9", state="disabled")
                 self.config_tooltip_hide(data["button"])
                 break
 
     def expected_move_hero(self, hero, position):
-        self.data_dict[self.tentative_position['position']]["button"].config(image='', width=10, height=5, bg="green")
+        self.data_dict[self.tentative_position['position']]["button"].config(image='', width=WIDTH, height=HEIGHT, bg="green")
         self.config_tooltip_hide(self.data_dict[self.tentative_position['position']]["button"])
         self.update_hero_photo(hero, position)
         self.tentative_position['position'] = position
@@ -460,15 +469,15 @@ class TIANDIJIEGUI:
         for i, skill in enumerate(hero.enabled_skills):
             temp += 1
             image_path = f"open_spiel/python/games/Tiandijie/res/{skill.temp.chinese_name}.png"
-            image = self.load_image(image_path, (100, 100))
+            image = self.load_image(image_path, PICTURE_SIZE)
             self.skill_dic[skill.temp.chinese_name] = tk.Button(
                 self.map_container,
                 width=4,
                 height=2,
                 command=lambda t=skill.temp.chinese_name: self.select_skill(t)
             )
-            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
-            self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100, state="normal" if skill in skill_list else "disabled")
+            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=SPACING_X, pady=SPACING_Y)
+            self.skill_dic[skill.temp.chinese_name].config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT, state="normal" if skill in skill_list else "disabled")
             self.config_tooltip_text(self.skill_dic[skill.temp.chinese_name], f"{skill.temp.id}, CD:{skill.cool_down}")
 
         for i, skill in enumerate(hero.enabled_passives):
@@ -476,10 +485,10 @@ class TIANDIJIEGUI:
                 continue
             temp += 1
             image_path = f"open_spiel/python/games/Tiandijie/res/{skill.temp.chinese_name}.png"
-            image = self.load_image(image_path, (100, 100))
-            self.skill_dic[skill.temp.chinese_name] = tk.Button(self.map_container, width=4, height=2)
-            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
-            self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100, state="disabled")
+            image = self.load_image(image_path, PICTURE_SIZE)
+            self.skill_dic[skill.temp.chinese_name] = tk.Button(self.map_container, width=PICTURE_WIDTH, height=PICTURE_HEIGHT)
+            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=SPACING_X, pady=SPACING_Y)
+            self.skill_dic[skill.temp.chinese_name].config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT, state="disabled")
             self.config_tooltip_text(self.skill_dic[skill.temp.chinese_name], f"passive: {skill.temp.passive_id}")
 
         for i, skill in enumerate(skill_list):
@@ -487,19 +496,19 @@ class TIANDIJIEGUI:
                 continue
             temp += 1
             image_path = f"open_spiel/python/games/Tiandijie/res/{skill.temp.chinese_name}.png"
-            image = self.load_image(image_path, (100, 100))
+            image = self.load_image(image_path, PICTURE_SIZE)
             self.skill_dic[skill.temp.chinese_name] = tk.Button(
                 self.map_container,
-                width=4,
-                height=2,
+                width=PICTURE_WIDTH,
+                height=PICTURE_HEIGHT,
                 command=lambda t=skill.temp.chinese_name: self.select_skill(t)
             )
-            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=10, pady=10)
-            self.skill_dic[skill.temp.chinese_name].config(image=image, width=100, height=100)
+            self.skill_dic[skill.temp.chinese_name].grid(row=len(self.map) + 1, column=4 + temp, padx=SPACING_X, pady=SPACING_Y)
+            self.skill_dic[skill.temp.chinese_name].config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT)
             self.config_tooltip_text(self.skill_dic[skill.temp.chinese_name], f"{skill.temp.id}, CD:{skill.cool_down}")
 
-        self.confirm_action_button = tk.Button(self.map_container, text="confirm_AC", command=lambda h=hero: self.confirm_action(h))
-        self.confirm_action_button.grid(row=len(self.map) + 1, column=5 + temp, padx=10, pady=10)
+        self.confirm_action_button = tk.Button(self.map_container, text="confirm_AC", command=lambda h=hero: self.confirm_action(h), font=(None, 6))
+        self.confirm_action_button.grid(row=len(self.map) + 1, column=5 + temp, padx=SPACING_X, pady=SPACING_Y)
 
     def select_skill(self, name):
         if self.skill_dic[name].cget("bg") == "red":
@@ -562,27 +571,27 @@ class TIANDIJIEGUI:
     def update_hero_position(self, hero, data):
         hero_id = hero.id
         image_path = f"open_spiel/python/games/Tiandijie/res/{hero_id[:-1]}.png"
-        image = self.load_image(image_path, (100, 100))
-        data["button"].config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
+        image = self.load_image(image_path, PICTURE_SIZE)
+        data["button"].config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT, bg="red" if hero_id[-1] == "0" else "blue",
                       state="normal" if hero.actionable else "disabled", command=lambda p=hero: self.show_action(p))
         self.update_hero_attribute(hero, hero.position)
 
     def update_hero_photo(self, hero, position):
         hero_id = hero.id
         image_path = f"open_spiel/python/games/Tiandijie/res/{hero_id[:-1]}.png"
-        image = self.load_image(image_path, (100, 100))
-        self.data_dict[position]["button"].config(image=image, width=100, height=100, bg="red" if hero_id[-1] == "0" else "blue",
+        image = self.load_image(image_path, PICTURE_SIZE)
+        self.data_dict[position]["button"].config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT, bg="red" if hero_id[-1] == "0" else "blue",
                       state="normal" if hero.actionable else "disabled")
         self.update_hero_attribute(hero, position)
 
     def remove_hero_photo(self, data):
-        data["button"].config(image='', width=10, height=5, bg="#D9D9D9")
+        data["button"].config(image='', width=WIDTH, height=HEIGHT, bg="#D9D9D9")
         self.config_tooltip_hide(data["button"])
 
     def set_grid_to_impassable(self, button):
         image_path = f"open_spiel/python/games/Tiandijie/res/IMPASSABLE_OBSTACLE.png"
-        image = self.load_image(image_path, (100, 100))
-        button.config(image=image, width=100, height=100)
+        image = self.load_image(image_path, PICTURE_SIZE)
+        button.config(image=image, width=PICTURE_WIDTH, height=PICTURE_HEIGHT)
         button.image = image
 
     def load_image(self, path, size):
