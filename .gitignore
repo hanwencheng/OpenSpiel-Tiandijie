@@ -60,3 +60,6 @@ Package.resolved
 # Visual Studio generated files
 open_spiel/.vs
 /.env
+/tiandijie-frontend/node_modules
+/tiandijie-frontend/.next
+tiandijie-frontend/next-env.d.ts
