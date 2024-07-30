@@ -963,7 +963,7 @@ class Skills(Enum):
         Range(RangeType.POINT, 0, 1, 1),
         0.6,
         [
-            ModifierEffect(Rs.always_true, {Ma.is_double_attack: 1}),
+            ModifierEffect(Rs.always_true, {Ma.double_attack: 1}),
         ],
         [
             EventListener(

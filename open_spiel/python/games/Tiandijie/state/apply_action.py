@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from open_spiel.python.games.Tiandijie.calculation.damage_calculator import apply_counterattack_damage, apply_damage
+from open_spiel.python.games.Tiandijie.calculation.damage_calculator import (
+    apply_counterattack_damage,
+    apply_damage,
+    apply_double_damage
+)
 from open_spiel.python.games.Tiandijie.calculation.non_damage_calculator import *
 from open_spiel.python.games.Tiandijie.state.state_calculator import (
     check_if_counterattack_first,
@@ -126,15 +130,15 @@ def counterattack_actions(action, context: Context, is_first: bool):
         )
 
 
-def double_attack_event(context: Context):
+def double_attack_event(double_attack_modifier: int, context: Context):
     action = context.get_last_action()
     target = action.get_defender_hero_in_battle()
     actor = action.actor
     event_listener_calculator(actor, target, EventTypes.double_attack_start, context)
-    event_listener_calculator(target, actor, EventTypes.double_attack_start, context)
-    apply_damage(actor, action.actor, action, context)
+    event_listener_calculator(target, actor, EventTypes.under_double_attack_start, context)
+    apply_double_damage(actor, action.actor, action, double_attack_modifier, context)
     event_listener_calculator(actor, target, EventTypes.double_attack_end, context)
-    event_listener_calculator(target, actor, EventTypes.double_attack_end, context)
+    event_listener_calculator(target, actor, EventTypes.under_double_attack_end, context)
 
 
 def calculation_events(
@@ -153,12 +157,10 @@ def calculation_events(
 #  若先攻： 先攻 -> 攻击 -> 连击（不触发追击）
 #  非先攻： 攻击 -> 连击 -> 反击 —> 追击
 def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
-
     if action.skill:
         event_listener_calculator(
             actor, target, EventTypes.skill_start, context
         )
-
 
     event_listener_calculator(actor, target, EventTypes.battle_start, context)
     event_listener_calculator(target, actor, EventTypes.battle_start, context)
@@ -169,16 +171,18 @@ def battle_events(actor: Hero, target: Hero, action: Action, context: Context):
                 actor, target, action, context, apply_damage
             )
             if is_hero_live(actor, target, context):
-                if check_if_double_attack(action, context):
-                    double_attack_event(context)
+                double_attack_modifier = check_if_double_attack(action, context)
+                if double_attack_modifier:
+                    double_attack_event(double_attack_modifier, context)
         event_listener_calculator(actor, target, EventTypes.battle_end, context)
     else:
         calculation_events(
             actor, target, action, context, apply_damage
         )
         if is_hero_live(target, target, context):
-            if check_if_double_attack(action, context):     # 连击
-                double_attack_event(context)
+            double_attack_modifier = check_if_double_attack(action, context)
+            if double_attack_modifier:
+                double_attack_event(double_attack_modifier, context)
             if is_hero_live(target, actor, context):
                 counterattack_actions(action, context, False)
             if is_hero_live(actor, target, context):

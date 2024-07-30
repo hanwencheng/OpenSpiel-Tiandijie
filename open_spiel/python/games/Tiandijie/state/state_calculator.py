@@ -91,8 +91,8 @@ def check_if_double_attack(action: Action, context: Context):
     is_double_attack_disabled = get_a_modifier(ma.is_double_attack_disabled, actor, target, context)
     if is_double_attack_disabled:
         return False
-    if_double_attack = get_a_modifier(ma.is_double_attack, actor, target, context, action.skill)
-    return if_double_attack
+    double_attack_modifier = get_a_modifier(ma.double_attack, actor, target, context, action.skill)
+    return double_attack_modifier
 
 
 def check_if_chase_attack(action: Action, context: Context):

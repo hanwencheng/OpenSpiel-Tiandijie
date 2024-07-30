@@ -269,13 +269,15 @@ def get_skill_modifier(
     counter_instance: Hero,
     skill: Skill,
     context: Context,
+    test=False
 ) -> float:
     basic_modifier_value = 0
     if not skill:
         return basic_modifier_value
+
     for effect in skill.temp.modifier_effects:
-        if hasattr(effect.modifier, attr_name):
-            multiplier = effect.requirement(actor_instance, counter_instance, context)
+        if attr_name in effect.modifier:
+            multiplier = effect.requirement(actor_instance, counter_instance, context, skill)
             if multiplier > 0:
                 basic_modifier_value += (
                     get_modifier_attribute_value(
@@ -566,11 +568,11 @@ def get_a_modifier(attr_name, actor_instance, counter_instance, context, skill=N
         attr_name, actor_instance, counter_instance, context
     )
 
-    # if attr_name == "counterattack_damage_percentage":
+    # if attr_name == "physical_damage_percentage":
     #     print("-------------------------计算-------------------------------", ":", actor_instance.id, attr_name)
     #     print(
     #       "talents",  accumulate_talents_modifier(attr_name, actor_instance, counter_instance, context), accumulated_talents_modifier,"\n",
-    #       "skill",  get_skill_modifier(attr_name, actor_instance, counter_instance, skill, context), accumulated_skill_modifier,"\n",
+    #       "skill",  get_skill_modifier(attr_name, actor_instance, counter_instance, skill, context, True), accumulated_skill_modifier,"\n",
     #       "passives",  accumulate_attribute(actor_instance.temp.passives, attr_name), accumulated_passives_damage_reduction_modifier,"\n",
     #       "xinghun",  accumulate_xinghun_attribute(actor_instance.temp.xinghun, attr_name), accumulated_xinghui_modifier,"\n",
     #       "weapon",  get_weapon_modifier(attr_name, actor_instance, counter_instance, context, ), accumulated_weapon_modifier,"\n",

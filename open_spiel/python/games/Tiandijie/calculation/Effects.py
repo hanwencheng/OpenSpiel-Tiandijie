@@ -656,9 +656,8 @@ class Effects:
         buff: Buff,
     ):
         caster = context.get_hero_by_id(buff.caster_id)
-        damage = actor.get_max_life(context) * multiplier
-        print("战前damage", damage)
-        calculate_fix_damage(damage, caster, actor, context, buff.temp.id)
+        damage = target.get_max_life(context) * multiplier
+        calculate_fix_damage(damage, caster, target, context, buff.temp.id)
 
     @staticmethod
     def add_fixed_damage_by_target_lose_life(

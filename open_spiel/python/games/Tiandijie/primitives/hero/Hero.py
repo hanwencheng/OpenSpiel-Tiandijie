@@ -78,8 +78,8 @@ class Hero:
         if harm_value > 0:
             max_life = self.get_max_life(context)
             current_life = self.get_current_life(context, attacker)
-            print("-")
-            print("承伤前：承伤者", self.id, "生命百分比", current_life, "总生命值", get_max_life(self, attacker, context), "当前生命值", current_life, "伤害", harm_value)
+            # print("-")
+            # print("承伤前：承伤者", self.id, "生命百分比", current_life, "总生命值", get_max_life(self, attacker, context), "当前生命值", current_life, "伤害", harm_value)
             damage = max(harm_value - self.shield, 0)
             is_damage_container_percentage = get_a_modifier("damage_container_percentage", self, attacker, context)
 
@@ -96,8 +96,8 @@ class Hero:
             self.receive_damage += damage
             self.current_life = ceil(max(current_life - damage, 0))
 
-            print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",current_life)
-            print("-")
+            # print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",current_life)
+            # print("-")
 
     def init_max_and_current_life(self, context):
         self.max_life = get_max_life(self, None, context)
@@ -107,9 +107,9 @@ class Hero:
         new_max_life = get_max_life(self, attacker, context)
         if new_max_life > self.max_life:
             different_current_life = self.max_life - self.current_life
-            print("========================================================================", "\n", "\n")
-            print("new_life_calcunew_life_calcunew_life_calcunew_life_calcunew_life_calcu", self.id, different_current_life, new_max_life - different_current_life, "\n", "\n")
-            print("========================================================================")
+            # print("========================================================================", "\n", "\n")
+            # print("new_life_calcunew_life_calcunew_life_calcunew_life_calcunew_life_calcu", self.id, different_current_life, new_max_life - different_current_life, "\n", "\n")
+            # print("========================================================================")
             self.current_life = new_max_life - different_current_life
             self.max_life = new_max_life
         elif new_max_life < self.max_life:

@@ -96,7 +96,7 @@ class ModifierAttributes:
     )
     is_attack_disabled = "is_attack_disabled"  # 禁用攻击
 
-    is_double_attack = "double_attack"  # 是否连击
+    double_attack = "double_attack"  # 连击的倍率
     is_dodge_attack = "is_dodge_attack"  # 是否闪避攻击
     is_counterattack_first = "counterattack_first"  # 是否先攻
     is_non_selectable = "non_selectable"  # 无法被选中

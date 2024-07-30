@@ -101,7 +101,7 @@ def get_penetration_multiplier(
     )
     accumulated_penetration = get_a_modifier(attr_name, hero_instance, counter_hero, context, skill)
     accumulated_penetration_perstone = accumulate_stone_attribute(hero_instance.stones, attr_name)
-    print("穿透系数:", normalize_value((accumulated_penetration_perstone + accumulated_penetration)/100))
+    # print("穿透系数:", normalize_value((accumulated_penetration_perstone + accumulated_penetration)/100))
     return normalize_value((accumulated_penetration_perstone + accumulated_penetration)/100)
 
 
@@ -277,6 +277,26 @@ def get_a_damage_modifier(
             - get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context)
             - get_damage_elements_reduction_modifier(counter_instance, attacker_instance, context)
     )
+    # if test:
+    #     print("============伤害a_modifier===============")
+    #     print("伤害加成", get_a_modifier(
+    #                 ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage,
+    #                 attacker_instance,
+    #                 counter_instance,
+    #                 context,
+    #                 skill,
+    #             ))
+    #     print("对战中伤害加成", get_action_type_damage_modifier(attacker_instance, counter_instance, context, skill, True))
+    #     print("属相伤害加成", get_damage_elements_modifier(attacker_instance, counter_instance, context, skill))
+    #     print("伤害减免", get_a_modifier(
+    #                 ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage,
+    #                 counter_instance,
+    #                 attacker_instance,
+    #                 context
+    #             ))
+    #     print("对战中伤害加成", get_action_type_damage_reduction_modifier(counter_instance, attacker_instance, context))
+    #     print("属相伤害减免", get_damage_elements_reduction_modifier(counter_instance, attacker_instance, context))
+
 
     return 1 + modifier / 100
 
@@ -315,31 +335,31 @@ def get_a_counter_damage_modifier(
             )
             - get_damage_elements_reduction_modifier(counter_instance, attacker_instance, context)
     )
-    if test:
-        print("============反击伤害a_modifier===============")
-        print("伤害加成", get_a_modifier(
-                    ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage,
-                    attacker_instance,
-                    counter_instance,
-                    context,
-                    skill,
-                ))
-        print("反击伤害加成", get_a_modifier(
-                    ma.counterattack_damage_percentage, attacker_instance, counter_instance, context, skill
-                ))
-        print("对战中伤害加成", get_a_modifier(
-                    ma.battle_damage_percentage, attacker_instance, counter_instance, context, skill
-                ))
-        print("伤害减免", get_a_modifier(
-                    ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage,
-                    counter_instance,
-                    attacker_instance,
-                    context
-                ))
-        print("对战中伤害加成", get_a_modifier(
-                    ma.battle_damage_reduction_percentage, attacker_instance, counter_instance, context, skill
-                ))
-        print("属相伤害减免", get_damage_elements_reduction_modifier(counter_instance, attacker_instance, context))
+    # if test:
+    #     print("============反击伤害a_modifier===============")
+    #     print("伤害加成", get_a_modifier(
+    #                 ma.magic_damage_percentage if is_magic else ma.physical_damage_percentage,
+    #                 attacker_instance,
+    #                 counter_instance,
+    #                 context,
+    #                 skill,
+    #             ))
+    #     print("反击伤害加成", get_a_modifier(
+    #                 ma.counterattack_damage_percentage, attacker_instance, counter_instance, context, skill
+    #             ))
+    #     print("对战中伤害加成", get_a_modifier(
+    #                 ma.battle_damage_percentage, attacker_instance, counter_instance, context, skill
+    #             ))
+    #     print("伤害减免", get_a_modifier(
+    #                 ma.magic_damage_reduction_percentage if is_magic else ma.physical_damage_reduction_percentage,
+    #                 counter_instance,
+    #                 attacker_instance,
+    #                 context
+    #             ))
+    #     print("对战中伤害加成", get_a_modifier(
+    #                 ma.battle_damage_reduction_percentage, attacker_instance, counter_instance, context, skill
+    #             ))
+    #     print("属相伤害减免", get_damage_elements_reduction_modifier(counter_instance, attacker_instance, context))
     return 1 + modifier / 100
 
 
@@ -425,7 +445,6 @@ def get_action_type_damage_modifier(
         battle_modifier += get_a_modifier(
             ma.battle_damage_percentage, actor, target, context, skill
         )
-
     return skill_modifier + battle_modifier + normal_modifier
 
 

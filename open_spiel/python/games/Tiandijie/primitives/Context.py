@@ -355,8 +355,8 @@ class Context:
         )
         mohuahuangfushen.enabled_passives = [Passive(mohuahuangfushen.id, Passives.sanquehuisheng.value)]
         mohuahuangfushen.enabled_skills = [Skill(0, Skills.anshayouyan.value), Skill(0, Skills.leiyinwanyu.value)]
-        # mohuahuangfushen.stones = [Stones.get_stone_by_id("wanghuan1"), Stones.get_stone_by_id("wanghuan1"),
-        #                            Stones.get_stone_by_id("wanghuan1")]
+        mohuahuangfushen.stones = [Stones.get_stone_by_id("wanghuan1"), Stones.get_stone_by_id("wanghuan1"),
+                                   Stones.get_stone_by_id("wanghuan1")]
         hero_list.append(mohuahuangfushen)
 
         suijiu = Hero(
