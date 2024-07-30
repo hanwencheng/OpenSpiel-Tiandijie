@@ -549,10 +549,8 @@ class TIANDIJIEGUI:
                 temp_target = position
                 break
         legal_actions = self.now_state.legal_actions_dic[HUMAN_PLAYER]
-        print("confirm_action", self.tentative_position['position'])
         for action in legal_actions:
             if action.actor == hero and action.move_point == self.tentative_position['position']:
-                print("confirm_action22", action.move_point)
                 if temp_skill:
                     if action.skill and action.skill.temp.chinese_name == temp_skill:
                         if action.skill.temp.target_type.value == 3:
