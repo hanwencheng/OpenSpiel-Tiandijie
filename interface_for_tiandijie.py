@@ -34,6 +34,7 @@ PICTURE_HEIGHT = 50
 PICTURE_SIZE = (50, 50)
 SPACING_X = 10
 SPACING_Y = 6
+HUMAN_PLAYER = 1    # 0 为先手， 1为后手
 
 Q_LEARNER_AGENTS = []
 for idx in range(2):
@@ -199,14 +200,13 @@ class TIANDIJIEGUI:
         threading.Thread(target=self.battle_with_qlearner_worker).start()
 
     def battle_with_qlearner_worker(self):
-        human_player = 1
         while not self.time_step.last() and not self._terminal:
             player_id = self.time_step.observations["current_player"]
             if player_id == pyspiel.PlayerId.TERMINAL:
                 self.add_text("GAME_OVER")
                 print(self.time_step.rewards)
                 return
-            if player_id == human_player:
+            if player_id == HUMAN_PLAYER:
                 action = self.command_line_action(self.time_step)
                 self.time_step = self.env.step([action], self.add_text)
                 logging.info(f"player_reward for 0 {self.time_step.rewards[0]}, player_reward for 1 {self.time_step.rewards[1]}")
@@ -403,7 +403,7 @@ class TIANDIJIEGUI:
         self.show_normal_attack_action()
 
     def show_normal_attack_action(self):
-        for action in self.now_state.legal_actions_dic[1]:
+        for action in self.now_state.legal_actions_dic[HUMAN_PLAYER]:
             if action.actor == self.tentative_position['hero'] and action.move_point == self.tentative_position['position']:
                 if action.type.value == ActionTypes.NORMAL_ATTACK.value:
                     self.data_dict[action.action_point]["button"].config(bg="orange", state="normal", command=lambda p=action.action_point: self.confirm_target(p))
@@ -416,7 +416,7 @@ class TIANDIJIEGUI:
         action_test = []
         skill_list = []
         self.move_range_set = set()
-        for action in self.now_state.legal_actions_dic[1]:
+        for action in self.now_state.legal_actions_dic[HUMAN_PLAYER]:
             if action.actor == hero:
                 action_test.append(action)
                 if action.move_point not in self.move_range_set:
@@ -521,7 +521,7 @@ class TIANDIJIEGUI:
             self.show_skill_action(name)
 
     def show_skill_action(self, skill_name):
-        for action in self.now_state.legal_actions_dic[1]:
+        for action in self.now_state.legal_actions_dic[HUMAN_PLAYER]:
             if action.actor == self.tentative_position['hero'] and action.move_point == self.tentative_position['position']:
                 if action.skill and action.skill.temp.chinese_name == skill_name:
                     self.data_dict[action.action_point]["button"].config(bg="orange", state="normal", command=lambda p=action.action_point: self.confirm_target(p))
@@ -548,9 +548,11 @@ class TIANDIJIEGUI:
             if data["button"].cget("bg") == "yellow":
                 temp_target = position
                 break
-        legal_actions = self.now_state.legal_actions_dic[1]
+        legal_actions = self.now_state.legal_actions_dic[HUMAN_PLAYER]
+        print("confirm_action", self.tentative_position['position'])
         for action in legal_actions:
             if action.actor == hero and action.move_point == self.tentative_position['position']:
+                print("confirm_action22", action.move_point)
                 if temp_skill:
                     if action.skill and action.skill.temp.chinese_name == temp_skill:
                         if action.skill.temp.target_type.value == 3:
