@@ -77,8 +77,8 @@ class EventTypes(enum.Enum):
     # all_skill 对于actor来说只结算一次
     skill_start = "skill_start"
     skill_end = "skill_end"
-    under_skill_start = "skill_start"
-    under_skill_end = "skill_end"
+    under_skill_start = "under_skill_start"
+    under_skill_end = "under_skill_end"
     # skill for self
     skill_for_self_start = "skill_for_self_start"
     skill_for_self_end = "skill_for_self_end"

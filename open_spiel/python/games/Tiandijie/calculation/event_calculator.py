@@ -139,6 +139,14 @@ def event_listener_calculator(
 
     # Calculate suit Stone
     stones = actor_instance.stones
+    if len(stones) >= 3:
+        suit_stone = stones[0]
+        if suit_stone.temp.event:
+            for event_listener in suit_stone.temp.event:
+                if event_listener.event_type == event_type:
+                    event_listener_containers.append(
+                        EventListenerContainer(event_listener, suit_stone)
+                    )
 
     # Calculate Formation
     formation = context.get_formation_by_player_id(actor_instance.player_id)

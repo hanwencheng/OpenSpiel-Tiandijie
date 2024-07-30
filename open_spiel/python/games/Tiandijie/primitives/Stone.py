@@ -9,6 +9,14 @@ from functools import partial
 
 
 class Stone:
+    def __init__(self, id, temp, caster_id, init_stack=1, max_stack=1):
+        self.id = id
+        self.temp = temp
+        self.stack = init_stack
+        self.max_stack = max_stack
+        self.caster_id = caster_id
+
+class StoneTemp:
     def __init__(self, id, effect, value, event=None, init_stack=1, max_stack=1):
         self.id = id
         self.effect = effect  # [天, 地, 荒]
@@ -19,19 +27,19 @@ class Stone:
 
 
 class Stones(Enum):
-    # wumian = Stone(
+    # wumian = StoneTemp(
     #     effect = ["life", attack", "defense", "magic_attack", "magic_defense", "luck"],
     #     value = [0, 0, 0, 0, 0],
     #     percentage = [0, 0, 0, 0, 0]
     # )
     @classmethod
-    def get_stone_by_id(cls, stone_id):
+    def get_stone_by_id(cls, caster_id, stone_id):
         for stone in cls:
             if stone.value.id == stone_id:
-                return stone.value
+                return Stone(stone.value.id, stone.value, caster_id, stone.value.stack, stone.value.max_stack)
         return None
 
-    wumian = Stone(
+    wumian = StoneTemp(
         id="wumian",
         effect=[
             {
@@ -70,7 +78,7 @@ class Stones(Enum):
     )
 
     # 使用绝学或遭受攻击后，除气血外全属性+3%（最多叠加5层）。
-    wanghuan = Stone(
+    wanghuan = StoneTemp(
         id="wanghuan",
         effect=[
             {
@@ -120,19 +128,19 @@ class Stones(Enum):
                 EventTypes.skill_end,
                 1,
                 partial(Rs.always_true),
-                partial(Effects.add_stone_stack),
+                partial(Effects.add_stone_stack, 1),
             ),
             EventListener(
                 EventTypes.under_skill_end,
                 1,
                 partial(Rs.always_true),
-                partial(Effects.add_stone_stack),
+                partial(Effects.add_stone_stack, 2),
             ),
             EventListener(
                 EventTypes.under_normal_attack_end,
                 1,
                 partial(Rs.always_true),
-                partial(Effects.add_stone_stack),
+                partial(Effects.add_stone_stack, 3),
             )
         ],
         init_stack=0,
@@ -140,7 +148,7 @@ class Stones(Enum):
     )
 
     # 使用绝学或遭受攻击后，除气血外全属性+3%（最多叠加5层）。
-    wanghuan0 = Stone(
+    wanghuan0 = StoneTemp(
         id="wanghuan0",
         effect=[
             {
@@ -210,7 +218,7 @@ class Stones(Enum):
     )
 
     # 使用绝学或遭受攻击后，除气血外全属性+3%（最多叠加5层）。
-    wanghuan1 = Stone(
+    wanghuan1 = StoneTemp(
         id="wanghuan1",
         effect=[
             {
@@ -279,7 +287,7 @@ class Stones(Enum):
         max_stack=5,
     )
     # 三枚	对友方使用绝学后，40%概率使目标获得1个随机「有益状态」。
-    minkui = Stone(
+    minkui = StoneTemp(
         id="minkui",
         effect=[
             {
@@ -325,7 +333,7 @@ class Stones(Enum):
 
     # 两枚	法攻+5%
     # 三枚	使用绝学时伤害提升10%，使用范围绝学时伤害额外提高5%
-    zhuyanmohuo = Stone(
+    zhuyanmohuo = StoneTemp(
         "zhuyanmohuo",
         [
             {
@@ -371,7 +379,7 @@ class Stones(Enum):
 
     # 两枚	物防、法防+5%
     # 三枚	免伤提升10%
-    zhoushibing = Stone(
+    zhoushibing = StoneTemp(
         "zhoushibing",
         [
             {
@@ -418,7 +426,7 @@ class Stones(Enum):
         ],
     )
 
-    zhoushibing0 = Stone(
+    zhoushibing0 = StoneTemp(
         "zhoushibing0",
         [
             {
@@ -465,7 +473,7 @@ class Stones(Enum):
         ],
     )
 
-    zhoushibing1 = Stone(
+    zhoushibing1 = StoneTemp(
         "zhoushibing1",
         [
             {
@@ -514,7 +522,7 @@ class Stones(Enum):
 
     # 两枚 法攻 + 5 %
     # 三枚 使用绝学时伤害提高8 %，主动攻击「对战中」伤害提升10 %。
-    yuanhu = Stone(
+    yuanhu = StoneTemp(
         "yuanhu",
         [
             {
@@ -558,7 +566,7 @@ class Stones(Enum):
             ],
         ],
     )
-    yuanhu0 = Stone(
+    yuanhu0 = StoneTemp(
         "yuanhu0",
         [
             {
@@ -602,7 +610,7 @@ class Stones(Enum):
             ],
         ],
     )
-    yuanhu1 = Stone(
+    yuanhu1 = StoneTemp(
         "yuanhu1",
         [
             {
@@ -650,7 +658,7 @@ class Stones(Enum):
     # 尸魔术士
     # 两枚	气血+10%
     # 三枚	治疗效果+20%
-    shimoshushi0 = Stone(
+    shimoshushi0 = StoneTemp(
         "shimoshushi0",
         [
             {
@@ -694,7 +702,7 @@ class Stones(Enum):
     # 尸魔术士
     # 两枚	气血+10%
     # 三枚	治疗效果+20%
-    shimoshushi1 = Stone(
+    shimoshushi1 = StoneTemp(
         "shimoshushi1",
         [
             {
@@ -738,7 +746,7 @@ class Stones(Enum):
     # 腐虫
     # 两枚      物攻 + 5 %
     # 三枚      范围伤害提高5 %，且主动攻击每命中一个目标，下次主动绝学的伤害提高5 %（最高提高15 %）
-    fuchong = Stone(
+    fuchong = StoneTemp(
         "fuchong",
         [
             {
@@ -781,7 +789,7 @@ class Stones(Enum):
 
     # 两枚      物攻 + 5 %
     # 三枚      伤害提升10 %，主动攻击「对战中」免伤提升10 %
-    luogui0 = Stone(
+    luogui0 = StoneTemp(
         "luogui0",
         [
             {
@@ -822,7 +830,7 @@ class Stones(Enum):
         ],
     )
 
-    luogui1 = Stone(
+    luogui1 = StoneTemp(
         "luogui1",
         [
             {

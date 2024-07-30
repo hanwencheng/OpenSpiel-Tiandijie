@@ -291,7 +291,7 @@ def get_skill_modifier(
 def accumulate_stone_attribute(stones: List[Stone], attr_name: str) -> float:
     return reduce(
         lambda total, indexed_stone: total
-        + indexed_stone[1].effect[indexed_stone[0]].get(attr_name, 0),
+        + indexed_stone[1].temp.effect[indexed_stone[0]].get(attr_name, 0),
         enumerate(stones),
         float(0),
     )
@@ -301,28 +301,23 @@ def accumulate_suit_stone_attribute(
     actor_instance, target_instance, attr_name: str, context
 ) -> float:
     suit_stone_modifier_effects_list = []
-    stone_suit = None
-    counter = Counter(actor_instance.stones)
-    for stone, count in counter.items():
-        if count >= 2:
-            suit_stone_modifier_effects_list.append(stone.value[count - 2])
-            stone_suit = stone
-            if count > 2:
-                suit_stone_modifier_effects_list.append(stone.value[count - 3])
-    if stone_suit is not None:
+    if len(actor_instance.stones) >= 2:
+        suit_stone_modifier_effects_list.append(actor_instance.stones[0].temp.value[len(actor_instance.stones) - 2])
+        if len(actor_instance.stones) > 2:
+            suit_stone_modifier_effects_list.append(actor_instance.stones[0].temp.value[len(actor_instance.stones) - 3])
+
+    if suit_stone_modifier_effects_list:
         for modifier_effects_list in suit_stone_modifier_effects_list:
             for modifier_effects in modifier_effects_list:
                 if attr_name in modifier_effects.modifier:
                     is_requirement_meet = modifier_effects.requirement(
-                        actor_instance, target_instance, context, stone_suit
+                        actor_instance, target_instance, context, actor_instance.stones[0]
                     )
                     if is_requirement_meet > 0:
                         modifier_value = get_modifier_attribute_value(
                             actor_instance, modifier_effects.modifier, attr_name
                         )
-                        return is_requirement_meet * calculate_stone_with_max_stack(
-                            stone_suit, modifier_value, attr_name
-                        )
+                        return is_requirement_meet * modifier_value
     return 0
 
 
