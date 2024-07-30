@@ -2389,4 +2389,9 @@ class Effects:
     def take_effect_of_fengshaganlinshu(
         actor_instance: Hero, target_instance: Hero, context: Context, primary
     ):
-        pass
+        partners = context.get_partners_in_diamond_range(actor_instance, 3) + [actor_instance]
+        if len(partners) > 3:
+            partners.sort(key=lambda hero: hero.get_current_life_percentage(context))
+            partners = partners[:3]
+        for partner in partners:
+            Effects.heal_target_by_magic_attack(0.5, actor_instance, partner, context, primary)
