@@ -39,6 +39,7 @@ from open_spiel.python.games.Tiandijie.calculation.BuffStack import get_buff_max
 from open_spiel.python.games.Tiandijie.calculation.BuffTriggerLimit import get_buff_max_trigger_limit
 from open_spiel.python.games.Tiandijie.state.apply_action import is_hero_live
 from open_spiel.python.games.Tiandijie.primitives.talent.Talent import Talent
+from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
 
 
 def get_current_action(context: Context) -> Action:
@@ -2083,7 +2084,6 @@ class Effects:
         Effects.add_buffs(
             ["jinliao"], 2, actor_instance, target_instance, context, skill
         )
-        from open_spiel.python.games.Tiandijie.primitives.RequirementCheck.BuffRequirementChecks import BuffRequirementChecks
         if BuffRequirementChecks.self_buff_stack_reach(
             5, "juexin", actor_instance, actor_instance, context, skill
         ):
@@ -2370,6 +2370,14 @@ class Effects:
 
     # Passive Effects
 
+    @staticmethod
+    def take_effect_of_sanquehuisheng(
+        actor_instance: Hero, target_instance: Hero, context: Context, passive
+    ):
+        if BuffRequirementChecks.self_has_certain_buff_in_list(["zhilu"], actor_instance, target_instance, context, passive):
+            Effects.heal_self(0.5, actor_instance, actor_instance, context, passive)
+        else:
+            Effects.heal_self(0.25, actor_instance, actor_instance, context, passive)
     @staticmethod
     def take_effect_of_tongmai(
         actor_instance: Hero, target_instance: Hero, context: Context, passive

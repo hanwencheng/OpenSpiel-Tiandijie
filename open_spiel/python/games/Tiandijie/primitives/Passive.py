@@ -38,13 +38,7 @@ class Passives(Enum):
                 EventTypes.battle_start,
                 1,
                 partial(Rs.PositionChecks.battle_member_in_range, 2),
-                partial(Effects.heal_self, 0.25),
-            ),
-            EventListener(
-                EventTypes.battle_start,
-                1,
-                partial(Rs.sanquehuisheng_requires_check),
-                partial(Effects.heal_self, 0.25),
+                partial(Effects.take_effect_of_sanquehuisheng),
             ),
             EventListener(
                 EventTypes.game_start,

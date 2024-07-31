@@ -213,7 +213,7 @@ class TIANDIJIEGUI:
                 self.redraw_all()
             else:
                 agent_output = Q_LEARNER_AGENTS[player_id].step(self.time_step, is_evaluation=True)
-                self.time_step = self.env.step([3], self.add_text)
+                self.time_step = self.env.step([agent_output.action], self.add_text)
                 self.redraw_hero_map()
             self.redraw_skill_terrain()
 
