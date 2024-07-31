@@ -5242,7 +5242,7 @@ class BuffTemps(Enum):
                 partial(Effects.add_fixed_damage_by_target_max_life, 0.1),
             ),
             EventListener(
-                EventTypes.lose_buff_end,
+                EventTypes.lose_buff_start,
                 1,
                 RS.always_true,
                 partial(Effects.add_self_buffs, ["wendulengque"], 1),

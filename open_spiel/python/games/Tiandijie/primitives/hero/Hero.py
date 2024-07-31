@@ -79,7 +79,7 @@ class Hero:
             max_life = self.get_max_life(context)
             current_life = self.get_current_life(context, attacker)
             # print("-")
-            # print("承伤前：承伤者", self.id, "生命百分比", current_life, "总生命值", get_max_life(self, attacker, context), "当前生命值", current_life, "伤害", harm_value)
+            # print("承伤前：承伤者", self.id, "生命百分比", self.get_current_life_percentage(context), "总生命值", self.get_max_life(context), "当前生命值", self.get_current_life(context), "伤害", harm_value)
             damage = max(harm_value - self.shield, 0)
             is_damage_container_percentage = get_a_modifier("damage_container_percentage", self, attacker, context)
 
@@ -96,7 +96,7 @@ class Hero:
             self.receive_damage += damage
             self.current_life = ceil(max(current_life - damage, 0))
 
-            # print("承伤后：承伤者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, attacker, context), "当前生命值",current_life)
+            # print("承伤后：承伤者", self.id, "生命百分比", self.get_current_life_percentage(context), "总生命值", self.get_max_life(context), "当前生命值", self.get_current_life(context))
             # print("-")
 
     def init_max_and_current_life(self, context):
@@ -129,15 +129,10 @@ class Hero:
 
     def take_healing(self, healing_value: float, context):
         if healing_value > 0:
-            max_life = get_max_life(self, None, context)
-            current_life = self.get_current_life(context)
             # print("-")
-            # print("治疗前：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life, "治疗量" , healing_value)
-
-            self.last_life = current_life
-            current_life = min(current_life + healing_value, max_life)
-            self.receive_healing += round(current_life - self.last_life)
-            # print("治疗后：被治疗者", self.id, "生命百分比", self.current_life_percentage, "总生命值", get_max_life(self, None, context), "当前生命值",self.current_life)
+            # print("治疗前：被治疗者", self.id, "生命百分比", self.get_current_life_percentage(context), "总生命值", self.get_max_life(context), "当前生命值", self.get_current_life(context), "治疗量", healing_value)
+            self.current_life = min(self.get_current_life(context) + healing_value, self.get_max_life(context))
+            # print("治疗后：被治疗者", self.id, "生命百分比", self.get_current_life_percentage(context), "总生命值", self.get_max_life(context), "当前生命值", self.get_current_life(context))
             # print("-")
 
 

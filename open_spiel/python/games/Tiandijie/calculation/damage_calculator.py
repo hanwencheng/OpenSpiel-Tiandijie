@@ -94,7 +94,7 @@ def calculate_skill_damage(
         # Critical hit occurs
         critical_damage = round(max(actual_damage * critical_damage_multiplier, 1))
         action.record_action.append(
-            {"actor_id": target_instance.id, "value_type": "damage", "value": critical_damage, "from": skill.temp.id if skill else "normal_attack"}
+            {"actor_id": target_instance.id, "value_type": "damage", "value": critical_damage, "from": skill.temp.id if skill else "normal_attack", "extra_info": "critical"}
         )
         target_instance.take_harm(attacker_instance, critical_damage, context)
     else:

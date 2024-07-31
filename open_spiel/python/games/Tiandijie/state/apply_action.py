@@ -136,7 +136,7 @@ def double_attack_event(double_attack_modifier: int, context: Context):
     actor = action.actor
     event_listener_calculator(actor, target, EventTypes.double_attack_start, context)
     event_listener_calculator(target, actor, EventTypes.under_double_attack_start, context)
-    apply_double_damage(actor, action.actor, action, double_attack_modifier, context)
+    apply_double_damage(actor, target, action, double_attack_modifier, context)
     event_listener_calculator(actor, target, EventTypes.double_attack_end, context)
     event_listener_calculator(target, actor, EventTypes.under_double_attack_end, context)
 

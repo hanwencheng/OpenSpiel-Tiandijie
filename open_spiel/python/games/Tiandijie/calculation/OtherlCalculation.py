@@ -137,7 +137,8 @@ def calculate_remove_buff(
     from open_spiel.python.games.Tiandijie.calculation.event_calculator import event_listener_calculator
     from open_spiel.python.games.Tiandijie.primitives.effects.Event import EventTypes
     event_listener_calculator(actor, None, EventTypes.lose_buff_start, context)
-    actor.buffs.remove(buff_instance)
+    if buff_instance in actor.buffs:
+        actor.buffs.remove(buff_instance)
     event_listener_calculator(actor, None, EventTypes.lose_buff_end, context)
 
 
