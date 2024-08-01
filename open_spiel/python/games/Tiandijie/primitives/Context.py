@@ -291,7 +291,7 @@ class Context:
             (2, 8),
             # []
             [Equipments.dingbizan.value, Equipments.monibaozhu.value,
-             Equipments.xuanqueyaodai.value, Equipments.sheshoulingjie_yan.value]
+             Equipments.xuanqueyaodai.value, Equipments.huanniaojie.value]
         )
         mohuahuangfushen.enabled_passives = [Passive(mohuahuangfushen.id, Passives.sanquehuisheng.value)]
         mohuahuangfushen.enabled_skills = [Skill(0, Skills.anshayouyan.value), Skill(0, Skills.leiyinwanyu.value)]
@@ -376,7 +376,7 @@ class Context:
             HeroeTemps.yuxiaoxue1.value,
             (9, 2),
             [Equipments.binglinyinhuan_yan.value, Equipments.pixieyupei_yan.value,
-             Equipments.xuanwuyu.value, Equipments.youyaoxiuhuan.value]
+             Equipments.xuanwuyu.value, Equipments.qiongtonglingjie.value]
         )
         yuxiaoxue.enabled_passives = [Passive(yuxiaoxue.id, Passives.tongmai.value), Passive(yuxiaoxue.id, Passives.fengshaganlinshu.value)]
         yuxiaoxue.enabled_skills = [Skill(0, Skills.shenqiliuzhuan.value), Skill(0, Skills.fengshaganlinshu.value)]

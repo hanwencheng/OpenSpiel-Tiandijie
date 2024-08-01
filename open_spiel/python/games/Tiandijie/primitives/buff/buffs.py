@@ -5783,8 +5783,8 @@ class BuffTemps(Enum):
 
     # 储存
     # 贮酿	其他	不可驱散	不可扩散	不可偷取	最多储存自身最大气血的50%，行动结束时，自身受到1次伤害（储存总量的50%）（不可驱散，不可免疫，必定在2回合内消化储存总量）
-    chuliang = BuffTemp(
-        "chuliang",
+    zhuniang = BuffTemp(
+        "zhuniang",
         BuffTypes.Others,
         False,
         False,
@@ -5793,9 +5793,9 @@ class BuffTemps(Enum):
         [
             EventListener(
                 EventTypes.action_end,
-                1,
+                100,
                 RS.always_true,
-                partial(Effects.take_effect_of_chuliang),
+                partial(Effects.take_effect_of_zhuniang),
             ),
         ],
     )

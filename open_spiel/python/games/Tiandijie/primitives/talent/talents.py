@@ -1189,6 +1189,12 @@ class Talents(Enum):
                 Rs.always_true,
                 partial(TalentEffects.take_effect_of_hanlinhuachou),
             ),
+            EventListener(
+                EventTypes.under_damage_start,
+                1,
+                Rs.always_true,
+                partial(Effects.add_self_buffs, ["zhuniang"], 2),
+            ),
         ],
     )
 

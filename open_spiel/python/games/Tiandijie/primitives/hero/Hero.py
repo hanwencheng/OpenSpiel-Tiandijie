@@ -81,17 +81,6 @@ class Hero:
             # print("-")
             # print("承伤前：承伤者", self.id, "生命百分比", self.get_current_life_percentage(context), "总生命值", self.get_max_life(context), "当前生命值", self.get_current_life(context), "伤害", harm_value)
             damage = max(harm_value - self.shield, 0)
-            is_damage_container_percentage = get_a_modifier("damage_container_percentage", self, attacker, context)
-
-            if is_damage_container_percentage:
-                max_damage_container = max_life * 0.5
-                act_damage = damage * is_damage_container_percentage/100
-                self.damage_container += damage - act_damage
-                if self.damage_container > max_damage_container:
-                    act_damage = act_damage + self.damage_container - max_damage_container
-                    self.damage_container = max_damage_container
-                damage = act_damage
-
             self.shield = max(self.shield - harm_value, 0)
             self.receive_damage += damage
             self.current_life = ceil(max(current_life - damage, 0))

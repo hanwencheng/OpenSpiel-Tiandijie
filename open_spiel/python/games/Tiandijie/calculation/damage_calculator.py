@@ -15,7 +15,9 @@ CRIT_MULTIPLIER = 1.3
 
 def apply_damage(actor: Hero, target: Hero, action: Action, context: Context):
     event_listener_calculator(actor, target, EventTypes.damage_start, context)
+    event_listener_calculator(target, actor, EventTypes.under_damage_start, context)
     calculate_skill_damage(actor, target, action, context)
+    event_listener_calculator(target, actor, EventTypes.under_damage_end, context)
     event_listener_calculator(actor, target, EventTypes.damage_end, context)
 
 
@@ -89,21 +91,29 @@ def calculate_skill_damage(
     #
     # print("Critical hit occurs", actual_damage * critical_damage_multiplier)
     # print("No critical hit", actual_damage)
-
+    bCritical = False
     if random() < critical_probability:
         # Critical hit occurs
-        critical_damage = round(max(actual_damage * critical_damage_multiplier, 1))
-        action.record_action.append(
-            {"actor_id": target_instance.id, "value_type": "damage", "value": critical_damage, "from": skill.temp.id if skill else "normal_attack", "extra_info": "critical"}
-        )
-        target_instance.take_harm(attacker_instance, critical_damage, context)
+        actual_damage = round(max(actual_damage * critical_damage_multiplier, 1))
+        bCritical = True
     else:
         # No critical hit
         actual_damage = round(max(actual_damage, 1))
+
+    # 隋酒天赋额外处理：
+    if target_instance.temp.temp_id in ["suijiu", "bingchanyujian"]:
+        actual_damage = calculate_damage_container(actual_damage, attacker_instance, target_instance, context)
+
+    if bCritical:   # 只作显示用
+        action.record_action.append(
+            {"actor_id": target_instance.id, "value_type": "damage", "value": actual_damage, "from": skill.temp.id if skill else "normal_attack", "extra_info": "critical"}
+        )
+    else:
         action.record_action.append(
             {"actor_id": target_instance.id, "value_type": "damage", "value": actual_damage, "from": skill.temp.id if skill else "normal_attack"}
         )
-        target_instance.take_harm(attacker_instance, actual_damage, context)
+
+    target_instance.take_harm(attacker_instance, actual_damage, context)
 
 
 def calculate_fix_damage(
@@ -197,19 +207,29 @@ def calculate_counterattack_damage(
     #
     # print("Critical hit occurs of counterattack", attacker_instance.id, actual_damage * critical_damage_multiplier)
     # print("No critical hit of counterattack", attacker_instance.id, actual_damage)
-
+    bCritical = False
     if random() < critical_probability:
         # Critical hit occurs
-        critical_damage = round(max(actual_damage * critical_damage_multiplier, 1))
-        action.record_action.append(
-            {"actor_id": target_instance.id, "value_type": "damage", "value": actual_damage, "from": "counter_attack", "extra_info": "critical"})
-        target_instance.take_harm(attacker_instance, critical_damage, context)
+        actual_damage = round(max(actual_damage * critical_damage_multiplier, 1))
+        bCritical = True
     else:
         # No critical hit
         actual_damage = round(max(actual_damage, 1))
+
+    # 隋酒天赋额外处理：
+    if target_instance.temp.temp_id in ["suijiu", "bingchanyujian"]:
+        actual_damage = calculate_damage_container(actual_damage, attacker_instance, target_instance, context)
+
+    if bCritical:   # 只作显示用
         action.record_action.append(
-            {"actor_id": target_instance.id, "value_type": "damage", "value": actual_damage, "from": "counter_attack"})
-        target_instance.take_harm(attacker_instance, actual_damage, context)
+            {"actor_id": target_instance.id, "value_type": "damage", "value": actual_damage, "from": "counter_attack", "extra_info": "critical"}
+        )
+    else:
+        action.record_action.append(
+            {"actor_id": target_instance.id, "value_type": "damage", "value": actual_damage, "from": "counter_attack"}
+        )
+
+    target_instance.take_harm(attacker_instance, actual_damage, context)
 
 
 def apply_double_damage(
@@ -286,3 +306,26 @@ def apply_double_damage(
             {"actor_id": target_instance.id, "value_type": "damage", "value": actual_damage, "from": skill.temp.id if skill else "double_attack"}
         )
         target_instance.take_harm(attacker_instance, actual_damage, context)
+
+
+def calculate_damage_container(damage, actor_instance: Hero, target_instance: Hero, context: Context):
+    # if target_instance.temp.temp_id == "suijiu":
+
+    # 隋酒天赋额外处理：
+    damage_container_percentage = accumulate_talents_modifier("damage_container_percentage", target_instance, actor_instance, context)
+    # 统计守放字段
+
+    max_life = target_instance.get_max_life(context)   # 最多储存自身最大气血的50%
+    if target_instance.damage_container + (damage * (1 - damage_container_percentage/100)) > max_life * 0.5:
+        actual_damage = (
+                damage * damage_container_percentage/100
+                + (
+                        target_instance.damage_container + damage * (1 - damage_container_percentage/100)
+                )
+                - max_life * 0.5)
+        target_instance.damage_container = max_life * 0.5
+    else:
+        target_instance.damage_container = damage * (1 - damage_container_percentage / 100)
+        actual_damage = damage * damage_container_percentage/100
+    print("calculate_damage_container", target_instance.damage_container, actual_damage)
+    return actual_damage

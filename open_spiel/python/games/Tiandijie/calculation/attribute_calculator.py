@@ -28,7 +28,7 @@ from open_spiel.python.games.Tiandijie.calculation.modifier_calculator import (
     get_skill_modifier,
     accumulate_stone_attribute,
     get_damage_and_reduction_level2_modifier,
-    accumulate_suit_stone_attribute,
+    accumulate_talents_modifier,
     get_sstone_perstone_talent_equip_formation_passive_buff_weapon_modifier,
     get_a_modifier
 )

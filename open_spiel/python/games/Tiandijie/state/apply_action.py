@@ -289,9 +289,6 @@ def apply_action(context: Context, action: Action):
             is_hero_live(action.actor, True, context)
         else:
             range_skill_events(actor, action.targets, action, context, apply_damage)
-            # for target in action.targets:
-            #     attack_or_skill_events(actor, target, action, context, apply_damage)
-            #     is_hero_live(target, actor, context)
 
         # check liveness of all the heroes
         for hero in context.heroes:
@@ -342,8 +339,8 @@ def generate_legal_actions():
 def range_skill_events(actor_instance, counter_instances, action, context, apply_func):
     skill_start_event_type, skill_end_event_type = skill_type_to_event_dict[action.skill.temp.target_type]
 
-    def trigger_event(event_type, counter_instance=None):
-        event_listener_calculator(actor_instance, counter_instance, event_type, context)
+    def trigger_event(event_type):
+        event_listener_calculator(actor_instance, None, event_type, context)
 
     if not counter_instances:
         trigger_event(EventTypes.skill_start)
@@ -351,14 +348,14 @@ def range_skill_events(actor_instance, counter_instances, action, context, apply
         trigger_event(skill_end_event_type)
         trigger_event(EventTypes.skill_end)
     else:
-        trigger_event(EventTypes.skill_start, counter_instances[0])
-        trigger_event(skill_start_event_type, counter_instances[0])
+        trigger_event(EventTypes.skill_start)
+        trigger_event(skill_start_event_type)
 
         for counter_instance in counter_instances:
             calculation_events(actor_instance, counter_instance, action, context, apply_func)
 
-        trigger_event(skill_end_event_type, counter_instances[0])
-        trigger_event(EventTypes.skill_end, counter_instances[0])
+        trigger_event(skill_end_event_type)
+        trigger_event(EventTypes.skill_end)
 
 
 def heal_event(actor_instance, counter_instance, action, context, apply_func):

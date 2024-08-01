@@ -442,3 +442,18 @@ class PositionRequirementChecks:
         if calculate_if_target_in_diamond_range(actor_position, target_position, range_value):
             return 1
         return 0
+
+    @staticmethod
+    def battle_member_in_square(
+        range_value: int,
+        actor_hero: Hero,
+        target_hero: Hero,
+        context: Context,
+        passive
+    ) -> int:
+        action = context.get_last_action()
+        actor_position = action.move_point
+        target_position = action.targets[0].position
+        if calculate_if_target_in_square_range(actor_position, target_position, range_value):
+            return 1
+        return 0

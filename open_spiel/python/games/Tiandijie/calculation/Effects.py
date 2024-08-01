@@ -1584,12 +1584,17 @@ class Effects:
             )
 
     @staticmethod
-    def take_effect_of_chuliang(
+    def take_effect_of_zhuniang(
         actor_instance: Hero, target_instance: Hero, context: Context, buff: Buff
     ):
-        calculate_fix_damage(
-            buff.content * 0.5, actor_instance, actor_instance, context, buff.temp.id
-        )
+        if buff.duration == 1:
+            calculate_fix_damage(
+                actor_instance.damage_container * 0.5, actor_instance, actor_instance, context, buff.temp.id
+            )
+        else:
+            calculate_fix_damage(
+                actor_instance.damage_container, actor_instance, actor_instance, context, buff.temp.id
+            )
 
     @staticmethod
     def take_effect_of_xunlie(

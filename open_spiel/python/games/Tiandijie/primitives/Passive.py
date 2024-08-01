@@ -37,7 +37,7 @@ class Passives(Enum):
             EventListener(
                 EventTypes.battle_start,
                 1,
-                partial(Rs.PositionChecks.battle_member_in_range, 2),
+                partial(Rs.PositionChecks.battle_member_in_square, 2),
                 partial(Effects.take_effect_of_sanquehuisheng),
             ),
             EventListener(

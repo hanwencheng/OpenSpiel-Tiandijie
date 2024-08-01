@@ -783,7 +783,7 @@ class RequirementCheck:
     def sanquehuisheng_requires_check(
         actor_hero: Hero, target_hero: Hero, context: Context, passive
     ) -> int:
-        if PositionRequirementChecks.battle_member_in_range(2, actor_hero, target_hero, context, passive) and(
+        if PositionRequirementChecks.battle_member_in_square(2, actor_hero, target_hero, context, passive) and(
             RequirementCheck.BuffChecks.self_has_certain_buff_in_list(["zhilu"], actor_hero, target_hero, context, passive)
         ):
             return 1

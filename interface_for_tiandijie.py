@@ -180,8 +180,7 @@ class TIANDIJIEGUI:
                 print(self.time_step.rewards)
                 break
             agent_output = Q_LEARNER_AGENTS[player_id].step(self.time_step)
-            self.add_text(f"Agent {player_id} chooses {self.env.get_state.action_to_string(agent_output.action)}")
-            self.time_step = self.env.step([agent_output.action])
+            self.time_step = self.env.step([agent_output.action], self.add_text)
             self.redraw_hero_map()
 
         print(self.time_step.rewards)

@@ -99,6 +99,7 @@ def calculate_add_buff(
                 target.buffs.remove(existing_buff)
                 target.buffs.append(new_buff)
             else:
+                _refresh_buff_duration(new_buff.temp.id, target, new_buff.duration)
                 _increase_actor_certain_buff_stack(new_buff.temp.id, target, 1)
         else:
             target.buffs.append(new_buff)
@@ -163,3 +164,10 @@ def calculate_additional_move(
         return
     action = context.get_last_action()
     action.update_additional_move(move_range)
+
+
+def _refresh_buff_duration(buff_temp_id: str, actor, duration: int):
+    for buff in actor.buffs:
+        if buff.temp.id == buff_temp_id:
+            buff.duration = duration
+            break

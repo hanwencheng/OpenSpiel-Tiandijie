@@ -433,7 +433,7 @@ class Stones(Enum):
                 "life": 908,
                 "attack": 363,
                 Ma.magic_damage_reduction_percentage: 4,
-                Ma.physical_damage_reduction_percentage: 9,
+                Ma.physical_damage_percentage: 9,
                 Ma.suffer_critical_damage_reduction_percentage: 4,
                 Ma.life_percentage: 4,
             },
