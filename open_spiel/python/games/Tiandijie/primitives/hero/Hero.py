@@ -96,13 +96,12 @@ class Hero:
         new_max_life = get_max_life(self, attacker, context)
         if new_max_life > self.max_life:
             different_current_life = self.max_life - self.current_life
-            # print("========================================================================", "\n", "\n")
-            # print("new_life_calcunew_life_calcunew_life_calcunew_life_calcunew_life_calcu", self.id, different_current_life, new_max_life - different_current_life, "\n", "\n")
-            # print("========================================================================")
             self.current_life = new_max_life - different_current_life
             self.max_life = new_max_life
         elif new_max_life < self.max_life:
             self.max_life = new_max_life
+            if self.current_life > self.max_life:
+                self.current_life = self.max_life
 
     def get_max_life(self, context, attacker=None):
         self.check_max_and_current_life(context, attacker)
