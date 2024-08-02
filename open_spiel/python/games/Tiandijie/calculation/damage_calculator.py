@@ -327,5 +327,4 @@ def calculate_damage_container(damage, actor_instance: Hero, target_instance: He
     else:
         target_instance.damage_container = damage * (1 - damage_container_percentage / 100)
         actual_damage = damage * damage_container_percentage/100
-    print("calculate_damage_container", target_instance.damage_container, actual_damage)
     return actual_damage
