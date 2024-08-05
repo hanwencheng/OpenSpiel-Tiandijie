@@ -23,7 +23,7 @@ import pickle
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("game_string", "tiandijie", "Game string")
-EpisodeTime = int(1000)
+EpisodeTime = int(500)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 WIDTH = 4
@@ -216,6 +216,8 @@ class TIANDIJIEGUI:
                 self.redraw_hero_map()
             self.redraw_skill_terrain()
 
+        for agent in Q_LEARNER_AGENTS:
+            agent.step(self.time_step)
         print(self.time_step.rewards)
 
     def command_line_action(self, time_step):
@@ -602,6 +604,7 @@ class TIANDIJIEGUI:
     def Episode_for_agent(self):
         threading.Thread(target=self.Episode_for_agent_worker2).start()
 
+    # Evaluate the agents
     def eval_against_random_bots(self, env, trained_agents, random_agents, num_episodes):
         """Evaluates `trained_agents` against `random_agents` for `num_episodes`."""
         wins = np.zeros(2)
@@ -624,6 +627,7 @@ class TIANDIJIEGUI:
                     wins[player_pos] += 1
         return wins / num_episodes
 
+    # Train the agents
     def Episode_for_agent_worker2(self):
         self.add_text("Episode_Start")
         for cur_episode in range(EpisodeTime):
@@ -637,6 +641,13 @@ class TIANDIJIEGUI:
             while not time_step.last():
                 player_id = time_step.observations["current_player"]
                 if player_id == pyspiel.PlayerId.TERMINAL:
+                    logging.info("cemetery hero for 0 :%s, cemetery hero for 1 :%s, ",
+                                 self.env.get_state.show_cemetery_counts(0),  self.env.get_state.show_cemetery_counts(1)
+                                 )
+                    logging.info("reward hero for 0 :%s, reward hero for 1 :%s, ",
+                                 time_step.rewards[0],  time_step.rewards[1]
+                                 )
+                    print("============================================================================================\n")
                     break
                 agent_output = Q_LEARNER_AGENTS[player_id].step(time_step)
                 time_step = self.env.step([agent_output.action])

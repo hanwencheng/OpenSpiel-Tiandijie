@@ -88,7 +88,7 @@ def calculate_add_buff(
     if not prevent:
         new_buff = Buff(buff_temp, duration, caster.id, level)
         action = context.get_last_action()
-        if action.actor == caster and target == caster:
+        if action and action.actor == caster and target == caster:
             new_buff.duration = duration + 1
         existing_buff = next(
             (buff for buff in target.buffs if buff.temp.id == new_buff.temp.id), None

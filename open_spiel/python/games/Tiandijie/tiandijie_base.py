@@ -49,10 +49,10 @@ _GAME_INFO = pyspiel.GameInfo(
     num_distinct_actions=1000,
     max_chance_outcomes=100,
     num_players=_NUM_PLAYERS,
-    min_utility=-10000,
-    max_utility=10000,
+    min_utility=0,
+    max_utility=1,
     max_game_length=_MAX_GAME_LENGTH*3*10,
-    utility_sum=0.0)
+    utility_sum=None)
 
 
 
@@ -219,28 +219,28 @@ class TianDiJieState(pyspiel.State):
 
     def calculate_score(self, player):
         opponent_total_life_percentage = 0.0
-        opponent_hero_count = 0
 
         # Iterate over the active heroes
         for hero in self.context.heroes:
-            if hero.player_id != player:
+            if hero.player_id != player and hero.is_alive:
                 opponent_total_life_percentage += hero.get_current_life_percentage(self.context, None)
-                opponent_hero_count += 1
 
         # Calculate the average life percentage of opponent's heroes
-        if opponent_hero_count > 0:
-            opponent_average_life_percentage = opponent_total_life_percentage / opponent_hero_count
-        else:
-            opponent_average_life_percentage = 0.0
 
-        # print("opponent_average_life_percentage:", opponent_average_life_percentage/100)
         # Calculate the final score
-        return 1 - opponent_average_life_percentage/100
+        return (5 - opponent_total_life_percentage / 100) / 5
 
     def shows_cemetery(self):
         print("墓地的英灵:")
         for hero in self.context.cemetery:
             print(hero.id)
+
+    def show_cemetery_counts(self, player_id):
+        count = 0
+        for hero in self.context.cemetery:
+            if hero.player_id == player_id:
+                count += 1
+        return count
 
     def display_map(self):
         self.context.battlemap.display_map()

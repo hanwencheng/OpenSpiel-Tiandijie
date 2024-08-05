@@ -1186,7 +1186,7 @@ class Talents(Enum):
             EventListener(
                 EventTypes.action_end,
                 1,
-                Rs.always_true,
+                partial(Rs.self_is_used_active_skill),
                 partial(TalentEffects.take_effect_of_hanlinhuachou),
             ),
             EventListener(
