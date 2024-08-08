@@ -203,8 +203,7 @@ class TIANDIJIEGUI:
             player_id = self.time_step.observations["current_player"]
             if player_id == pyspiel.PlayerId.TERMINAL:
                 self.add_text("GAME_OVER")
-                print(self.time_step.rewards)
-                return
+                break
             if player_id == HUMAN_PLAYER:
                 action = self.command_line_action(self.time_step)
                 self.time_step = self.env.step([action], self.add_text)
@@ -216,8 +215,15 @@ class TIANDIJIEGUI:
                 self.redraw_hero_map()
             self.redraw_skill_terrain()
 
+
         for agent in Q_LEARNER_AGENTS:
             agent.step(self.time_step)
+
+        with open(f"2xqlearner_model_0x{EpisodeTime}.pkl", "wb") as f:
+            pickle.dump(Q_LEARNER_AGENTS[0], f)
+        with open(f"2xqlearner_model_1x{EpisodeTime}.pkl", "wb") as f:
+            pickle.dump(Q_LEARNER_AGENTS[1], f)
+        print("Done")
         print(self.time_step.rewards)
 
     def command_line_action(self, time_step):
